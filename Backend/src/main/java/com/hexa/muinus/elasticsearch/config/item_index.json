@@ -1,0 +1,27 @@
+{
+  "settings": {
+    "analysis": {
+      "analyzer": {
+        "nori_token": {
+          "type": "custom",
+          "tokenizer": "nori_tokenizer"
+        }
+      }
+    }
+  },
+  "mappings": {
+    "properties": {
+      "itemId":       { "type": "integer" },
+      "barcode":      { "type": "keyword" },
+      "itemName":     { "type": "text", "analyzer": "nori_token" },
+      "brand":        { "type": "text", "analyzer": "nori_token" },
+      "calories":     { "type": "integer" },
+      "protein":      { "type": "integer" },
+      "fat":          { "type": "integer" },
+      "carbohydrate": { "type": "integer" },
+      "sugars":       { "type": "integer" },
+      "weight":       { "type": "integer" },
+      "itemImageUrl": { "type": "text" }
+    }
+  }
+}
