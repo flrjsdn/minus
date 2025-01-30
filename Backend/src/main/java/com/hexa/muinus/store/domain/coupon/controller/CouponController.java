@@ -18,6 +18,7 @@ public class CouponController {
 
     @PostMapping("/create")
     public ResponseEntity<?> createCoupon(@RequestBody CouponRequestDto couponRequestDto){
-        couponService.createCoupon();
+        couponService.createCoupon(couponRequestDto);
+        return ResponseEntity.ok("Coupon create successfully");
     }
 }
