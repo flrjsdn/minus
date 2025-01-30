@@ -2,6 +2,7 @@ package com.hexa.muinus.store.domain.coupon.controller;
 
 import com.hexa.muinus.store.domain.coupon.dto.CouponRequestDto;
 import com.hexa.muinus.store.domain.coupon.service.CouponService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,8 +18,10 @@ public class CouponController {
     private final CouponService couponService;
 
     @PostMapping("/create")
-    public ResponseEntity<?> createCoupon(@RequestBody CouponRequestDto couponRequestDto){
+    public ResponseEntity<?> createCoupon(@Valid @RequestBody CouponRequestDto couponRequestDto){
         couponService.createCoupon(couponRequestDto);
         return ResponseEntity.ok("Coupon create successfully");
     }
+
+    
 }
