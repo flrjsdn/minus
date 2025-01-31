@@ -26,6 +26,12 @@ repositories {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    // Spring Data Elasticsearch
+    implementation 'org.springframework.data:spring-data-elasticsearch:4.4.0' // Spring Data Elasticsearch 4.x 버전 사용
+
+    // Elasticsearch RestHighLevelClient
+    implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.17.9'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'// Elasticsearch 클러스터 버전에 맞게 설정
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     runtimeOnly 'com.mysql:mysql-connector-j'

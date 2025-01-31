@@ -4,8 +4,8 @@ import com.hexa.muinus.elasticsearch.domain.ESItem;
 import lombok.RequiredArgsConstructor;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.RangeQueryBuilder;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
@@ -20,34 +20,42 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ESItemService {
 
-    private final ElasticsearchOperations elasticsearchOperations;
+    private final ElasticsearchOperations elasticsearchTemplate;
 
     /**
-     * 1) prefix query 로 5개 itemName 추천
+     * Prefix 쿼리를 사용하여 itemName 자동완성 (상위 5개 추천)
+     *
+     * @param prefix 자동완성을 위한 접두사
+     * @return 자동완성된 ESItem 목록
      */
     public List<ESItem> autocompleteItemName(String prefix) {
-        // 1) prefix query
-        // 예) itemName 필드가 prefix로 시작하는 것 검색
-        var prefixQuery = QueryBuilders.prefixQuery("item_name", prefix);
+        // Prefix 쿼리 생성
+        BoolQueryBuilder prefixQuery = QueryBuilders.boolQuery()
+                .must(QueryBuilders.prefixQuery("itemName", prefix));
 
-        // 2) NativeSearchQueryBuilder
-        Pageable limit = PageRequest.of(0, 5); // 상위 5개만
+        // 검색 쿼리 빌드 (상위 5개만)
         NativeSearchQuery searchQuery = new NativeSearchQueryBuilder()
                 .withQuery(prefixQuery)
-                .withPageable(limit)
+                .withPageable(PageRequest.of(0, 5))
                 .build();
 
-        // 3) 검색 실행
-        SearchHits<ESItem> searchHits = elasticsearchOperations.search(searchQuery, ESItem.class);
+        // 검색 실행
+        SearchHits<ESItem> searchHits = elasticsearchTemplate.search(searchQuery, ESItem.class);
 
-        // 4) itemName 만 반환
+        // 검색 결과에서 ESItem 목록 추출
         return searchHits.getSearchHits().stream()
                 .map(SearchHit::getContent)
                 .collect(Collectors.toList());
     }
 
     /**
-     * 2) 당(sugars)과 칼로리(calories) 범위 검색
+     * 당(sugars)과 칼로리(calories)의 범위로 검색
+     *
+     * @param minSugar 최소 당 함량
+     * @param maxSugar 최대 당 함량
+     * @param minCal   최소 칼로리
+     * @param maxCal   최대 칼로리
+     * @return 해당 범위에 맞는 ESItem 목록
      */
     public List<ESItem> searchBySugarAndCalorieRange(Integer minSugar,
                                                      Integer maxSugar,
@@ -56,29 +64,48 @@ public class ESItemService {
 
         BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
 
-        // sugars 범위
+        // 당(sugars) 범위 쿼리 추가
         if (minSugar != null || maxSugar != null) {
-            boolQuery.must(QueryBuilders.rangeQuery("sugars")
-                    .gte(minSugar != null ? minSugar : 0)
-                    .lte(maxSugar != null ? maxSugar : Integer.MAX_VALUE));
+            RangeQueryBuilder sugarRangeQuery = QueryBuilders.rangeQuery("sugars");
+            if (minSugar != null) {
+                sugarRangeQuery.gte(minSugar);
+            } else {
+                sugarRangeQuery.gte(0);
+            }
+            if (maxSugar != null) {
+                sugarRangeQuery.lte(maxSugar);
+            } else {
+                sugarRangeQuery.lte(Integer.MAX_VALUE);
+            }
+            boolQuery.must(sugarRangeQuery);
         }
 
-        // calories 범위
+        // 칼로리(calories) 범위 쿼리 추가
         if (minCal != null || maxCal != null) {
-            boolQuery.must(QueryBuilders.rangeQuery("calories")
-                    .gte(minCal != null ? minCal : 0)
-                    .lte(maxCal != null ? maxCal : Integer.MAX_VALUE));
+            RangeQueryBuilder calRangeQuery = QueryBuilders.rangeQuery("calories");
+            if (minCal != null) {
+                calRangeQuery.gte(minCal);
+            } else {
+                calRangeQuery.gte(0);
+            }
+            if (maxCal != null) {
+                calRangeQuery.lte(maxCal);
+            } else {
+                calRangeQuery.lte(Integer.MAX_VALUE);
+            }
+            boolQuery.must(calRangeQuery);
         }
 
-        // 쿼리 생성
+        // 검색 쿼리 빌드 (페이징 없이 모든 결과, 페이지 사이즈 조정 가능)
         NativeSearchQuery searchQuery = new NativeSearchQueryBuilder()
                 .withQuery(boolQuery)
+                .withPageable(PageRequest.of(0, 1000)) // 필요에 따라 페이지 사이즈 조정
                 .build();
 
         // 검색 실행
-        SearchHits<ESItem> searchHits = elasticsearchOperations.search(searchQuery, ESItem.class);
+        SearchHits<ESItem> searchHits = elasticsearchTemplate.search(searchQuery, ESItem.class);
 
-        // 실제 문서만 추출
+        // 검색 결과에서 ESItem 목록 추출
         return searchHits.getSearchHits().stream()
                 .map(SearchHit::getContent)
                 .collect(Collectors.toList());
