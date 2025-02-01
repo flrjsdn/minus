@@ -15,8 +15,13 @@ public class KioskController {
 
     private final KioskService kioskService;
 
-    @GetMapping
+    @GetMapping("/scan")
     public ResponseEntity<?> scanBarcode(@RequestParam(name = "storeNo") Integer storeNo, @RequestParam(name = "barcode") String barcode) {
         return ResponseEntity.ok(kioskService.scanBarcode(storeNo, barcode));
+    }
+
+    @GetMapping("/flea-item")
+    public ResponseEntity<?> putFliItem(@RequestParam(name = "storeNo") Integer storeNo, @RequestParam(name = "sectionId") Integer sectionId) {
+        return ResponseEntity.ok(kioskService.putFliItem(storeNo, sectionId));
     }
 }

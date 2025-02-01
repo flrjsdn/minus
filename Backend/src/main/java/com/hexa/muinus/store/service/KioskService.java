@@ -1,9 +1,10 @@
 package com.hexa.muinus.store.service;
 
 import com.hexa.muinus.store.domain.item.Item;
+import com.hexa.muinus.store.domain.item.repository.FliItemRepository;
 import com.hexa.muinus.store.domain.item.repository.ItemRepository;
 import com.hexa.muinus.store.domain.item.repository.StoreItemRepository;
-import com.hexa.muinus.store.dto.ScanBarcodeRequestDTO;
+import com.hexa.muinus.store.dto.PutFliItemResponseDTO;
 import com.hexa.muinus.store.dto.ScanBarcodeResponseDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,6 +17,7 @@ public class KioskService {
 
     private final StoreItemRepository storeItemRepository;
     private final ItemRepository itemRepository;
+    private final FliItemRepository fliItemRepository;
 
     public ScanBarcodeResponseDTO scanBarcode(Integer storeNo, String barcode) {
         // 바코드 번호로 item 테이블에서 상품 번호 및 이름 조회
@@ -30,5 +32,13 @@ public class KioskService {
                 .itemName(item.getItemName())
                 .price(price)
                 .build();
+    }
+
+    public PutFliItemResponseDTO putFliItem(Integer storeNo, Integer sectionId) {
+        // storeNo와 sectoinId로 fli_item 테이블에서 상품 이름 및 가격 조회
+        PutFliItemResponseDTO responseDTO = fliItemRepository.findFliItemByStoreNoAndSectionId(storeNo, sectionId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "판매하지 않는 상품입니다."));
+
+        return responseDTO;
     }
 }
