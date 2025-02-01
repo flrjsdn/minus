@@ -27,7 +27,7 @@ public class GuestTransactions {
     @JoinColumn(name = "guest_no", nullable = false)
     private GuestUser guest;
 
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false, length = 50)
     private String receiptCode;
 
     @Column(nullable = false)
@@ -37,7 +37,7 @@ public class GuestTransactions {
     @Column(name = "status", nullable = false, columnDefinition = "ENUM('SUCCESS', 'FAILED', 'REFUNDED') DEFAULT 'SUCCESS'")
     private Status status;
 
-    @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    @Column(name = "created_at", insertable = false, nullable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime createdAt;
 
     public enum Status {

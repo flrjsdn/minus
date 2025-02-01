@@ -2,8 +2,12 @@ package com.hexa.muinus.store.domain.transaction;
 
 import com.hexa.muinus.store.domain.store.Store;
 import com.hexa.muinus.users.domain.user.Users;
+import com.hexa.muinus.store.domain.transaction.GuestTransactions.Status;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
@@ -12,6 +16,7 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Transactions {
 
     @Id
@@ -19,7 +24,7 @@ public class Transactions {
     @Column(name = "transaction_id")
     private int transactionId;
 
-    @Column(name = "receipt_code", nullable = false, length = 20)
+    @Column(name = "receipt_code", nullable = false, length = 50)
     private String receiptCode;
 
     @ManyToOne
@@ -33,9 +38,10 @@ public class Transactions {
     @Column(name = "total_amount", nullable = false)
     private int totalAmount;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, columnDefinition = "ENUM('SUCCESS', 'FAILED', 'REFUNDED') DEFAULT 'SUCCESS'")
-    private String status;
+    private Status status;
 
-    @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    @Column(name = "created_at", insertable = false, nullable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime createdAt;
 }
