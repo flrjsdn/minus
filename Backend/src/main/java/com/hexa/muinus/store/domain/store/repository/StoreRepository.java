@@ -1,4 +1,4 @@
-package com.hexa.muinus.store.domain;
+package com.hexa.muinus.store.domain.store.repository;
 
 import com.hexa.muinus.store.domain.store.Store;
 import org.springframework.data.jpa.repository.JpaRepository;

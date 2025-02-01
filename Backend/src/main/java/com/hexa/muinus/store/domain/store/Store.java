@@ -1,4 +1,4 @@
-package com.hexa.muinus.store.domain;
+package com.hexa.muinus.store.domain.store;
 
 import com.hexa.muinus.users.domain.user.Users;
 import jakarta.persistence.*;

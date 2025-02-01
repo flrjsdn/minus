@@ -1,6 +1,6 @@
 package com.hexa.muinus.store.domain.item;
 
-import com.hexa.muinus.store.domain.Store;
+import com.hexa.muinus.store.domain.store.Store;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
