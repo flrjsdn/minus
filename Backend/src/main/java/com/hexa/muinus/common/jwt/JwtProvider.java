@@ -112,4 +112,20 @@ public class JwtProvider {
         }
         return null;
     }
+
+    /**
+     * Access Token으로부터 user email 추출
+     */
+    public String getUserEmailFromAccessToken(HttpServletRequest request) {
+        String accessToken = getCookieValue(request, "AccessToken");
+        if (accessToken == null) {
+            return null;
+        }
+        return Jwts.parserBuilder()
+                .setSigningKey(secretKey)
+                .build()
+                .parseClaimsJws(accessToken)
+                .getBody()
+                .getSubject();
+    }
 }

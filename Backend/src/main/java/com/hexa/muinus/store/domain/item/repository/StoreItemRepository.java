@@ -1,6 +1,7 @@
 package com.hexa.muinus.store.domain.item.repository;
 
 import com.hexa.muinus.store.domain.item.StoreItem;
+import com.hexa.muinus.store.domain.store.Store;
 import com.hexa.muinus.store.dto.StoreItemDTO;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -24,4 +25,6 @@ public interface StoreItemRepository extends CrudRepository<StoreItem, Integer> 
 
     @Query(value = "SELECT sale_price FROM store_item WHERE store_no = :storeNo and item_id = :itemId", nativeQuery = true)
     Optional<Integer> getPriceByStoreNoAndItemNo(@Param("storeNo") int storeNo, @Param("itemId") int itemId);
+
+    Optional<StoreItem> findByStore(Store store);
 }
