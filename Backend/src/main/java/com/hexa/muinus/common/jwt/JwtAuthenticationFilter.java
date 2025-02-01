@@ -31,8 +31,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 "/api/users/reissue",
                 "/api/store/list**",
                 "/api/store/detail**",
-                "/api/barcode**",
-                "/api/section**"
+                "/api/kiosk**"
         );
         // 특정 경로를 무시하도록 설정
         return excludePatterns.stream().anyMatch(pattern -> path.matches(pattern.replace("**", ".*")));
