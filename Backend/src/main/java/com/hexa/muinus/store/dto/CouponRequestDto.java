@@ -1,4 +1,4 @@
-package com.hexa.muinus.store.domain.coupon.dto;
+package com.hexa.muinus.coupon.dto;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;

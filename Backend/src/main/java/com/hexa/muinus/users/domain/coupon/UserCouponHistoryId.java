@@ -1,4 +1,4 @@
-package com.hexa.muinus.users.domain.coupon;
+package com.hexa.muinus.coupon.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
