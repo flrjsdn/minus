@@ -1,4 +1,4 @@
-package com.hexa.muinus.coupon.dto;
+package com.hexa.muinus.users.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,7 +1,7 @@
-package com.hexa.muinus.coupon.repository;
+package com.hexa.muinus.users.domain.coupon.repository;
 
-import com.hexa.muinus.coupon.entity.UserCouponHistory;
-import com.hexa.muinus.coupon.entity.UserCouponHistoryId;
+import com.hexa.muinus.users.domain.coupon.UserCouponHistory;
+import com.hexa.muinus.users.domain.coupon.UserCouponHistoryId;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface UserCouponHistoryRepository extends JpaRepository<UserCouponHistory, UserCouponHistoryId> {
 
-    Optional<UserCouponHistory> findById_UserNoAndId_CouponIdAndUsedAtIsNull(Integer userNo, Integer couponId);
+    Optional<UserCouponHistory> findById_UserNoAndId_CouponIdAndId_StoreNoAndUsedAtIsNull(Integer userNo, Integer couponId, Integer storeNo);
 
     boolean existsById(UserCouponHistoryId id);
 

@@ -1,4 +1,4 @@
-package com.hexa.muinus.coupon.dto;
+package com.hexa.muinus.users.dto;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;

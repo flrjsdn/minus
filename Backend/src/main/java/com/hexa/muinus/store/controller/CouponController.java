@@ -1,7 +1,8 @@
-package com.hexa.muinus.coupon.controller;
+package com.hexa.muinus.store.controller;
 
-import com.hexa.muinus.coupon.dto.*;
-import com.hexa.muinus.coupon.service.CouponService;
+import com.hexa.muinus.store.dto.CouponRequestDto;
+import com.hexa.muinus.store.service.CouponService;
+import com.hexa.muinus.users.dto.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -9,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.concurrent.locks.ReentrantLock;
 
 @RestController
 @RequestMapping("api/coupon")
@@ -44,5 +46,12 @@ public class CouponController {
         UseCouponResponseDto responseDto = couponService.useCoupon(useCouponRequestDto);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(responseDto);
+    }
+
+    // 할인율 적용
+    @PostMapping("/discount")
+    public ResponseEntity<ApplyDiscountResponseDto> applyDiscount(@Valid @RequestBody ApplyDisCountRequestDto applyDisCountRequestDto){
+        ApplyDiscountResponseDto responseDto = couponService.applyDiscount(applyDisCountRequestDto);
+        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 }
