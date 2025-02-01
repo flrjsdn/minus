@@ -1,6 +1,7 @@
 package com.hexa.muinus.users.service;
 
 import com.hexa.muinus.common.jwt.JwtProvider;
+import com.hexa.muinus.store.domain.store.Store;
 import com.hexa.muinus.store.domain.store.repository.StoreRepository;
 import com.hexa.muinus.users.domain.user.Users;
 import com.hexa.muinus.users.domain.user.repository.UserRepository;
@@ -51,7 +52,7 @@ public class UserService {
      * 점주 회원가입 시 정보 받아와 Users 테이블에 저장, 또한 Store 테이블에도 저장
      */
     @Transactional
-    public int registerStoreOwner(StoreOwnerRegisterRequestDto requestDto, HttpServletResponse response) {
+    public Store registerStoreOwner(StoreOwnerRegisterRequestDto requestDto, HttpServletResponse response) {
         // 이미 가입한 회원인지 이메일로 확인
         if (userRepository.findByEmail(requestDto.getUserEmail()) != null) {
             log.info("User already exists with email {}", requestDto.getUserEmail());
@@ -70,17 +71,20 @@ public class UserService {
         issueTokens(user, response);
 
         Users savedUser = userRepository.save(user);
+        Store store = Store.builder()
+                .user(savedUser)
+                .name(requestDto.getStoreName())
+                .locationX(requestDto.getLocationX())
+                .locationY(requestDto.getLocationY())
+                .address(requestDto.getStoreAddress())
+                .storeImageUrl(requestDto.getStoreImageUrl())
+                .registrationNo(requestDto.getRegistrationNumber())
+                .phone(requestDto.getPhone())
+                .flimarketYn(requestDto.getIsFliMarketAllowed())
+                .flimarketSectionCnt(requestDto.getFliMarketSectionCount())
+                .build();
 
-        return storeRepository.saveStore(
-                savedUser.getUserNo(),
-                requestDto.getStoreName(),
-                requestDto.getLocation().getX(), // point 타입 -> mysql insert를 위한 추출
-                requestDto.getLocation().getY(),
-                requestDto.getStoreAddress(),
-                requestDto.getRegistrationNumber(),
-                requestDto.getIsFliMarketAllowed().toString(),
-                requestDto.getFliMarketSectionCount()
-                );
+        return storeRepository.save(store);
     }
 
     /**

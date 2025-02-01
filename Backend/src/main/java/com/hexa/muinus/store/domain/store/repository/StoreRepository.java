@@ -40,9 +40,4 @@ public interface StoreRepository extends JpaRepository<Store, Integer> {
         WHERE s.storeNo = :storeNo
     """)
     Optional<StoreDTO> findStoreDTOById(@Param("storeNo") int storeNo);
-
-    @Modifying
-    @Query(value = "INSERT INTO store (user_no, name, location, address, registration_no, flimarket_yn, flimarket_section_cnt) " +
-            "VALUES (:userNo, :name, POINT(:longitude, :latitude), :address, :registrationNo, :flimarketYn, :fliMarketSectionCount)", nativeQuery = true)
-    int saveStore(Integer userNo, String name, Double longitude, Double latitude, String address, String registrationNo, String flimarketYn, Byte fliMarketSectionCount);
 }
