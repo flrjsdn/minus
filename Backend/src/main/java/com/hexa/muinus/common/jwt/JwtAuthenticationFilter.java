@@ -6,7 +6,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -31,7 +30,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 "/api/users/reissue",
                 "/api/store/list**",
                 "/api/store/detail**",
-                "/api/kiosk**"
+                "/api/kiosk/**"
         );
         // 특정 경로를 무시하도록 설정
         return excludePatterns.stream().anyMatch(pattern -> path.matches(pattern.replace("**", ".*")));
