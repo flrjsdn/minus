@@ -35,10 +35,14 @@ public class KioskService {
     }
 
     public PutFliItemResponseDTO putFliItem(Integer storeNo, Integer sectionId) {
-        // storeNo와 sectoinId로 fli_item 테이블에서 상품 이름 및 가격 조회
-        PutFliItemResponseDTO responseDTO = fliItemRepository.findFliItemByStoreNoAndSectionId(storeNo, sectionId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "판매하지 않는 상품입니다."));
+        Store store = storeRepository.findById(storeNo)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 매장입니다."));
+        FliItem fliItem = fliItemRepository.findByStoreAndSectionId(store, sectionId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 상품입니다."));
 
-        return responseDTO;
+        return PutFliItemResponseDTO.builder()
+                .itemName(fliItem.getFliItemName())
+                .price(fliItem.getPrice())
+                .build();
     }
 }
