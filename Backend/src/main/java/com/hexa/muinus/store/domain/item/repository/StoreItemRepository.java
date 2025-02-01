@@ -7,6 +7,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface StoreItemRepository extends CrudRepository<StoreItem, Integer> {
 
@@ -20,4 +21,7 @@ public interface StoreItemRepository extends CrudRepository<StoreItem, Integer> 
     WHERE si.store.storeNo = :storeNo
 """)
     List<StoreItemDTO> findStoreItemsByStore(@Param("storeNo") int storeNo);
+
+    @Query(value = "SELECT sale_price FROM store_item WHERE store_no = :storeNo and item_id = :itemId", nativeQuery = true)
+    Optional<Integer> getPriceByStoreNoAndItemNo(@Param("storeNo") int storeNo, @Param("itemId") int itemId);
 }
