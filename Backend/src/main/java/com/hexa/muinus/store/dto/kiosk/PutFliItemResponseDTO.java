@@ -1,8 +1,7 @@
-package com.hexa.muinus.store.dto;
+package com.hexa.muinus.store.dto.kiosk;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
 @Builder
