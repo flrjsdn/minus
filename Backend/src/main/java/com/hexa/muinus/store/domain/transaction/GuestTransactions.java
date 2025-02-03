@@ -1,5 +1,6 @@
 package com.hexa.muinus.store.domain.transaction;
 
+import com.hexa.muinus.common.enums.TxnStatus;
 import com.hexa.muinus.store.domain.store.Store;
 import com.hexa.muinus.users.domain.user.GuestUser;
 import jakarta.persistence.*;
@@ -7,8 +8,7 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
+@Data
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,32 +18,28 @@ public class GuestTransactions {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "transaction_id")
     private Integer transactionId;
 
-    @ManyToOne(fetch = FetchType.LAZY) // ManyToOne 관계 설정
+    @Column(name = "receipt_code", nullable = false, length = 20, unique = true)
+    private String receiptCode;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "store_no", nullable = false)
     private Store store;
 
-    @ManyToOne(fetch = FetchType.LAZY) // ManyToOne 관계 설정
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "guest_no", nullable = false)
     private GuestUser guest;
 
-    @Column(nullable = false, length = 20)
-    private String receiptCode;
-
-    @Column(nullable = false)
+    @Column(name = "total_amount", nullable = false)
     private int totalAmount;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false, columnDefinition = "ENUM('SUCCESS', 'FAILED', 'REFUNDED') DEFAULT 'SUCCESS'")
-    private Status status;
+    @Column(name = "status", nullable = false, columnDefinition = "ENUM('SUCCESS', 'FAILED', 'REFUNDED')")
+    private TxnStatus status = TxnStatus.SUCCESS;
 
-    @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    @Column(name = "created_at", nullable = false, updatable = false, insertable = false)
     private LocalDateTime createdAt;
 
-    public enum Status {
-        SUCCESS,
-        FAILED,
-        REFUNDED,
-    }
 }

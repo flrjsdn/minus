@@ -1,21 +1,25 @@
 package com.hexa.muinus.store.domain.item;
 
+import com.hexa.muinus.common.enums.YesNo;
 import com.hexa.muinus.store.domain.store.Store;
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
-@Table(name = "store_item")
-@Getter
+@Table(
+        name = "store_item",
+        uniqueConstraints = {@UniqueConstraint(name = "unique_store_item", columnNames = {"store_no", "item_id"})}
+)
+@Data
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class StoreItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "store_prdt_id")
-    private Integer storePrdtId;
+    @Column(name = "store_item_id")
+    private Integer storeItemId;
 
     @ManyToOne
     @JoinColumn(name = "store_no", nullable = false)
@@ -34,14 +38,7 @@ public class StoreItem {
     @Column(name = "discount_rate", nullable = false)
     private Integer discountRate = 0;
 
-    @Builder
-
-    public StoreItem(Integer storePrdtId, Store store, Item item, Integer quantity, Integer salePrice, Integer discountRate) {
-        this.storePrdtId = storePrdtId;
-        this.store = store;
-        this.item = item;
-        this.quantity = quantity;
-        this.salePrice = salePrice;
-        this.discountRate = discountRate;
-    }
+    @Enumerated(EnumType.STRING)
+    @Column(name = "deleted", nullable = false, columnDefinition = "ENUM('Y', 'N')")
+    private YesNo deleted = YesNo.N;
 }

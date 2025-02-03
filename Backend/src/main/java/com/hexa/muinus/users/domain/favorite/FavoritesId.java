@@ -3,6 +3,7 @@ package com.hexa.muinus.users.domain.favorite;
 import jakarta.persistence.Embeddable;
 import lombok.*;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -13,21 +14,19 @@ import java.util.Objects;
 @Setter
 public class FavoritesId implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-
-    private Integer user;
-    private Integer store;
+    private Integer userNo;
+    private Integer storeNo;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         FavoritesId that = (FavoritesId) o;
-        return Objects.equals(user, that.user) && Objects.equals(store, that.store);
+        return Objects.equals(userNo, that.userNo) && Objects.equals(storeNo, that.storeNo);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(user, store);
+        return Objects.hash(userNo, storeNo);
     }
 }

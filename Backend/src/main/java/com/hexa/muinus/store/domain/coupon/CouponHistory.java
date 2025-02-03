@@ -8,8 +8,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "coupon_history")
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -18,12 +17,14 @@ public class CouponHistory {
     @EmbeddedId
     private CouponHistoryId id;
 
+    @MapsId("storeNo")
     @ManyToOne
-    @JoinColumn(name = "store_no", referencedColumnName = "store_no", insertable = false, updatable = false)
+    @JoinColumn(name = "store_no", referencedColumnName = "store_no", insertable = false, updatable = false, nullable = false)
     private Store store;
 
+    @MapsId("couponId")
     @ManyToOne
-    @JoinColumn(name = "coupon_id", referencedColumnName = "coupon_id", insertable = false, updatable = false)
+    @JoinColumn(name = "coupon_id", referencedColumnName = "coupon_id", insertable = false, updatable = false, nullable = false)
     private Coupon coupon;
 
     @Column(name = "count", nullable = false)
@@ -32,14 +33,9 @@ public class CouponHistory {
     @Column(name = "expiration_date", nullable = false)
     private LocalDateTime expirationDate;
 
-    @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    @Column(name = "created_at", nullable = false, updatable = false, insertable = false)
     private LocalDateTime createdAt;
 
-    public CouponHistory(CouponHistoryId id, int count, LocalDateTime expirationDate, LocalDateTime createdAt) {
-        this.id = id;
-        this.count = count;
-        this.expirationDate = expirationDate;
-        this.createdAt = createdAt;
-    }
+
 }
 

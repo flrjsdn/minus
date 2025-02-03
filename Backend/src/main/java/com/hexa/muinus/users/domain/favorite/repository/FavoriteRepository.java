@@ -12,12 +12,12 @@ import java.util.List;
 
 public interface FavoriteRepository extends JpaRepository<Favorites, FavoritesId> {
     //특정 사용자의 즐겨찾기 목록 조회
-    @Query("SELECT f.id.store FROM Favorites f WHERE f.id.user = :userNo")
+    @Query("SELECT f.id.storeNo FROM Favorites f WHERE f.id.userNo = :userNo")
     List<Integer> findStoreNoListByUser(@Param("userNo") Integer userNo);
 
     //특정 사용자의 즐겨찾기 삭제
     @Modifying
     @Transactional
-    @Query("DELETE FROM Favorites f WHERE f.id.user = :userNo AND f.id.store = :storeNo")
+    @Query("DELETE FROM Favorites f WHERE f.id.userNo = :userNo AND f.id.storeNo = :storeNo")
     void deleteByUserNoAndStoreNo(@Param("userNo") Integer userNo, @Param("storeNo") Integer storeNo);
 }

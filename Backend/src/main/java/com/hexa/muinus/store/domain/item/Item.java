@@ -1,14 +1,15 @@
 package com.hexa.muinus.store.domain.item;
 
+import com.hexa.muinus.common.enums.YesNo;
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Table(name = "item")
-@Getter
+@Data
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Item {
 
     @Id
@@ -16,7 +17,7 @@ public class Item {
     @Column(name = "item_id")
     private Integer itemId;
 
-    @Column(nullable = false, length = 50)
+    @Column(name = "barcode", nullable = false, unique = true, length = 50)
     private String barcode;
 
     @Column(name = "item_name", nullable = false, length = 200)
@@ -43,21 +44,11 @@ public class Item {
     @Column(nullable = false)
     private Integer weight;
 
-    @Column(name = "item_image_url")
+    @Column(name = "item_image_url", length = 255)
     private String itemImageUrl;
 
-    @Builder
-    public Item(Integer itemId, String barcode, String itemName, String brand, Integer calories, Integer protein, Integer fat, Integer carbohydrate, Integer sugars, Integer weight, String itemImageUrl) {
-        this.itemId = itemId;
-        this.barcode = barcode;
-        this.itemName = itemName;
-        this.brand = brand;
-        this.calories = calories;
-        this.protein = protein;
-        this.fat = fat;
-        this.carbohydrate = carbohydrate;
-        this.sugars = sugars;
-        this.weight = weight;
-        this.itemImageUrl = itemImageUrl;
-    }
+    @Enumerated(EnumType.STRING)
+    @Column(name = "deleted", nullable = false, columnDefinition = "ENUM('Y', 'N')")
+    private YesNo deleted = YesNo.N;
+
 }

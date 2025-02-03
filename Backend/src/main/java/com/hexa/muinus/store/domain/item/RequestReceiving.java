@@ -8,8 +8,7 @@ import java.sql.Timestamp;
 
 @Entity
 @Table(name = "request_receiving")
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -20,21 +19,20 @@ public class RequestReceiving {
 
     @MapsId("storeNo")
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "store_no", nullable = false)
+    @JoinColumn(name = "store_no", nullable = false, insertable = false, updatable = false)
     private Store store;
 
-    @MapsId("productId")
+    @MapsId("itemId")
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id", nullable = false)
+    @JoinColumn(name = "item_id", nullable = false, insertable = false, updatable = false)
     private Item item;
 
     @MapsId("userNo")
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_no", nullable = false)
+    @JoinColumn(name = "user_no", nullable = false, insertable = false, updatable = false)
     private Users user;
 
-    @Column(name = "created_at", nullable = false, insertable = false, updatable = false,
-            columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    @Column(name = "created_at", nullable = false, insertable = false, updatable = false)
     private Timestamp createdAt;
 }
 

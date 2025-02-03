@@ -7,9 +7,10 @@ import lombok.*;
 import java.io.Serializable;
 
 @Embeddable
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 public class UserCouponHistoryId implements Serializable {
 
     @Column(name = "store_no")

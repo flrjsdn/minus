@@ -6,13 +6,12 @@ import lombok.*;
 import java.io.Serializable;
 
 @Embeddable
-@Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Data
 public class RequestReceivingId implements Serializable {
     private Integer storeNo;
-    private Integer productId;
+    private Integer itemId;
     private Integer userNo;
 }
 

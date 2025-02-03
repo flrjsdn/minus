@@ -7,8 +7,7 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -18,36 +17,37 @@ public class FliItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "fli_item_id")
     private Integer fliItemId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "store_no", nullable = false)
     private Store store;
 
-    @ManyToOne(fetch = FetchType.LAZY) // ManyToOne 관계 설정
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_no", nullable = false)
     private Users users;
 
-    @Column(nullable = false, length = 200)
+    @Column(name = "fli_item_name", nullable = false, length = 200)
     private String fliItemName;
 
-    @Column(nullable = false)
-    private int price;
+    @Column(name = "price", nullable = false)
+    private Integer price;
 
-    @Column(nullable = false)
-    private int quantity;
+    @Column(name = "quantity", nullable = false)
+    private Integer quantity = 1;
 
-    @Column(nullable = false)
-    private int sectionId;
+    @Column(name = "section_id", nullable = false, columnDefinition = "TINYINT UNSIGNED")
+    private Integer sectionId;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, columnDefinition = "ENUM('PENDING', 'APPROVED', 'REJECTED', 'SELLING', 'SOLD') DEFAULT 'PENDING'")
-    private FliItemStatus status;
+    @Column(nullable = false, columnDefinition = "ENUM('PENDING', 'APPROVED', 'REJECTED', 'SELLING', 'SOLD')")
+    private FliItemStatus status = FliItemStatus.PENDING;
 
-    @Column(nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    @Column(name = "application_date", nullable = false, updatable = false, insertable = false)
     private LocalDateTime applicationDate;
 
-    @Column(columnDefinition = "TIMESTAMP")
+    @Column(name = "expiration_date", nullable = false)
     private LocalDateTime expirationDate;
 
     public enum FliItemStatus {

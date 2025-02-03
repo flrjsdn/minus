@@ -6,8 +6,7 @@ import lombok.*;
 
 @Entity
 @Table(name = "fli_user")
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -18,7 +17,7 @@ public class FliUser {
     private Integer userNo;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_no")
+    @JoinColumn(name = "user_no", referencedColumnName = "user_no", insertable = false, updatable = false)
     @MapsId
     private Users user;
 

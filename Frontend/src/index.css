@@ -1,0 +1,8 @@
+/* 모든 화면을 모바일 사이즈로 고정 */
+body {
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: #f2f2f2;
+}
+

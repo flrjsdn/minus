@@ -1,20 +1,22 @@
 package com.hexa.muinus.users.domain.user;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
-@Getter
-@Setter
+@Data
 @Entity
 @Table(name = "guest_user")
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class GuestUser {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "guest_no")
     private Integer guestNo;
 
-    @Column(nullable = false, length = 200)
+    @Column(name = "guest_name", nullable = false, length = 200)
     private String guestName;
 
 }
