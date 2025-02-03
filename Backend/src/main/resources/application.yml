@@ -13,6 +13,41 @@ spring:
       ddl-auto: update  # 운영 환경이라면 'none' 또는 'validate' 권장
     show-sql: true
     database-platform: org.hibernate.dialect.MySQL8Dialect
-#    properties:
-#      hibernate:
-#        dialect: org.hibernate.spatial.dialect.mysql.MySQL8SpatialDialect # Point 타입 매핑
+
+#  elasticsearch:
+#    rest:
+#      uris: http://elasticsearch:9200
+#      username: your_username  # 필요 시 설정
+#      password: your_password  # 필요 시 설정
+#  data:
+#    elasticsearch:
+#      repositories:
+#        enabled: true
+
+  security:
+    oauth2:
+      client:
+        registration:
+          kakao:
+            client-id: 6fc81aea9290c3fb44078c43a90b2acb
+            redirect-uri: http://{서버url}/api/users/login
+            authorization-grant-type: authorization_code
+            scope:
+              - profile_nickname
+              - account_email
+            client-name: Kakao
+            client-authentication-method: POST
+        provider:
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize
+            token-uri: https://kauth.kakao.com/oauth/token
+            user-info-uri: https://kapi.kakao.com/v2/user/me
+
+jwt:
+  secretKey: t0u2eRrD1jjZV3JCLBNQKZjLjYmDb59m68WIaLRRQwvjG7NtyJk0xI92YXamsssqUQWDdQBZc62llh2ltPxPgasdaWD233wVVVZXSDQWTYDDVVFdfqww426wwdsdzxcasew3211wwadxczS22
+
+  access:
+    expiration: 3600000 # 1시간(60분) (1000L(ms -> s) * 60L(s -> m) * 60L(m -> h))
+
+  refresh:
+    expiration: 1209600000 #  (1000L(ms -> s) * 60L(s -> m) * 60L(m -> h) * 24L(h -> 하루) * 14(2주))

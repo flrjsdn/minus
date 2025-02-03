@@ -13,7 +13,7 @@ import com.hexa.muinus.store.dto.CouponRequestDto;
 import com.hexa.muinus.users.domain.coupon.UserCouponHistory;
 import com.hexa.muinus.users.domain.coupon.UserCouponHistoryId;
 import com.hexa.muinus.users.domain.user.Users;
-import com.hexa.muinus.users.domain.user.repository.UsersRepository;
+import com.hexa.muinus.users.domain.user.repository.UserRepository;
 import com.hexa.muinus.users.dto.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +33,7 @@ public class CouponService {
     private final CouponHistoryRepository couponHistoryRepository;
     private final UserCouponHistoryRepository userCouponHistoryRepository;
     private final StoreRepository storeRepository;
-    private final UsersRepository usersRepository;
+    private final UserRepository userRepository;
 
 
     @Transactional
@@ -67,7 +67,7 @@ public class CouponService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 쿠폰이 존재하지 않습니다. couponId: "+receiveCouponRequestDto.getCouponId()));
 
         // 사용자 존재 여부 확인
-        Users user = usersRepository.findById(receiveCouponRequestDto.getUserNo())
+        Users user = userRepository.findById(receiveCouponRequestDto.getUserNo())
                 .orElseThrow(() -> new IllegalArgumentException("해당 사용자가 존재하지 않습니다. userNo: "+receiveCouponRequestDto.getUserNo()));
 
         // 복합 키 생성
