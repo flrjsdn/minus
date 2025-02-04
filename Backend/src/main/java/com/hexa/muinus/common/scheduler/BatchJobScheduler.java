@@ -22,11 +22,17 @@ public class BatchJobScheduler {
     private JobLauncher jobLauncher;
 
     @Autowired
+    @Qualifier("DailySalesBatchJob")
     private Job dailySalesJob;
 
+    @Autowired
+    @Qualifier("preferenceBatchJob")
+    private Job preferenceJob;
+
     // 매일 자정 30초에 실행 (00:00:30)
-    @Scheduled(cron = "30 0 0 * * ?")
-    public void runBatchJobAtMidnight5() throws Exception {
+    @Scheduled(cron = "0 33 7 * * ?")
+    public void runBatchJobAtMidnight() throws Exception {
         jobLauncher.run(dailySalesJob, new JobParameters());
+        jobLauncher.run(preferenceJob, new JobParameters());
     }
 }

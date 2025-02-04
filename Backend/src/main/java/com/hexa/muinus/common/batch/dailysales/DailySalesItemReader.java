@@ -1,4 +1,4 @@
-package com.hexa.muinus.common.batch;
+package com.hexa.muinus.common.batch.dailysales;
 
 import com.hexa.muinus.store.domain.transaction.DailySales;
 import com.hexa.muinus.store.domain.transaction.DailySalesId;

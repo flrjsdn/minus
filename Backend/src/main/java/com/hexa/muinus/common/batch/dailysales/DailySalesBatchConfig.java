@@ -1,4 +1,4 @@
-package com.hexa.muinus.common.batch;
+package com.hexa.muinus.common.batch.dailysales;
 
 import com.hexa.muinus.store.domain.transaction.DailySales;
 import com.hexa.muinus.store.domain.transaction.repository.DailySalesRepository;
@@ -29,22 +29,16 @@ public class DailySalesBatchConfig {
     private final PlatformTransactionManager dataTransactionManager;
     private final DataSource metaDBSource;
     private final DataSource dataDBSource;
-    private final EntityManagerFactory dataEntityManagerFactory;
-    private final DailySalesRepository dailySalesRepository;
 
     public DailySalesBatchConfig(
             @Qualifier("metaTransactionManager") PlatformTransactionManager platformTransactionManager,
             @Qualifier("dataTransactionManager") PlatformTransactionManager dataTransactionManager,
             @Qualifier("metaDBSource") DataSource metaDBSource,
-            @Qualifier("dataDBSource") DataSource dataDBSource,
-            @Qualifier("dataEntityManager") EntityManagerFactory dataEntityManagerFactory,
-            DailySalesRepository dailySalesRepository) {
+            @Qualifier("dataDBSource") DataSource dataDBSource) {
         this.platformTransactionManager = platformTransactionManager;
         this.dataTransactionManager = dataTransactionManager;
         this.metaDBSource = metaDBSource;
         this.dataDBSource = dataDBSource;
-        this.dataEntityManagerFactory = dataEntityManagerFactory;
-        this.dailySalesRepository = dailySalesRepository;
     }
 
     /**
