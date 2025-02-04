@@ -11,9 +11,6 @@ function MyPageHeader() {
             <Nav isAdmin={isAdmin}>
                 {isAdmin ? (
                 <>
-                    <NavLink to="/mypage/admin/edit" active={location.pathname === "/mypage/admin/edit"}>
-                        정보수정
-                    </NavLink>
                     <NavLink to="/mypage/admin/flea" active={location.pathname === "/mypage/admin/flea"}>
                         플리마켓
                     </NavLink>
@@ -29,9 +26,6 @@ function MyPageHeader() {
                 </>
             ) : (
                 <>
-                    <NavLink to="/mypage/user/edit" active={location.pathname === "/mypage/user/edit"}>
-                        정보수정
-                    </NavLink>
                     <NavLink to="/mypage/user/chats" active={location.pathname === "/mypage/user/chats"}>
                         채팅목록
                     </NavLink>
@@ -55,7 +49,7 @@ const Header = styled.header`
 
 const Nav = styled.nav`
   display: flex;
-  gap: ${({ isAdmin }) => (isAdmin ? '12px' : '55px')};
+  gap: ${({ isAdmin }) => (isAdmin ? '30px' : '70px')};
 `;
 
 const NavLink = styled(Link)`

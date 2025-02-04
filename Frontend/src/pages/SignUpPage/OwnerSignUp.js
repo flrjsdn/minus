@@ -8,6 +8,8 @@ import axios from "axios";
 function OwnerSignUp() {
     // 상태 관리 (폼 데이터)
     const [formData, setFormData] = useState({
+        userName: '',
+        userEmail: '',
         storeName: '',
         storeAddress: '',
         phoneNumber: '',
@@ -18,6 +20,8 @@ function OwnerSignUp() {
 
     // 오류 메시지 상태 관리
     const [errors, setErrors] = useState({
+        userName: '',
+        userEmail: '',
         storeName: '',
         storeAddress: '',
         phoneNumber: '',
@@ -108,6 +112,34 @@ function OwnerSignUp() {
         <div>
             <HeaderContainer />
             <form onSubmit={handleSubmit}>
+            <InputGroup>
+                    <label>이름 <span>*</span></label>
+                    <input
+                        type="text"
+                        name="userName"
+                        value={formData.userName}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        required
+                        style={{ borderColor: errors.userName ? 'red' : '#ccc' }}
+                    />
+                    {errors.userName && <ErrorMessage>{errors.userName}</ErrorMessage>}
+                </InputGroup>
+
+                <InputGroup>
+                    <label>이메일 <span>*</span></label>
+                    <input
+                        type="text"
+                        name="userEmail"
+                        value={formData.userEmail}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        required
+                        style={{ borderColor: errors.userEmail ? 'red' : '#ccc' }}
+                    />
+                    {errors.userEmail && <ErrorMessage>{errors.userEmail}</ErrorMessage>}
+                </InputGroup>
+
                 <InputGroup>
                     <label>가게명 <span>*</span></label>
                     <input
@@ -196,10 +228,10 @@ function OwnerSignUp() {
 }
 
 const InputGroup = styled.div`
-  margin-top: 30px;
+  margin-top: 15px;
   label {
     display: block;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
     font-weight: bold;
     span {
       color: red;
@@ -210,7 +242,7 @@ const InputGroup = styled.div`
   input {
     width: 85%;
     padding: 9px;
-    font-size: 16px;
+    font-size: 10px;
     border: 1px solid #ccc;
     border-radius: 4px;
     &:focus {
