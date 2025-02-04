@@ -14,8 +14,8 @@ import EditProfile from "./pages/EditProfile";
 import Coupons from "./pages/Coupons";
 import Chats from "./pages/Chats";
 import KakaoRedirect from "./pages/KakaoRedirect";
-import SearchPage from "./pages/SearchPage";
-import StoreDetail from "./pages/SearchPage/StoreDetail"
+
+
 function App() {
 
   // function setScreenSize() {
