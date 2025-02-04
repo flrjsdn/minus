@@ -1,14 +1,21 @@
 import React, { useState } from 'react';
+import { useNavigate } from "react-router-dom";
 import BarcodeScannerComponent from "../../components/Kiosk_Barcodescanner";
 import KioskHeaderContainer from "../../components/Kiosk_HeaderContainer";
 import Cartpage from "../../components/Kiosk_CartPage";
 import KioskList from "../../components/Kiosk_List";
 import PaymentPopup from '../../components/PaymentPopup'; // 결제 팝업 컴포넌트
 import './main.css'
+import kiosk from "./index";
 
 const KioskMainScreen = () => {
     const [cartItems, setCartItems] = useState([]);
     const [isPopupOpen, setIsPopupOpen] = useState(false);
+    const navigate = useNavigate();
+
+    const kioskhomeclick = () => {
+        navigate('/kiosk');
+    };
 
     const handleAddToCart = (product) => {
         setCartItems((prevItems) => {
@@ -69,12 +76,12 @@ const KioskMainScreen = () => {
                     onRemove={handleRemove}
                 />
             </div>
-            <div className="mainscreenbarcodescanner"><BarcodeScannerComponent onAddToCart={handleAddToCart} /></div>
-
-            <div className="buttonzone">
-                <button className="mainscreenpayment" onClick={handleOpenPopup}>
-                    결제하기
-                </button>
+            <div className="barcodebuttoncontainer">
+                <div className="mainscreenbarcodescanner"><BarcodeScannerComponent onAddToCart={handleAddToCart} /></div>
+                <div className="buttonzone">
+                    <button className="mainscreenpayment" onClick={handleOpenPopup}>결제하기</button>
+                    {/*<button className="mainscreentohome" onclick={kioskhomeclick()}>홈으로</button>*/}
+                </div>
             </div>
 
             {isPopupOpen && (
