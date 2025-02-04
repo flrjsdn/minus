@@ -1,6 +1,7 @@
 import "./App.css";
 import React from "react";
-// import { useEffect } from "react";
+
+import { useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
 import MainPage from "./pages/MainPage";
 import Kiosk from "./pages/Kiosk"
@@ -25,6 +26,7 @@ function App() {
   //   setScreenSize();
   // });
 
+
   return (
     <div className="App">
 
@@ -41,6 +43,23 @@ function App() {
 
       <Route path="/kiosk" element={<Kiosk/>}/>
       <Route path="/kmain" element={<KioskMainScreen/>}/>
+      <Route path="/search" element={<SearchPage/>}/>
+      <Route path="/search/1" element={<StoreDetail/>}/>
+      {/* <Route path="/callback" component={KakaoLoginHandler}/> */}
+
+      {/*/!* 보호된 라우트 *!/*/}
+      {/*<Route*/}
+      {/*    path="/kiosk/{user_no}"*/}
+      {/*    element={*/}
+      {/*      <LoginRequired user={user}>*/}
+      {/*        <AdminRequired user={user} requiredRole="A">*/}
+      {/*          <Kiosk />*/}
+      {/*        </AdminRequired>*/}
+      {/*      </LoginRequired>*/}
+      {/*    }*/}
+      {/*/>*/}
+
+
     </Routes>
 
     </div>

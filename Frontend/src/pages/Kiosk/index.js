@@ -9,9 +9,15 @@ function Kiosk() {
     return (
         <div className="Kiosk">
             {/* Header Section */}
-            <h1 className="kiosk_header">
-                <img src={logoimage} alt="Kiosk Logo" />
-            </h1>
+
+            <div className="kiosk_header">
+                <div className="kiosk_image">
+                    <img src={logoimage} alt="Kiosk Logo" />
+                </div>
+                <div className="store_select">
+
+                </div>
+            </div>
 
             {/* Barcode Image Section */}
             <h2 className="barcode_image">
