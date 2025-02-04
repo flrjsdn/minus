@@ -1,16 +1,50 @@
-.Kiosk {
-    display: flex;
-    flex-direction: column; /* 세로 방향으로 요소 배치 */
-    align-items: center; /* 모든 자식 요소를 중앙 정렬 */
-    justify-content: flex-start; /* 위쪽부터 순서대로 배치 */
+.kioskmainscreen {
+    display: grid;
     height: 100vh; /* 화면 전체 높이 */
-    padding: 20px; /* 내부 여백 추가 */
+    grid-template-rows: 200px 150px 100px 1310px 800px; /* 마지막 행은 유연하게 조정 가능 */
+    grid-template-columns: auto auto; /* 기본적으로 두 개의 열 */
+    grid-template-areas:
+        "header header"
+        "notice notice"
+        "kiosklist kiosklist"
+        "cartpage cartpage"
+        "scanner payment"; /* 마지막 행에서만 두 개의 열로 나눔 */
+    place-items: center; /* 모든 자식 요소를 가로와 세로 중앙 정렬 */
 }
 
-.kiosk_header {
-    margin-top: 30px;
+.mainscreencontainer {
+    grid-area: header; /* 첫 번째 행 */
 }
 
-.kmain_navbar {
-    margin-top: 30px;
+.mainscreennotice {
+    grid-area: notice; /* 두 번째 행 */
+    width: 1600px;
+    height: 100px;
+    font-size: 110px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.mainscreenkiosklist {
+    grid-area: kiosklist; /* 세 번째 행 */
+}
+
+.mainscreeencartpage {
+    grid-area: cartpage; /* 네 번째 행 */
+}
+
+.mainscreenbarcodescanner {
+    grid-area: scanner; /* 다섯 번째 행의 첫 번째 열 */
+    width: 800px;
+    border: black solid 1px;
+}
+
+.buttonzone {
+    grid-area: payment; /* 다섯 번째 행의 두 번째 열 */
+    width: 800px;
+    height: 800px;
+    background-color: red;
+    color: white;
+    font-weight: bold;
+    margin-top: 10px;
 }
