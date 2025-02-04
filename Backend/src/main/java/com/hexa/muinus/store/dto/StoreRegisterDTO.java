@@ -70,6 +70,7 @@ public class StoreRegisterDTO {
                 .flimarketYn(this.flimarketYn)
                 .flimarketImageUrl(this.flimarketImageUrl)
                 .flimarketSectionCnt(this.flimarketSectionCnt == null ? 0 : this.flimarketSectionCnt)
+                .deleted(YesNo.N)
                 .build();
     }
 
