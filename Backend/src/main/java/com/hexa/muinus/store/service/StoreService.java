@@ -39,6 +39,7 @@ public class StoreService {
      * 매장 등록
      * @param storeRegisterDTO 매장 등록 정보
      */
+    @Transactional(transactionManager = "dataTransactionManager")
     public void registerStore(StoreRegisterDTO storeRegisterDTO) {
         log.info("Starting store registration for DTO: {}", storeRegisterDTO);
 

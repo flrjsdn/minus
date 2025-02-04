@@ -23,7 +23,6 @@ import javax.sql.DataSource;
 
 public class MetaDBConfig {
 
-//    @Primary
     @Bean(name="metaDBSource")
     @ConfigurationProperties(prefix = "spring.datasource-meta")
     public DataSource metaDBSource() {
@@ -32,13 +31,11 @@ public class MetaDBConfig {
     }
 
 
-//    @Primary
     @Bean(name="metaTransactionManager")
     public PlatformTransactionManager metaTransactionManager() {
         return new DataSourceTransactionManager(metaDBSource());
     }
 
-//    @Primary
     @Bean(name = "metaEntityManager")
     public LocalContainerEntityManagerFactoryBean batchEntityManagerFactory(
             EntityManagerFactoryBuilder builder,

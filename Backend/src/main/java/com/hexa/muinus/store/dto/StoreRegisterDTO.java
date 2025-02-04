@@ -40,7 +40,7 @@ public class StoreRegisterDTO {
     @NotBlank(message = "번호를 입력해주세요.")
     private String phone;
 
-    @NotBlank(message = "플리마켓 허용 여부를 선택해주세요.")
+    @NotNull(message = "플리마켓 허용 여부를 선택해주세요.")
     private YesNo flimarketYn;
 
     private String flimarketImageUrl;
