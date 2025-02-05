@@ -1,48 +1,39 @@
-.Kiosk {
-    display: flex;
-    flex-direction: column; /* 세로 방향으로 요소 배치 */
-    align-items: center; /* 모든 자식 요소를 중앙 정렬 */
-    justify-content: flex-start; /* 위쪽부터 순서대로 배치 */
+.kiosk {
+    display: grid;
     height: 100vh; /* 화면 전체 높이 */
-    padding: 20px; /* 내부 여백 추가 */
+    grid-template-rows: auto auto auto auto auto;
+    place-items: center; /* 모든 자식 요소를 가로와 세로 중앙 정렬 */
 }
 
-.kiosk_header {
-    margin-top: 30px;
+.headercontainer1 {
+    grid-row: 1;
 }
 
 .barcode_image {
-    margin-top: 20px;
+    grid-row: 2; /* 첫 번째 행에 배치 */
+    margin-top: 100px; /* 위쪽 여백 */
 }
 
 .instructions {
-    width: 1000px;
-    font-size: 40px;
+    grid-row: 3; /* 두 번째 행에 배치 */
+    width: 1600px;
+    font-size: 80px;
     font-weight: bold;
-    margin-top: 20px; /* 위쪽 여백 추가 */
-    padding: 10px; /* 내부 여백 추가 */
-}
-
-.highlight {
-    color: #223797;
+    text-align: center;
 }
 
 .start_button {
+    grid-row: 4; /* 세 번째 행에 배치 */
     background-color: #4a90e2;
-    width: 300px;
-    height: 150px;
+    width: 600px;
+    height: 250px;
     color: white;
     border: none;
-    padding: 10px 20px;
-    font-size: 50px;
-    border-radius: 5px;
+    font-size: 120px;
+    border-radius: 120px;
     cursor: pointer;
-    position: relative; /* 위치 설정 */
-    z-index: 10; /* 더 앞으로 배치 */
 }
 
 .description {
-    margin-top: -60px;
-    position: relative; /* 위치 설정 */
-    z-index: 1; /* 뒤로 배치 */
+    grid-row: 5;
 }

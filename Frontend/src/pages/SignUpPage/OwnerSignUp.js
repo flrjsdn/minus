@@ -6,7 +6,6 @@ import styled from "styled-components";
 import axios from "axios";
 
 function OwnerSignUp() {
-    // 상태 관리 (폼 데이터)
     const [formData, setFormData] = useState({
         userName: '',
         userEmail: '',
@@ -15,10 +14,9 @@ function OwnerSignUp() {
         phoneNumber: '',
         businessNumber: '',
         storePic: null,
-        isFlimarketAllowed: false  // 플리마켓 허용 여부 기본값 false
+        isFlimarketAllowed: false
     });
 
-    // 오류 메시지 상태 관리
     const [errors, setErrors] = useState({
         userName: '',
         userEmail: '',
@@ -28,7 +26,6 @@ function OwnerSignUp() {
         businessNumber: '',
     });
 
-    // 입력값 처리 함수
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData((prevData) => ({
@@ -37,15 +34,44 @@ function OwnerSignUp() {
         }));
     };
 
-    // 플리마켓 허용 여부 처리 함수
     const handleCheckboxChange = () => {
         setFormData((prevData) => ({
             ...prevData,
-            isFlimarketAllowed: !prevData.isFlimarketAllowed,  // 체크 상태에 따라 true/false 값 변경
+            isFlimarketAllowed: !prevData.isFlimarketAllowed,
         }));
     };
 
-    // 실시간 유효성 검사 함수
+    const checkBusinessNumber = async () => {
+        if (formData.businessNumber.length !== 10) {
+            setErrors((prev) => ({
+                ...prev,
+                businessNumber: "사업자등록번호는 숫자 10자리여야 합니다.",
+            }));
+            return;
+        }
+
+        const url = `https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey=${process.env.REACT_APP_Service_API_KEY}`;
+
+        try {
+            const response = await axios.post(url, {
+                b_no: [formData.businessNumber],
+            });
+
+            if (response.data.status_code === "OK") {
+                const businessStatusCode = response.data.data[0].b_stt_cd;
+                if (businessStatusCode === "01") {
+                    alert("✅ 사업자등록번호가 정상입니다.");
+                } else {
+                    alert("❌ 사업자등록번호 유효하지 않음.");
+                }
+            } else {
+                alert("❓ 알 수 없는 응답 상태입니다.");
+            }
+        } catch (error) {
+            alert("사업자등록번호 조회에 실패했습니다.");
+        }
+    };
+
     const validateField = (name, value) => {
         let formErrors = { ...errors };
 
@@ -72,34 +98,28 @@ function OwnerSignUp() {
         setErrors(formErrors);
     };
 
-    // onBlur 이벤트를 통해 유효성 검사 실행
     const handleBlur = (e) => {
         const { name, value } = e.target;
         validateField(name, value);
     };
 
-    // 폼 제출 처리 함수
     const handleSubmit = async (e) => {
-        e.preventDefault();  // 기본 폼 제출 동작 방지
+        e.preventDefault();
 
-        // 유효성 검사
         const formErrors = { ...errors };
         Object.keys(formData).forEach((key) => {
             validateField(key, formData[key]);
         });
 
-        // 오류가 없으면 서버로 데이터 전송
         if (!Object.values(formErrors).some(error => error !== '')) {
             try {
                 const formDataToSend = new FormData();
                 Object.keys(formData).forEach(key => {
                     formDataToSend.append(key, formData[key]);
-                    console.log(formData);
                 });
 
-                // POST 요청
                 const response = await axios.post('http://i12a506.p.ssafy.io:8000/api/users/store-owner', formDataToSend);
-                console.log('가입 성공:', response.data); // 서버 응답 확인
+                console.log('가입 성공:', response.data);
             } catch (error) {
                 console.error('가입 실패:', error);
             }
@@ -112,7 +132,7 @@ function OwnerSignUp() {
         <div>
             <HeaderContainer />
             <form onSubmit={handleSubmit}>
-            <InputGroup>
+                <InputGroup>
                     <label>이름 <span>*</span></label>
                     <input
                         type="text"
@@ -197,28 +217,26 @@ function OwnerSignUp() {
                         style={{ borderColor: errors.businessNumber ? 'red' : '#ccc' }}
                     />
                     {errors.businessNumber && <ErrorMessage>{errors.businessNumber}</ErrorMessage>}
+                    <button type="button" onClick={checkBusinessNumber}>인증하기</button>
                 </InputGroup>
 
-
-                {/* 매장 사진 업로드 */}
                 <InputGroup>
                     <label>매장 사진</label>
                     <input
                         type="file"
                         accept="image/*"
-                        onChange={(e) => handleChange(e)}
+                        onChange={handleChange}
                     />
                 </InputGroup>
-                
-                {/* 플리마켓 허용여부 체크박스 */}
-                    <CheckboxWrapper>
+
+                <CheckboxWrapper>
                     <label>플리마켓 허용여부</label>
                     <input
                         type="checkbox"
                         checked={formData.isFlimarketAllowed}
                         onChange={handleCheckboxChange}
                     />
-                    </CheckboxWrapper>
+                </CheckboxWrapper>
 
                 <RegisterButtons />
             </form>
@@ -229,10 +247,13 @@ function OwnerSignUp() {
 
 const InputGroup = styled.div`
   margin-top: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  
   label {
-    display: block;
-    margin-bottom: 5px;
     font-weight: bold;
+    
     span {
       color: red;
       font-size: 18px;
@@ -240,24 +261,28 @@ const InputGroup = styled.div`
   }
 
   input {
-    width: 85%;
+    width: 60%;
     padding: 9px;
-    font-size: 10px;
+    font-size: 14px;
     border: 1px solid #ccc;
     border-radius: 4px;
     &:focus {
       border-color: #007bff;
     }
   }
+
+  button {
+    width:30%;
+    margin-left: 10px;
+  }
 `;
 
 const CheckboxWrapper = styled.div`
   display: flex;
   align-items: center;
+  margin: 15px 0;
   font-size: 15px;
   font-weight: bold;
-  margin: 20px 0 7px 25px;
-
 `;
 
 const ErrorMessage = styled.div`

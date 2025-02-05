@@ -5,7 +5,6 @@ import "./index.css"
 
 function SearchPage() {
 
-
     return (
         <div>
             <HeaderContainer/>

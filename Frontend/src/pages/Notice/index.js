@@ -19,9 +19,8 @@ function Notice() {
             const response = await axios.post('http://i12a506.p.ssafy.io:8000/api/store/board', {
                 title: noticeTitle,
                 content: noticeContent,
-                storeNo: 1,  // 예시로, 서버에서 자동으로 할당하거나 기본값 설정
-                userNo: 1,   // 예시로, 로그인된 사용자에 따라 자동 할당
                 boardImageUrl: null,
+                userEmail: "jun9048@naver.com", // 임시 이메일 설정
             });
 
             if (response.status === 200) {
@@ -32,6 +31,8 @@ function Notice() {
             }
         } catch (error) {
             console.error('공지사항 등록 실패:',  error.response?.data || error.message);
+            console.log('Field Errors:', error.response?.data?.fieldErrors);
+
             alert('등록에 실패했습니다.');
         }
     };
@@ -41,9 +42,10 @@ function Notice() {
             <HeaderContainer />
             <MyPageHeader />
             <Title>공지 등록</Title>
+
             <NoticeList>
-                {notices.map((notice) => (
-                    <NoticeItem key={notice.storeNo}>
+                {notices.map((notice, index) => (
+                    <NoticeItem key={`${notice.storeNo}-${index}`}> 
                         <h3>{notice.title}</h3>
                         <p>{notice.content}</p>
                         <img src={notice.boardImageUrl} alt="공지사항 이미지" />
@@ -51,6 +53,8 @@ function Notice() {
                     </NoticeItem>
                 ))}
             </NoticeList>
+
+
             {/* 공지 등록 버튼 */}
             <Button onClick={() => setModalIsOpen(true)}>공지사항 작성하기</Button>
 
@@ -105,6 +109,8 @@ const NoticeList = styled.ul`
 const NoticeItem = styled.li`
     border: 1px solid #ddd;
     margin: 1px 5px 15px 5px;
+
+
 `;
 
 const Container = styled.div`

@@ -18,6 +18,7 @@ import MakeCoupons from "./pages/MakeCoupons";
 import Flea from "./pages/Flea";
 import Stock from "./pages/Stock";
 import Notice from "./pages/Notice";
+import Map from "./pages/Map";
 
 function App() {
 
@@ -46,7 +47,7 @@ function App() {
         <Route path="/mypage/admin/stock" element={<Stock/>}/>
         <Route path="/mypage/admin/coupon" element={<MakeCoupons/>}/>
         <Route path="/mypage/admin/notice" element={<Notice/>}/>
-
+      <Route path="/map" element={<Map/>}/>
 
       <Route path="/oauth/kakao" element={<KakaoRedirect />} />
 

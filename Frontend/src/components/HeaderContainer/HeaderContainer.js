@@ -11,41 +11,11 @@ function HeaderContainer() {
 
     const userId = sessionStorage.getItem("email"); // 로그인 상태 확인
 
-    // const sendLoginRequest = async () => {
-    //     try {
-    //         // 이메일, 비밀번호 없이 단순히 로그인 요청 보내기
-    //         const response = await axios.get('http://i12a506.p.ssafy.io:8000/api/users/login');
-            
-    //         // 로그인 성공 후 처리
-    //         console.log('로그인 요청 성공:', response.data);
-    //         // 응답 데이터에 따른 추가 작업
-    //     } catch (error) {
-    //         console.error('로그인 요청 실패:', error);
-    //     }
-    // };
-    // const handleConnectUser = () => {
-    //     if (userId === null) {
-    //         // 카카오 로그인 대신 axios 요청 보내기
-    //         sendLoginRequest(); // 로그인 요청 보내기
-    //     } else {
-    //         navigate("/"); // 로그인된 경우 홈으로 이동
-    //     }
-    // };
-
-    const handleConnectUser = () => {
-        if (userId === null) {
-            // 카카오 로그인 대신 axios 요청 보내기
-            window.location.href = 'http://i12a506.p.ssafy.io:8000/api/users/login'; // 로그인 요청 보내기
-        } else {
-            navigate("/"); // 로그인된 경우 홈으로 이동
-        }
-    };
-    
-
     const handleConnectBell = () => {
         if (userId === null) {
+            navigate("/map")
             // 카카오 로그인 대신 axios 요청 보내기
-            window.location.href = 'http://i12a506.p.ssafy.io:8000/api/users/login'; // 로그인 요청 보내기
+            // window.location.href = 'http://i12a506.p.ssafy.io:8000/api/users/login'; // 로그인 요청 보내기
         } else {
             navigate("/notifications");
         }
@@ -71,17 +41,18 @@ function HeaderContainer() {
                     </div>
                 </div>
 
-                {/* 로그인 버튼 누를시 axios 로그인 요청 */}
-                <div className="link" onClick={handleConnectUser}>
+                {/* 로그인 버튼 누를시 link 로그인 요청 */}
                     <div className="login">
+                        <Link to="http://i12a506.p.ssafy.io:8000/api/users/login">
                         <FontAwesomeIcon
                             icon={faRightToBracket}
                             className={
                                 locationNow.pathname === "/login" ? "login-icon active-login-icon" : "login"
                             }
                         />
+                        </Link>
                     </div>
-                </div>
+                {/* </div> */}
             </div>
         </header>
     );

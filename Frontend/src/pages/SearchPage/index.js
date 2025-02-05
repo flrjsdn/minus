@@ -2,7 +2,7 @@ import HeaderContainer from "../../components/HeaderContainer";
 import SearchBar from "../../components/SearchBar"
 import "./index.css"
 
-function StoreDetail() {
+function SearchPage() {
 
 
     return (
@@ -14,4 +14,4 @@ function StoreDetail() {
 }
 
 
-export default StoreDetail;
+export default SearchPage;

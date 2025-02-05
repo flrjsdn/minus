@@ -1,28 +1,20 @@
 import { Link } from 'react-router-dom'
 import "./index.css"
-import logoimage from "./images/kiosk_logo.png"
-import barcodeimage from "./images/barcode_icon.png"
-import description from "./images/Frame 1.png"
+import KioskHeaderContainer from "../../components/Kiosk_HeaderContainer";
 
 
 function Kiosk() {
     return (
-        <div className="Kiosk">
-            {/* Header Section */}
+        <div className="kiosk">
 
-            <div className="kiosk_header">
-                <div className="kiosk_image">
-                    <img src={logoimage} alt="Kiosk Logo" />
-                </div>
-                <div className="store_select">
-
-                </div>
+            <div className="headercontainer1">
+                <KioskHeaderContainer/>
             </div>
 
             {/* Barcode Image Section */}
-            <h2 className="barcode_image">
-                <img src={barcodeimage} alt="Barcode Logo" />
-            </h2>
+            <div className="barcode_image">
+                <img src="/barcode_icon.png"/>
+            </div>
 
             {/* Instruction Section */}
             <section className="instructions">
@@ -36,11 +28,11 @@ function Kiosk() {
             </Link>
             
             {/* Description*/}
-            <h3 className="description">
-                <img src={description} alt="instruction" />
-            </h3>
+            <div className="description">
+                <img src='/Description.png' className="instruction" />
+            </div>
         </div>
-    );
+    )
 }
 
-export default Kiosk;
+export default Kiosk
