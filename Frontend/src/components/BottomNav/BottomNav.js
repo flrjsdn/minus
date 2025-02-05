@@ -13,12 +13,12 @@ const BottomNav = () => {
         <nav className="nav-wrapper"> {/* 하단 네비게이션 최상위 태그 */}
           
         {/* 네비게이션을 구성하고 있는 하나의 버튼 */}
-          <Link to="/map" className="nav-link">
+          <Link to="/mypage/admin" className="nav-link">
             <div>
               <FontAwesomeIcon
                 icon={faMap}
                 className={
-                  locationNow.pathname === "/map"
+                  locationNow.pathname === "/mypage/admin"
                     ? "nav-item active-nav-item"
                     : "nav-item"
                 }
@@ -39,12 +39,12 @@ const BottomNav = () => {
             </div>
           </Link>
 
-          <Link to="/mypage" className="nav-link">
+          <Link to="/mypage/user" className="nav-link">
             <div>
               <FontAwesomeIcon
                 icon={faBowlFood}
                 className={
-                  locationNow.pathname === "/mypage"
+                  locationNow.pathname === "/mypage/user"
                     ? "nav-item active-nav-item"
                     : "nav-item"
                 }

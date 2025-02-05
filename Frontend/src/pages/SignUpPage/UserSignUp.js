@@ -8,14 +8,18 @@ import axios from "axios";
 function UserSignUp() {
     // 상태 관리 (폼 데이터)
     const [formData, setFormData] = useState({
-        phoneNumber: '',
-        bday: '',
+        userName: '',
+        userEmail: '',
+        userTelephone: '',
+        userBirth: '',
     });
 
     // 오류 메시지 상태 관리
     const [errors, setErrors] = useState({
-        phoneNumber: '',
-        bday: '',
+        userName: '',
+        userEmail: '',
+        userTelephone: '',
+        userBirth: '',
     });
 
     // 입력값 처리 함수
@@ -34,11 +38,11 @@ function UserSignUp() {
         switch (name) {
             case "phoneNumber":
                 const phoneRegex = /^\d{3}-\d{4}-\d{4}$/;
-                formErrors.phoneNumber = !value || !phoneRegex.test(value)
+                formErrors.userTelephone = !value || !phoneRegex.test(value)
                     ? "전화번호 형식이 올바르지 않습니다. (예: 010-1234-5678)"
                     : "";
                 break;
-            case "bday":
+            case "userBirth":
                 const dateRegex = /^\d{4}-\d{2}-\d{2}$/;  // YYYY-MM-DD 형식 정규 표현식
                 formErrors.bday = !value || !dateRegex.test(value)
                     ? "생년월일은 'YYYY-MM-DD' 형식으로 입력해주세요."
@@ -85,12 +89,41 @@ function UserSignUp() {
         <div>
             <HeaderContainer />
             <form onSubmit={handleSubmit}>
+
+            <InputGroup>
+                    <label>이름 <span>*</span></label>
+                    <input
+                        type="text"
+                        name="userName"
+                        value={formData.userName}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        required
+                        style={{ borderColor: errors.userName ? 'red' : '#ccc' }}
+                    />
+                    {errors.userName && <ErrorMessage>{errors.userName}</ErrorMessage>}
+                </InputGroup>
+
+                <InputGroup>
+                    <label>이메일 <span>*</span></label>
+                    <input
+                        type="text"
+                        name="userEmail"
+                        value={formData.userEmail}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        required
+                        style={{ borderColor: errors.userEmail ? 'red' : '#ccc' }}
+                    />
+                    {errors.userEmail && <ErrorMessage>{errors.userEmail}</ErrorMessage>}
+                </InputGroup>
+                
                 <InputGroup>
                     <label>전화번호 <span>*</span></label>
                     <input
                         type="text"
-                        name="phoneNumber"
-                        value={formData.phoneNumber}
+                        name="userTelephone"
+                        value={formData.userTelephone}
                         onChange={handleChange}
                         onBlur={handleBlur}
                         placeholder="예: 010-1234-5678"

@@ -106,7 +106,6 @@ function Coupons() {
 
 const CouponsContainer = styled.div`
   padding: 16px;
-  background-color: #f9f9f9;
 `;
 
 const CouponList = styled.div`

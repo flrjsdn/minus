@@ -1,7 +1,6 @@
 import "./App.css";
 import React from "react";
 
-import { useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
 import MainPage from "./pages/MainPage";
 import Kiosk from "./pages/Kiosk"
@@ -10,11 +9,15 @@ import SignUp from "./pages/SignUpPage/SignUp";
 import OwnerSignUp from "./pages/SignUpPage/OwnerSignUp";
 import UserSignUp from "./pages/SignUpPage/UserSignUp";
 import MyPage from "./pages/MyPage";
-import EditProfile from "./pages/EditProfile";
 import Coupons from "./pages/Coupons";
 import Chats from "./pages/Chats";
 import KakaoRedirect from "./pages/KakaoRedirect";
-
+import SearchPage from "./pages/SearchPage";
+import StoreDetail from "./pages/SearchPage/StoreDetail"
+import MakeCoupons from "./pages/MakeCoupons";
+import Flea from "./pages/Flea";
+import Stock from "./pages/Stock";
+import Notice from "./pages/Notice";
 
 function App() {
 
@@ -35,10 +38,16 @@ function App() {
       <Route path="/signup" element={<SignUp/>}/>
       <Route path="/owner-signup" element={<OwnerSignUp/>}/>
       <Route path="/user-signup" element={<UserSignUp/>}/>
-      <Route path="/mypage" element={<MyPage/>}/>
-        <Route path="/mypage/edit" element={<EditProfile/>}/>
-        <Route path="/mypage/coupons" element={<Coupons/>}/>
-        <Route path="/mypage/chats" element={<Chats/>}/>
+      <Route path="/mypage/user" element={<MyPage/>}/>
+        <Route path="/mypage/user/coupons" element={<Coupons/>}/>
+        <Route path="/mypage/user/chats" element={<Chats/>}/>
+      <Route path="/mypage/admin" element={<MyPage/>}/>
+        <Route path="/mypage/admin/flea" element={<Flea/>}/>
+        <Route path="/mypage/admin/stock" element={<Stock/>}/>
+        <Route path="/mypage/admin/coupon" element={<MakeCoupons/>}/>
+        <Route path="/mypage/admin/notice" element={<Notice/>}/>
+
+
       <Route path="/oauth/kakao" element={<KakaoRedirect />} />
 
       <Route path="/kiosk" element={<Kiosk/>}/>
