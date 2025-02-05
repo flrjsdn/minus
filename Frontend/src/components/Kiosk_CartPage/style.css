@@ -1,74 +1,77 @@
-/* 장바구니 전체 컨테이너 */
-.ShoppingCart {
-    width: 100%;
-    max-width: 1024px;
-    margin: 0 auto;
-    font-family: Arial, sans-serif;
+.cartpagedom {
+    display: grid;
+    width: 1600px ;
+    height: 910px ;
+    grid-template-rows: 1100px 210px;
 }
 
-.ShoppingCart ul {
-    list-style-type: none;
-    padding: 0;
+.cartpagelist {
+    grid-row: 1;
+
+}
+
+.cartpageemptynotice {
+    font-size: 140px;
+}
+
+.cartpagelist ul {
+    list-style: none;
     margin: 0;
+    display: grid;
+    max-height: 910px;
+    overflow-y: auto;
 }
 
-.CartItem {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 15px;
-    border: 1px solid #ddd;
+.cartpageli {
+    width: 1500px;
+    height: 100px;
+    border: 3px solid #ddd;
     border-radius: 8px;
-    margin-bottom: 10px;
-    background-color: #f9f9f9;
-    width: 100%;
+    background-color: lightgray;
+    font-size: 40px;
+
+    display: grid; /* Flexbox 활성화 */
+    grid-template-columns: 500px 100px 600px 40px 200px 40px;
+    place-items: center;
 }
 
-/* 상품 이름 */
-.Item-Name {
-    flex: 2;
-    font-size: 18px;
+.cartpageli .itemname {
+    grid-column: 1;
+    width: 300px;
+    white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+    overflow: hidden; /* 넘치는 텍스트 숨기기 */
+    text-overflow: ellipsis; /* 말줄임표 처리 */
+}
+
+.cartpagedelete {
+    grid-column: 2;
+    width : 100px;
+    height: 70px;
+    font-size: 30px;
     font-weight: bold;
+
 }
 
-/* 상품 가격 */
-.Item-Price {
-    flex: 1;
-    text-align: right;
-    font-size: 16px;
+.eachitemtotal {
+    grid-column: 3;
+    width: 300px;
+    font-size: 40px;
 }
 
-/* 수량 조절 버튼 */
-.QuantityControls {
-    display: flex;
-    align-items: center;
+.cartpageplmi1 {
+    grid-column: 4;
+    width: 60px;
+    font-size: 40px;
 }
 
-.QuantityControls button {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    border: none;
-    background-color: #ddd;
-    color: #333;
-    font-size: 18px;
+.carpageli .item.quantity {
+    grid-column: 5;
+    width: 100px;
+}
+.cartpageplmi2 {
+    width: 60px;
+    font-size: 40px;
 }
 
-.QuantityControls span {
-    margin: 0 10px;
-}
 
-/* 삭제 버튼 */
-.DeleteButton {
-    background-color: transparent;
-    border: none;
-    color: #ff4d4f; /* 빨간색 */
-    font-size: 20px;
-}
 
-/* 총 금액 섹션 */
-.Total-Price {
-    text-align: right;
-    margin-top: 20px;
-    font-size: 18px;
-}

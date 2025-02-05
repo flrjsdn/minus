@@ -3,9 +3,8 @@
     width: 1600px;
     height: 100px;
     background-color: #ebf0fa;
-    padding: 10px 30px;
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-    grid-auto-columns: 300px 700px 500px;
+    grid-auto-columns: 600px 550px 450px;
     place-items: center;
 }
 
