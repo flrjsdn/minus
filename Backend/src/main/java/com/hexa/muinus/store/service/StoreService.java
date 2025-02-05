@@ -125,6 +125,26 @@ public class StoreService {
     }
 
     /**
+     * 주소 중복 확인
+     * @param address 매장 주소
+     */
+    private void validateStoreAddress(String address){
+        if(findStoreByAddress(address) != null){
+            throw new StoreAddressDuplicateException(address);
+        }
+    }
+
+    /**
+     * 주소로 매장 찾기
+     * @param address 주소
+     * @return Store
+     */
+    @Transactional(readOnly = true)
+    public Store findStoreByAddress(String address) {
+        return storeRepository.findByAddress(address);
+    }
+
+    /**
      * Insert Store
      * 
      * @param store Store 객체
