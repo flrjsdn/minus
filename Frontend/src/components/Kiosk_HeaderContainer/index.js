@@ -1,7 +1,7 @@
 import React from "react";
 import "./style.css";
 
-function KioskHeaderContainer() {
+const KioskHeaderContainer = () => {
     return (
         <div className="headercontainer">
             <div className="logo"> <img src="/logo.png"/></div>

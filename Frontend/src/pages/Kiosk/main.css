@@ -1,12 +1,13 @@
 .kioskmainscreen {
     display: grid;
     height: 100vh; /* 화면 전체 높이 */
-    grid-template-rows: 200px 150px 100px 1310px auto; /* 마지막 행은 유연하게 조정 가능 */
+    grid-template-rows: 200px 150px 100px 910px 400px auto; /* 마지막 행은 유연하게 조정 가능 */
     grid-template-areas:
         "header"
         "notice"
         "kiosklist"
         "cartpage"
+        "kioskpleaproductlist"
         "scanner";
     place-items: center; /* 모든 자식 요소를 가로와 세로 중앙 정렬 */
 }
@@ -33,6 +34,11 @@
     width: 1600px;
 }
 
+.kioskpleaproductlist {
+    grid-area: kioskpleaproductlist;
+    width: 1600px;
+}
+
 .barcodebuttoncontainer {
     grid-area: scanner;
     display: flex;
@@ -52,7 +58,19 @@
     background-color: white;
     color: white;
     font-weight: bold;
-    margin-top: 10px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+.cartpagetotal {
+    width: 700px;
+    font-size: 80px;
+    border-radius: 8px;
+    color: black;
+    text-align: center;
 }
 
 .mainscreenpayment {
@@ -67,3 +85,4 @@
     font-size: 70px;
     border-radius: 8px;
 }
+

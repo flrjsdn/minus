@@ -1,20 +1,25 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BarcodeScanner } from '@thewirv/react-barcode-scanner';
-import axios from "axios";
+import apiClient from '../../api/apiClient'; // apiClient 파일을 import
 
 const BarcodeScannerComponent = ({ onAddToCart }) => {
+    const [isCameraActive, setIsCameraActive] = useState(true);
+    const [isScanningAllowed, setIsScanningAllowed] = useState(true);
+
     const handleScanSuccess = async () => {
+        if (!isScanningAllowed) return;
+
+        setIsScanningAllowed(false);
+        setTimeout(() => setIsScanningAllowed(true), 1000);
+
         try {
             const storeNo = 1;
             const barcode = 8801118250590;
 
-            const response = await axios.get(
-                `http://i12a506.p.ssafy.io:8000/api/kiosk/scan`,
-                {
-                    params: { storeNo, barcode },
-                    headers: { 'Content-Type': 'application/json' },
-                }
-            );
+            // apiClient를 사용하여 API 호출
+            const response = await apiClient.get('/kiosk/scan', {
+                params: { storeNo, barcode },
+            });
 
             const product = response.data;
 
@@ -40,15 +45,26 @@ const BarcodeScannerComponent = ({ onAddToCart }) => {
         }
     };
 
+    // 카메라 활성화 상태를 관리하는 버튼 추가 (필요 시)
+    const toggleCamera = () => {
+        setIsCameraActive((prevState) => !prevState);
+    };
+
     return (
         <div>
-            <BarcodeScanner
-                onSuccess={handleScanSuccess}
-                onError={(error) => console.error('스캐너 오류:', error)}
-            />
+            {isCameraActive ? (
+                <BarcodeScanner
+                    onSuccess={handleScanSuccess}
+                    onError={(error) => console.error('스캐너 오류:', error)}
+                />
+            ) : (
+                <p>카메라가 비활성화되었습니다.</p>
+            )}
+            <button onClick={toggleCamera}>
+                {isCameraActive ? '카메라 끄기' : '카메라 켜기'}
+            </button>
         </div>
     );
 };
 
 export default BarcodeScannerComponent;
-
