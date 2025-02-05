@@ -1,47 +1,194 @@
+import React, { useRef, useState } from "react";
+import axios from "axios";
+import styled from "styled-components";
 import HeaderContainer from "../../components/HeaderContainer/HeaderContainer";
 import BottomNav from "../../components/BottomNav/BottomNav";
 import MyPageHeader from "../../components/MyPageHeader";
-import React, { useState } from "react";
 import { noticesData } from "../../dummydata/notice";
 
 function Notice() {
     const [notices, setNotices] = useState(noticesData); // 더미데이터를 상태로 관리
+    const [modalIsOpen, setModalIsOpen] = useState(false);
+    const [noticeTitle, setNoticeTitle] = useState("");
+    const [noticeContent, setNoticeContent] = useState("");
+    const modalBackground = useRef();
 
-    const handleAddNotice = () => {
-        // 새로운 공지사항 추가
-        const newNotice = {
-            storeNo: notices.length + 1,
-            userNo: 1,
-            title: "새로운 공지사항",
-            content: "새로운 공지사항 내용",
-            boardImageUrl: "https://via.placeholder.com/150",
-            date: new Date(),
-        };
+    // 공지사항 등록
+    const handleAddNotice = async () => {
+        try {
+            const response = await axios.post('http://i12a506.p.ssafy.io:8000/api/store/board', {
+                title: noticeTitle,
+                content: noticeContent,
+                storeNo: 1,  // 예시로, 서버에서 자동으로 할당하거나 기본값 설정
+                userNo: 1,   // 예시로, 로그인된 사용자에 따라 자동 할당
+                boardImageUrl: null,
+            });
 
-        // 상태에 새로운 공지사항을 추가
-        setNotices((prevNotices) => [...prevNotices, newNotice]);
+            if (response.status === 200) {
+                alert('공지사항이 등록되었습니다.');
+                setNoticeTitle("");
+                setNoticeContent("");
+                setModalIsOpen(false); // 등록 후 모달 닫기
+            }
+        } catch (error) {
+            console.error('공지사항 등록 실패:',  error.response?.data || error.message);
+            alert('등록에 실패했습니다.');
+        }
     };
 
     return (
-        <div>
+        <Container>
             <HeaderContainer />
             <MyPageHeader />
-            <h2>공지사항</h2>
-            <ul>
+            <Title>공지 등록</Title>
+            <NoticeList>
                 {notices.map((notice) => (
-                    <li key={notice.storeNo}>
+                    <NoticeItem key={notice.storeNo}>
                         <h3>{notice.title}</h3>
                         <p>{notice.content}</p>
                         <img src={notice.boardImageUrl} alt="공지사항 이미지" />
                         <small>{new Date(notice.date).toLocaleString()}</small>
-                    </li>
+                    </NoticeItem>
                 ))}
-            </ul>
-            <button onClick={handleAddNotice}>등록</button>
-            <button>수정</button>
+            </NoticeList>
+            {/* 공지 등록 버튼 */}
+            <Button onClick={() => setModalIsOpen(true)}>공지사항 작성하기</Button>
+
+            {/* 모달 창 */}
+            {modalIsOpen && (
+                <ModalBackground
+                    ref={modalBackground}
+                    onClick={(e) => {
+                        if (e.target === modalBackground.current) {
+                            setModalIsOpen(false);
+                        }
+                    }}
+                >
+                    <ModalContent>
+                        <h2>공지 등록</h2>
+                        <Input
+                            type="text"
+                            placeholder="공지 제목"
+                            value={noticeTitle}
+                            onChange={(e) => setNoticeTitle(e.target.value)}
+                        />
+                        <TextArea
+                            placeholder="공지 내용"
+                            value={noticeContent}
+                            onChange={(e) => setNoticeContent(e.target.value)}
+                        />
+                        <ButtonContainer>
+                            <CloseButton onClick={() => setModalIsOpen(false)}>닫기</CloseButton>
+                            <Button onClick={handleAddNotice}>등록</Button>
+                        </ButtonContainer>
+                    </ModalContent>
+                </ModalBackground>
+            )}
+
             <BottomNav />
-        </div>
+        </Container>
     );
 }
 
 export default Notice;
+
+const Title = styled.h2`
+    margin: 12px;
+`;
+
+const NoticeList = styled.ul`
+    list-style: none;  /* 목록 앞 점 제거 */
+    padding: 5px;
+    margin: 0;
+`;
+
+const NoticeItem = styled.li`
+    border: 1px solid #ddd;
+    margin: 1px 5px 15px 5px;
+`;
+
+const Container = styled.div`
+    background-color: #f8f9fa;
+`;
+
+const ModalBackground = styled.div`
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.5);
+`;
+
+const ModalContent = styled.div`
+    background-color: #ffffff;
+    width: 80%;
+    height: 70%;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    text-align: center;
+`;
+
+const Input = styled.input`
+    width: 90%;
+    padding: 10px;
+    margin-top: 10px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    outline: none;
+    transition: border-color 0.3s ease;
+
+    &:focus {
+        border-color: #3f72af;
+    }
+`;
+
+const TextArea = styled.textarea`
+    width: 90%;
+    padding: 12px;
+    font-size: 1rem;
+    margin-top: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    min-height: 300px;
+    outline: none;
+    transition: border-color 0.3s ease;
+
+    &:focus {
+        border-color: #3f72af;
+    }
+`;
+
+const ButtonContainer = styled.div`
+    display: flex;
+    justify-content: space-around;
+    margin-top: 30px;
+`;
+
+const Button = styled.button`
+    padding: 10px 20px;
+    font-size: 1rem;
+    background-color: #3f72af;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+
+    &:hover {
+        background-color: #3f72af;
+    }
+`;
+
+const CloseButton = styled(Button)`
+    background-color:rgb(82, 80, 80);
+
+    &:hover {
+        background-color:rgb(57, 57, 57);
+    }
+`;
