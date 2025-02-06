@@ -12,8 +12,8 @@ import MyPage from "./pages/MyPage";
 import Coupons from "./pages/Coupons";
 import Chats from "./pages/Chats";
 import KakaoRedirect from "./pages/KakaoRedirect";
-import SearchPage from "./pages/SearchPage";
-import StoreDetail from "./pages/SearchPage/StoreDetail"
+import SearchPage from "./pages/Search";
+import StoreDetail from "./pages/StoreDetail"
 import MakeCoupons from "./pages/MakeCoupons";
 import Flea from "./pages/Flea";
 import Stock from "./pages/Stock";
@@ -54,21 +54,7 @@ function App() {
       <Route path="/kiosk" element={<Kiosk/>}/>
       <Route path="/kmain" element={<KioskMainScreen/>}/>
       <Route path="/search" element={<SearchPage/>}/>
-      <Route path="/search/1" element={<StoreDetail/>}/>
-      {/* <Route path="/callback" component={KakaoLoginHandler}/> */}
-
-      {/*/!* 보호된 라우트 *!/*/}
-      {/*<Route*/}
-      {/*    path="/kiosk/{user_no}"*/}
-      {/*    element={*/}
-      {/*      <LoginRequired user={user}>*/}
-      {/*        <AdminRequired user={user} requiredRole="A">*/}
-      {/*          <Kiosk />*/}
-      {/*        </AdminRequired>*/}
-      {/*      </LoginRequired>*/}
-      {/*    }*/}
-      {/*/>*/}
-
+      <Route path="/storedetail/1" element={<StoreDetail/>}/>
 
     </Routes>
 
