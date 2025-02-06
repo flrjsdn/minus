@@ -1,8 +1,8 @@
 package com.hexa.muinus.users.service;
 
-import com.hexa.muinus.common.exception.user.InvalidRefreshTokenException;
-import com.hexa.muinus.common.exception.user.RefreshTokenRequiredException;
-import com.hexa.muinus.common.exception.user.UserEmailDuplicateException;
+import com.hexa.muinus.common.exception.api.user.InvalidRefreshTokenException;
+import com.hexa.muinus.common.exception.api.user.RefreshTokenRequiredException;
+import com.hexa.muinus.common.exception.api.user.UserEmailDuplicateException;
 import com.hexa.muinus.common.jwt.JwtProvider;
 import com.hexa.muinus.store.domain.store.Store;
 import com.hexa.muinus.store.domain.store.repository.StoreRepository;
@@ -11,7 +11,6 @@ import com.hexa.muinus.users.domain.user.Users;
 import com.hexa.muinus.users.domain.user.repository.FliUserRepository;
 import com.hexa.muinus.users.domain.user.repository.UserRepository;
 import com.hexa.muinus.users.dto.*;
-import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;

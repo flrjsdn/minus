@@ -46,7 +46,7 @@ public class DataDBConfig {
             @Qualifier("dataDBSource") DataSource dataSource) {
         return builder
                 .dataSource(dataSource)
-                .packages("com.hexa.muinus.store", "com.hexa.muinus.users") // ✅ 운영 DB 관련 엔티티 패키지
+                .packages("com.hexa.muinus.store", "com.hexa.muinus.users", "com.hexa.muinus.elasticsearch", "com.hexa.muinus.recommand")
                 .persistenceUnit("data")
                 .build();
     }

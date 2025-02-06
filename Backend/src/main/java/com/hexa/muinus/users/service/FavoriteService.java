@@ -1,11 +1,10 @@
 package com.hexa.muinus.users.service;
 
-import com.hexa.muinus.common.exception.store.StoreNotFoundException;
-import com.hexa.muinus.common.exception.user.FavoriteStoreDuplicate;
-import com.hexa.muinus.common.exception.user.UserNotFoundException;
+import com.hexa.muinus.common.exception.api.store.StoreNotFoundException;
+import com.hexa.muinus.common.exception.api.user.FavoriteStoreDuplicate;
+import com.hexa.muinus.common.exception.api.user.UserNotFoundException;
 import com.hexa.muinus.store.domain.store.Store;
 import com.hexa.muinus.store.domain.store.repository.StoreRepository;
-import com.hexa.muinus.store.domain.store.Store;
 import com.hexa.muinus.users.domain.favorite.Favorites;
 import com.hexa.muinus.users.domain.favorite.FavoritesId;
 import com.hexa.muinus.users.dto.FavoriteResponseDto;

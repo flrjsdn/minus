@@ -1,7 +1,7 @@
 package com.hexa.muinus.store.service;
 
-import com.hexa.muinus.common.exception.item.FliItemNotFoundException;
-import com.hexa.muinus.common.exception.item.SectionFliItemNotFoundException;
+import com.hexa.muinus.common.exception.api.item.FliItemNotFoundException;
+import com.hexa.muinus.common.exception.api.item.SectionFliItemNotFoundException;
 import com.hexa.muinus.store.domain.item.FliItem;
 import com.hexa.muinus.store.domain.item.repository.FliItemRepository;
 import com.hexa.muinus.store.domain.store.Store;

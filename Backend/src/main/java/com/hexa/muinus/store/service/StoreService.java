@@ -1,10 +1,9 @@
 package com.hexa.muinus.store.service;
 
 import com.hexa.muinus.common.enums.YesNo;
-import com.hexa.muinus.common.exception.store.*;
-import com.hexa.muinus.common.exception.user.UserNotFoundException;
+import com.hexa.muinus.common.exception.api.store.*;
+import com.hexa.muinus.common.exception.api.user.UserNotFoundException;
 import com.hexa.muinus.store.domain.information.Announcement;
-import com.hexa.muinus.store.domain.item.repository.FliItemRepository;
 import com.hexa.muinus.store.domain.store.Store;
 import com.hexa.muinus.store.dto.FliItemDTO;
 import com.hexa.muinus.store.dto.information.AnnouncementDTO;

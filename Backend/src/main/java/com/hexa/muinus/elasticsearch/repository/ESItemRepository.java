@@ -8,4 +8,5 @@ import java.util.List;
 public interface ESItemRepository extends ElasticsearchRepository<ESItem, Integer> {
 
     List<ESItem> findByItemNameStartingWith(String prefix);
+
 }

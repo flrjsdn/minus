@@ -1,12 +1,11 @@
 package com.hexa.muinus.store.service;
 
-import com.hexa.muinus.common.exception.item.ItemNotFoundException;
+import com.hexa.muinus.common.exception.api.item.ItemNotFoundException;
 import com.hexa.muinus.store.domain.item.Item;
 import com.hexa.muinus.store.domain.item.repository.ItemRepository;
 import com.hexa.muinus.store.dto.ItemDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;

@@ -18,6 +18,7 @@ public class MuinusException extends RuntimeException {
         this.errorCode = errorCode;
         this.details = details;
     }
+
 }
 
 

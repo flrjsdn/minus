@@ -47,7 +47,7 @@ public class FliItem {
     @Column(nullable = false, columnDefinition = "ENUM('PENDING', 'APPROVED', 'REJECTED', 'SELLING', 'SOLD')")
     private FliItemStatus status = FliItemStatus.PENDING;
 
-    @Column(name = "application_date", nullable = false, updatable = false, insertable = false)
+    @Column(name = "application_date", nullable = false, updatable = false)
     private LocalDateTime applicationDate;
 
     @Column(name = "expiration_date", nullable = false)

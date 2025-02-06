@@ -45,7 +45,7 @@ public class MetaDBConfig {
             @Qualifier("metaDBSource") DataSource dataSource) {
         return builder
                 .dataSource(dataSource)
-                .packages("com.hexa.muinus.common.batch") // ✅ Users 엔티티 제외
+                .packages("com.hexa.muinus.common.batch")
                 .persistenceUnit("batch")
                 .build();
     }

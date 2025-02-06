@@ -44,9 +44,9 @@ public class GlobalExceptionHandler {
         log.error("Validation 예외 발생: {}", ex.getMessage());
 
         Map<String, Object> response = new HashMap<>();
-        response.put("errorCode", ErrorCode.INVALID_INPUT.getCode());
+        response.put("errorCode", APIErrorCode.INVALID_INPUT.getCode());
         response.put("timestamp", LocalDateTime.now());
-        response.put("message", ErrorCode.INVALID_INPUT.getMessage());
+        response.put("message", APIErrorCode.INVALID_INPUT.getMessage());
 
         // 필드별 오류 메시지 추가
         List<Map<String, String>> fieldErrors = ex.getBindingResult().getFieldErrors().stream()
@@ -59,7 +59,7 @@ public class GlobalExceptionHandler {
                 .collect(Collectors.toList());
         response.put("fieldErrors", fieldErrors);
 
-        return ResponseEntity.status(ErrorCode.INVALID_INPUT.getCode() / 100)
+        return ResponseEntity.status(APIErrorCode.INVALID_INPUT.getCode() / 100)
                 .body(response);
     }
 
@@ -72,11 +72,11 @@ public class GlobalExceptionHandler {
 
         Map<String, Object> response = new HashMap<>();
         response.put("timestamp", LocalDateTime.now());
-        response.put("errorCode", ErrorCode.INTERNAL_SERVER_ERROR.getCode());
+        response.put("errorCode", APIErrorCode.INTERNAL_SERVER_ERROR.getCode());
         response.put("details", "Unexpected Error");
         response.put("message", ex.getMessage());
 
-        return ResponseEntity.status(ErrorCode.INTERNAL_SERVER_ERROR.getCode() / 100)
+        return ResponseEntity.status(APIErrorCode.INTERNAL_SERVER_ERROR.getCode() / 100)
                 .body(response);
     }
 }

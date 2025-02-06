@@ -4,6 +4,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.*;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -44,7 +45,7 @@ public class ESItem {
     private String itemImageUrl;
 
     @Field(name = "updated_at", type = FieldType.Date, format = DateFormat.date_optional_time)
-    private LocalDateTime updatedAt;
+    private LocalDate updatedAt;
 
 //    @CompletionField(maxInputLength = 100)
 //    private Completion suggest;

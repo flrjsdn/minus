@@ -1,7 +1,11 @@
 package com.hexa.muinus.elasticsearch.service;
 
+import com.hexa.muinus.common.exception.ESErrorCode;
+import com.hexa.muinus.common.exception.MuinusException;
 import com.hexa.muinus.elasticsearch.domain.ESItem;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.elasticsearch.common.unit.Fuzziness;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.RangeQueryBuilder;
@@ -16,6 +20,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ESItemService {
@@ -109,5 +114,69 @@ public class ESItemService {
         return searchHits.getSearchHits().stream()
                 .map(SearchHit::getContent)
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * save ALL
+     * @param esItems
+     */
+    public void saveItemsInBulk(List<ESItem> esItems) {
+        log.info("Saving Items In Bulk");
+        elasticsearchTemplate.save(esItems);
+    }
+
+    public List<ESItem> searchByQuery(String query, Integer minSugar, Integer maxSugar, Integer minCal, Integer maxCal, String brand) {
+        try {
+
+            // 상품명 (Match + Fuzzy)
+            BoolQueryBuilder boolQuery = QueryBuilders.boolQuery()
+                    .should(QueryBuilders.matchQuery("item_name", query)) // Nori
+                    .should(QueryBuilders.fuzzyQuery("item_name", query).fuzziness(Fuzziness.AUTO)); // Fuzzy
+
+            // brand
+            if (brand != null && !brand.isEmpty()) {
+                boolQuery.filter(QueryBuilders.termQuery("brand", brand));
+            }
+
+            // 칼로리
+            if (minCal != null || maxCal != null) {
+                RangeQueryBuilder calorieRange = QueryBuilders.rangeQuery("calories");
+                if (minCal != null) calorieRange.gte(minCal);
+                if (maxCal != null) calorieRange.lte(maxCal);
+                boolQuery.filter(calorieRange);
+            }
+
+            // 당
+            if (minSugar != null || maxSugar != null) {
+                RangeQueryBuilder sugarRange = QueryBuilders.rangeQuery("sugars");
+                if (minSugar != null) sugarRange.gte(minSugar);
+                if (maxSugar != null) sugarRange.lte(maxSugar);
+                boolQuery.filter(sugarRange);
+            }
+
+            NativeSearchQuery searchQuery = new NativeSearchQueryBuilder()
+                    .withQuery(boolQuery)
+                    //                .withPageable(PageRequest.of(0, 5))
+                    .build();
+
+            log.debug("searchQuery: {}", searchQuery);
+
+            SearchHits<ESItem> searchHits = elasticsearchTemplate.search(searchQuery, ESItem.class);
+
+            List<ESItem> results = searchHits.stream()
+                    .map(hit -> hit.getContent())
+                    .toList();
+
+            log.debug("results: {}", results);
+
+            return results;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new MuinusException(ESErrorCode.ES_QUERY_ERROR, "Elasticsearch 검색 중 오류 발생");
+        }
+
+
+
     }
 }

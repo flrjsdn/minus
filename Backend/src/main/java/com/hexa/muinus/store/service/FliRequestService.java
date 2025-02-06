@@ -1,8 +1,8 @@
 package com.hexa.muinus.store.service;
 
 
-import com.hexa.muinus.common.exception.store.StoreNotFoundException;
-import com.hexa.muinus.common.exception.user.UserNotFoundException;
+import com.hexa.muinus.common.exception.api.store.StoreNotFoundException;
+import com.hexa.muinus.common.exception.api.user.UserNotFoundException;
 import com.hexa.muinus.store.domain.item.FliItem;
 import com.hexa.muinus.store.domain.item.FliItem.FliItemStatus;
 import com.hexa.muinus.store.domain.item.repository.FliItemRepository;
