@@ -3,8 +3,6 @@ package com.hexa.muinus.common.batch.config;
 import com.hexa.muinus.common.batch.exeption.BatchErrorCode;
 import com.hexa.muinus.common.batch.exeption.BatchProcessingException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.batch.core.repository.JobRepository;
-import org.springframework.batch.core.repository.support.JobRepositoryFactoryBean;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer;
 import org.springframework.boot.sql.init.DatabaseInitializationMode;
