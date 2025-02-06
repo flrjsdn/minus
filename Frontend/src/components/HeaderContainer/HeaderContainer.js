@@ -3,7 +3,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import "./HeaderContainer.css";
-// import axios from 'axios';
 
 function HeaderContainer() {
     const locationNow = useLocation();
@@ -41,7 +40,7 @@ function HeaderContainer() {
                     </div>
                 </div>
 
-                {/* 로그인 버튼 누를시 link 로그인 요청 */}
+                {/* 로그인 아이콘 누를시 link 로그인 요청 */}
                     <div className="login">
                         <Link to="http://i12a506.p.ssafy.io:8000/api/users/login">
                         <FontAwesomeIcon
@@ -52,7 +51,6 @@ function HeaderContainer() {
                         />
                         </Link>
                     </div>
-                {/* </div> */}
             </div>
         </header>
     );
