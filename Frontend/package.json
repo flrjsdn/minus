@@ -22,10 +22,10 @@
     "web-vitals": "^4.2.4"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "start": "craco start",
+    "build": "craco build",
+    "test": "craco test",
+    "eject": "craco eject"
   },
   "eslintConfig": {
     "extends": [
@@ -46,6 +46,9 @@
     ]
   },
   "devDependencies": {
-    "@faker-js/faker": "^9.4.0"
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@craco/craco": "^7.1.0",
+    "@faker-js/faker": "^9.4.0",
+    "source-map-loader": "^5.0.0"
   }
 }

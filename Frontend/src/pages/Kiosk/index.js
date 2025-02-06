@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import "./index.css"
-import KioskHeaderContainer from "../../components/Kiosk_HeaderContainer";
+import KioskHeaderContainer from "../../components/KioskHeaderContainer";
 
 
 function Kiosk() {
@@ -13,7 +13,7 @@ function Kiosk() {
 
             {/* Barcode Image Section */}
             <div className="barcode_image">
-                <img src="/barcode_icon.png"/>
+                <img src="/barcode_icon.png" alt="kioskbarcode"/>
             </div>
 
             {/* Instruction Section */}
@@ -29,7 +29,7 @@ function Kiosk() {
             
             {/* Description*/}
             <div className="description">
-                <img src='/Description.png' className="instruction" />
+                <img src='/Description.png' alt= "kioskinstruction" />
             </div>
         </div>
     )

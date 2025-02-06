@@ -2,34 +2,87 @@
     display: grid;
     width: 360px;
     height: 800px;
-    grid-template-rows: 60px 150px 50px 540px ;
+    place-items: center;
+    grid-template-rows: 48px 150px 50px 552px ;
     grid-template-areas:
     "detailheader"
     "photoinfo"
     "storedetailnavbar"
     "storedetailinfo";
-    place-items: center;
+}
+
+.storedetailheadercontainer {
+    grid-area: detailheader;
+    width: 360px;
+    height: 68px;
 }
 
 
-.box {
-    margin-top: 10px;
-    width : 390px;
-    height : 300px;
-    align-items: center; /* Aligns items vertically in the center */
+.storedetailphotoinfo {
+    grid-area: photoinfo;
+    width : 360px;
+    height : 150px;
+
+    display: grid;
+    grid-template-columns: 150px 210px;
+
 }
 
 .market-image {
-    width : 150px;
-    height : 150px;
+    grid-column: 1;
+    width: 150px;
+    height: 150px;
     background-color: #4a90e2;
-    flex: 1; /* Adjusts width proportionally */
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.market-image img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
 }
 
 .market-detail {
-    width : 240px;
+    grid-column: 2;
+    width : 210px;
     height : 150px;
-    flex: 2; /* Adjusts width proportionally */
     text-align : left;
-    margin-left: 10px;
+
+    display: grid;
+    grid-template-rows: 50px 50px 50px;
+}
+
+.market-name {
+    grid-row: 1;
+    width: 100%;
+    max-height: 50px;
+    overflow: hidden;
+}
+
+.market-location {
+    grid-row: 2;
+    width: 100%;
+    max-height: 50px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.storedetailnavbar {
+    grid-area: storedetailnavbar;
+    width: 360px;
+    height: 50px;
+}
+
+.storedetailmarketinfo {
+    grid-area: storedetailinfo;
+    width: 360px;
+    height: 532px;
+}
+
+.storedetailul {
+    max-width: 100%;
+    max-height: 100%;
 }

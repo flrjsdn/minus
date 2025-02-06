@@ -4,7 +4,7 @@ import "./style.css";
 const KioskHeaderContainer = () => {
     return (
         <div className="headercontainer">
-            <div className="logo"> <img src="/logo.png"/></div>
+            <div className="logo"> <img src="/logo.png" alt="headercontainerimg"/></div>
         </div>
     );
 }
