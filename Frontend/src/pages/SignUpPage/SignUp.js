@@ -10,7 +10,6 @@ function SignUp() {
         <div>
             <HeaderContainer />
 
-
             <h2>당신은 어떤 사용자이신가요?</h2>
 
             <ImageWrapper> 
