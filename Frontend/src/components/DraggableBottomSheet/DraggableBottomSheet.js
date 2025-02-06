@@ -7,7 +7,7 @@ const DraggableBottomSheet = () => {
   const [isDragging, setIsDragging] = useState(false);
   const panelRef = useRef(null);
 
-  const NAV_HEIGHT = 80; // ✅ 바텀 네비게이션 높이 설정
+  const NAV_HEIGHT = 69; // ✅ 바텀 네비게이션 높이 설정
   const PANEL_WIDTH = "100%"; // ✅ 바텀 네비와 동일한 너비로 설정
 
   // 드래그 시작

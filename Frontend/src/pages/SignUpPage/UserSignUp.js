@@ -12,6 +12,8 @@ function UserSignUp() {
         userEmail: '',
         userTelephone: '',
         userBirth: '',
+        userType : "U",
+        userPoint : 0
     });
 
     // 오류 메시지 상태 관리
@@ -22,14 +24,46 @@ function UserSignUp() {
         userBirth: '',
     });
 
-    // 입력값 처리 함수
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData((prevData) => ({
-            ...prevData,
-            [name]: value,
-        }));
+    
+        if (name === "userTelephone") {
+            let formattedValue = value.replace(/[^0-9]/g, '');  // 숫자만 남기기
+        
+            // 전화번호가 11자리를 초과하면 초과된 부분을 잘라내기
+            if (formattedValue.length > 11) {
+                formattedValue = formattedValue.slice(0, 11);  // 11자리까지만 입력
+             }
+            // 전화화번호 하이픈 추가 로직
+            if (formattedValue.length <= 3) {
+                setFormData((prevData) => ({
+                    ...prevData,
+                    [name]: formattedValue
+                }));
+            } else if (formattedValue.length <= 7) {
+                setFormData((prevData) => ({
+                    ...prevData,
+                    [name]: formattedValue.replace(/(\d{3})(\d{0,4})/, '$1-$2')
+                }));
+            } else if (formattedValue.length <= 11) {
+                setFormData((prevData) => ({
+                    ...prevData,
+                    [name]: formattedValue.replace(/(\d{3})(\d{4})(\d{0,4})/, '$1-$2-$3')
+                }));
+            } else {
+                setFormData((prevData) => ({
+                    ...prevData,
+                    [name]: formattedValue.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3')
+                }));
+            }
+        }  else {
+            setFormData((prevData) => ({
+                ...prevData,
+                [name]: value,
+            }));
+        }
     };
+    
 
     // 실시간 유효성 검사 함수
     const validateField = (name, value) => {
@@ -44,7 +78,7 @@ function UserSignUp() {
                 break;
             case "userBirth":
                 const dateRegex = /^\d{4}-\d{2}-\d{2}$/;  // YYYY-MM-DD 형식 정규 표현식
-                formErrors.bday = !value || !dateRegex.test(value)
+                formErrors.userBirth = !value || !dateRegex.test(value)
                     ? "생년월일은 'YYYY-MM-DD' 형식으로 입력해주세요."
                     : "";
                 break;
@@ -63,20 +97,29 @@ function UserSignUp() {
 
     // 폼 제출 처리 함수
     const handleSubmit = async (e) => {
-        e.preventDefault();  // 기본 폼 제출 동작 방지
+        e.preventDefault();
+        console.log("폼 제출 데이터:", formData);
+    
+    // 데이터 유효성 검사
+    const formErrors = { ...errors };
+    Object.keys(formData).forEach((key) => {
+        validateField(key, formData[key]);
+    });
 
-        // 유효성 검사
-        const formErrors = { ...errors };
-        Object.keys(formData).forEach((key) => {
-            validateField(key, formData[key]);
-        });
-
-        // 오류가 없으면 서버로 데이터 전송
-        if (!Object.values(formErrors).some(error => error !== '')) {
-            try {
-                // 서버로 전송할 데이터 준비
-                const response = await axios.post('http://i12a506.p.ssafy.io:8000/api/users/store-owner', formData);
-                console.log('가입 성공:', response.data); // 서버 응답 확인
+    // 유효성 검사에서 오류가 없다면
+    if (!Object.values(formErrors).some(error => error !== '')) {
+        try {
+            // JSON 형식으로 데이터를 변환
+            const response = await axios.post(
+                'http://i12a506.p.ssafy.io:8000/api/users/consumer',
+                formData, // JSON 데이터 전달
+                {
+                    headers: {
+                        'Content-Type': 'application/json', // JSON 형식으로 보내기 위해 설정
+                    },
+                }
+            );
+                console.log('서버 응답:', response.data);
             } catch (error) {
                 console.error('가입 실패:', error);
             }
@@ -137,16 +180,16 @@ function UserSignUp() {
                     <label>생년월일 <span>*</span></label>
                     <input
                         type="date"  // 날짜 선택기를 사용
-                        name="bday"
-                        value={formData.bday}
+                        name="userBirth"
+                        value={formData.userBirth}
                         onChange={handleChange}
                         onBlur={handleBlur}
                         required
                         max="9999-12-31"  // 최대값을 9999-12-31로 설정
                         min="1900-01-01"  // 최소값을 1900-01-01로 설정
-                        style={{ borderColor: errors.bday ? 'red' : '#ccc' }}
+                        style={{ borderColor: errors.userBirth ? 'red' : '#ccc' }}
                     />
-                    {errors.bday && <ErrorMessage>{errors.bday}</ErrorMessage>}
+                    {errors.userBirth && <ErrorMessage>{errors.userBirth}</ErrorMessage>}
                 </InputGroup>
 
                 <RegisterButtons />
