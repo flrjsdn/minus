@@ -18,6 +18,10 @@ public enum BatchErrorCode {
     STEP_CREATION_FAILED(60012, "배치 Step 생성 실패"),
     READER_INITIALIZATION_FAILED(60013, "Reader 초기화 실패"),
     WRITER_INITIALIZATION_FAILED(60014, "Writer 초기화 실패"),
+    DATABASE_CONNECTION_FAILED(60015, "메타 데이터 DB 연결 실패"),
+    TRANSACTION_MANAGER_INIT_FAILED(60016, "트랜잭션 매니저 초기화 실패"),
+    ENTITY_MANAGER_INIT_FAILED(60017, "EntityManager 초기화 실패"),
+    SCHEMA_INITIALIZATION_FAILED(60018, "배치 스키마 초기화 실패"),
     UNKNOWN_ERROR(69999, "배치 처리 중 알 수 없는 오류 발생")
     ;
 

@@ -29,8 +29,8 @@ public class BatchJobScheduler {
         this.preferenceJob = preferenceJob;
     }
 
-    // 매일 자정 30초에 실행 (00:00:30)
-    @Scheduled(cron = "30 0 0 * * ?")
+    // 매일 자정 실행
+    @Scheduled(cron = "00 00 00 * * ?")
     public void runBatchJobAtMidnight() throws Exception {
         jobLauncher.run(dailySalesJob, new JobParameters());
         jobLauncher.run(preferenceJob, new JobParameters());
