@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from "react-router-dom";
-import BarcodeScannerComponent from "../../components/Kiosk_Barcodescanner";
-import KioskHeaderContainer from "../../components/Kiosk_HeaderContainer";
-import Cartpage from "../../components/Kiosk_CartPage";
-import KioskList from "../../components/Kiosk_List";
-import Kiosk_FleaProductList from "../../components/Kiosk_FleaProductList";
-import PaymentPopup from '../../components/Kiosk_PaymentPopup'; // 결제 팝업 컴포넌트
+import BarcodeScannerComponent from "../../components/KioskBarcodeScanner";
+import KioskHeaderContainer from "../../components/KioskHeaderContainer";
+import Cartpage from "../../components/KioskCartpage";
+import KioskList from "../../components/KioskList";
+import KioskFleaproductlist from "../../components/KioskFleaproductlist";
+import PaymentPopup from '../../components/KioskPaymentPopup'; // 결제 팝업 컴포넌트
 import './main.css'
-import kiosk from "./index";
 
 const KioskMainScreen = () => {
     const [cartItems, setCartItems] = useState([]);
@@ -88,7 +87,7 @@ const KioskMainScreen = () => {
                     onRemove={handleRemove}
                 />
             </div>
-            <div className="kioskpleaproductlist"><Kiosk_FleaProductList onAddToCart={handleAddToCart}/></div>
+            <div className="kioskpleaproductlist"><KioskFleaproductlist onAddToCart={handleAddToCart}/></div>
             <div className="barcodebuttoncontainer">
                 <div className="mainscreenbarcodescanner"><BarcodeScannerComponent onAddToCart={handleAddToCart} /></div>
                 <div className="buttonzone">

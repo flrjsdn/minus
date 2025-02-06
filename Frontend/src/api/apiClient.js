@@ -1,7 +1,10 @@
 import axios from 'axios';
 
+const apiUrl = process.env.REACT_APP_BACKEND_API_URL;
+
 const apiClient = axios.create({
-    baseURL: 'http://i12a506.p.ssafy.io:8000/api/',
+    baseURL: apiUrl,
+    timeout: 10000,
     withCredentials: true, // 쿠키 자동 포함
 });
 

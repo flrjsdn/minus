@@ -1,13 +1,11 @@
-import HeaderContainer from "../../components/HeaderContainer";
-import SearchBar from "../../components/"
+import HeaderContainer from "../../components/HeaderContainer/HeaderContainer";
+import SearchBar from "../../components/SearchBar/SearchBar"
 
 function Search() {
     return (
         <div>
             <HeaderContainer />
             <SearchBar />
-            <DraggableBottomSheet />
-            <BottomNav />
         </div>
     );
 }
