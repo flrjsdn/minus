@@ -45,20 +45,4 @@ public class BatchConfig {
         this.metaDBSource = metaDBSource;
         this.platformTransactionManager = platformTransactionManager;
     }
-
-    @Bean
-    public JobRepository jobRepository() {
-        try {
-            JobRepositoryFactoryBean factory = new JobRepositoryFactoryBean();
-            factory.setDataSource(metaDBSource);
-            factory.setTransactionManager(platformTransactionManager);
-            factory.setIsolationLevelForCreate("ISOLATION_DEFAULT");
-            factory.setTablePrefix("BATCH_");
-            factory.afterPropertiesSet();
-            return factory.getObject();
-        } catch (Exception e) {
-            log.error("JobRepository 초기화 실패: {}", e.getMessage());
-            throw new BatchProcessingException(BatchErrorCode.JOB_REPOSITORY_INIT_FAILED, e);
-        }
-    }
 }
