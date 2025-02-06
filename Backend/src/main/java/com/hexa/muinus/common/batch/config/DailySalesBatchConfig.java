@@ -1,5 +1,6 @@
-package com.hexa.muinus.common.batch;
+package com.hexa.muinus.common.batch.config;
 
+import com.hexa.muinus.common.batch.reader.DailySalesItemReader;
 import com.hexa.muinus.store.domain.transaction.DailySales;
 import com.hexa.muinus.store.domain.transaction.repository.DailySalesRepository;
 import jakarta.persistence.EntityManagerFactory;

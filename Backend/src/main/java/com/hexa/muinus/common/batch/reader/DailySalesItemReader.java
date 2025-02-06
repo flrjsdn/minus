@@ -1,5 +1,7 @@
-package com.hexa.muinus.common.batch;
+package com.hexa.muinus.common.batch.reader;
 
+import com.hexa.muinus.common.batch.exeption.BatchErrorCode;
+import com.hexa.muinus.common.batch.exeption.BatchProcessingException;
 import com.hexa.muinus.store.domain.transaction.DailySales;
 import com.hexa.muinus.store.domain.transaction.DailySalesId;
 import org.springframework.batch.item.database.JdbcCursorItemReader;
@@ -41,22 +43,37 @@ public class DailySalesItemReader extends JdbcCursorItemReader<DailySales> {
         setDataSource(dataSource);
         setSql(query);
 
-        // RowMapper 설정
-        setRowMapper(new RowMapper<DailySales>() {
-            @Override
-            public DailySales mapRow(ResultSet rs, int rowNum) throws SQLException {
-                LocalDate saleDate = rs.getDate("sale_date").toLocalDate();
-                int storeNo = rs.getInt("store_no");
-                int itemId = rs.getInt("item_id");
+        try {
+            setRowMapper(new RowMapper<DailySales>() {
+                @Override
+                public DailySales mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    try {
+                        LocalDate saleDate = (rs.getDate("sale_date") != null)
+                                ? rs.getDate("sale_date").toLocalDate()
+                                : LocalDate.now().minusDays(1); // 기본값: 어제 날짜
 
-                DailySalesId id = new DailySalesId(saleDate, storeNo, itemId);
+                        int storeNo = rs.getInt("store_no");
+                        int itemId = rs.getInt("item_id");
 
-                return DailySales.builder()
-                        .id(id)
-                        .totalQuantity(rs.getInt("total_quantity"))
-                        .totalAmount(rs.getInt("total_amount"))
-                        .build();
-            }
-        });
+                        // NULL 값 방지
+                        int totalQuantity = rs.getObject("total_quantity", Integer.class) != null ? rs.getInt("total_quantity") : 0;
+                        int totalAmount = rs.getObject("total_amount", Integer.class) != null ? rs.getInt("total_amount") : 0;
+
+                        DailySalesId id = new DailySalesId(saleDate, storeNo, itemId);
+
+                        return DailySales.builder()
+                                .id(id)
+                                .totalQuantity(totalQuantity)
+                                .totalAmount(totalAmount)
+                                .build();
+
+                    } catch (Exception e) {
+                        throw new BatchProcessingException(BatchErrorCode.ROW_MAPPER_ERROR, e);
+                    }
+                }
+            });
+        } catch (Exception e) {
+            throw new BatchProcessingException(BatchErrorCode.SQL_EXECUTION_ERROR, e);
+        }
     }
 }

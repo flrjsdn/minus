@@ -1,4 +1,4 @@
-package com.hexa.muinus.common.config;
+package com.hexa.muinus.common.batch.config;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer;
