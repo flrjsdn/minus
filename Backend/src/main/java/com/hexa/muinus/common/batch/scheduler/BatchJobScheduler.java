@@ -1,4 +1,4 @@
-package com.hexa.muinus.common.scheduler;
+package com.hexa.muinus.common.batch.scheduler;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParameters;
@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
 
@@ -21,12 +20,19 @@ public class BatchJobScheduler {
     @Autowired
     private JobLauncher jobLauncher;
 
-    @Autowired
-    private Job dailySalesJob;
+    private final Job dailySalesJob;
+    private final Job preferenceJob;
+
+    public BatchJobScheduler(@Qualifier("DailySalesBatchJob") Job dailySalesJob,
+                             @Qualifier("preferenceBatchJob") Job preferenceJob) {
+        this.dailySalesJob = dailySalesJob;
+        this.preferenceJob = preferenceJob;
+    }
 
     // 매일 자정 30초에 실행 (00:00:30)
     @Scheduled(cron = "30 0 0 * * ?")
-    public void runBatchJobAtMidnight5() throws Exception {
+    public void runBatchJobAtMidnight() throws Exception {
         jobLauncher.run(dailySalesJob, new JobParameters());
+        jobLauncher.run(preferenceJob, new JobParameters());
     }
 }
