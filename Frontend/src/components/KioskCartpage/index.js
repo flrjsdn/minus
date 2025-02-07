@@ -7,7 +7,7 @@ const CartPage = ({ cartItems, onIncrement, onDecrement, onRemove }) => {
         <div className="cartpagedom">
             <div className="cartpagelist">
                 {cartItems.length === 0 ? (
-                    <div className="cartpageemptynotice">장바구니가 비어 있습니다.</div>
+                    <div className="cartpageemptynotice"><h1>장바구니가 비어 있습니다.<br/> 바코드를 스캔하여 물건을 담아보세요!</h1></div>
                     ) : (
                     <ul>
                         {cartItems.map((item) => (

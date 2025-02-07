@@ -1,16 +1,23 @@
 import React, { useState } from 'react';
 import { useNavigate } from "react-router-dom";
-import BarcodeScannerComponent from "../../components/KioskBarcodeScanner";
 import KioskHeaderContainer from "../../components/KioskHeaderContainer";
-import Cartpage from "../../components/KioskCartpage";
 import KioskList from "../../components/KioskList";
+import BarcodeScannerComponent from "../../components/KioskBarcodeScanner";
+import Cartpage from "../../components/KioskCartpage";
 import KioskFleaproductlist from "../../components/KioskFleaproductlist";
-import PaymentPopup from '../../components/KioskPaymentPopup'; // 결제 팝업 컴포넌트
-import './main.css'
+import PaymentPopup from '../../components/KioskPaymentPopup';
+import KioskCouponPopup from "../../components/KioskCouponPopup";
+import KioskPaymentFinishPopup from "../../components/KioskPaymentFinishPopup";
+import './main.css';
 
 const KioskMainScreen = () => {
     const [cartItems, setCartItems] = useState([]);
-    const [isPopupOpen, setIsPopupOpen] = useState(false);
+    const [discount, setDiscount] = useState(0);
+    const [isPaymentPopupOpen, setIsPaymentPopupOpen] = useState(false);
+    const [isCouponPopupOpen, setIsCouponPopupOpen] = useState(false);
+    const [isPaymentFinish, setIsPaymentFinish] = useState(false);
+
+
     const navigate = useNavigate();
 
     const kioskhomeclick = () => {
@@ -19,23 +26,18 @@ const KioskMainScreen = () => {
 
     const handleAddToCart = (product) => {
         setCartItems((prevItems) => {
-            // itemName 기준으로 기존 장바구니에서 같은 이름의 제품 찾기
             const existingItem = prevItems.find((item) => item.itemName === product.itemName);
-
             if (existingItem) {
-                // 이미 존재하면 수량(quantity) 증가
                 return prevItems.map((item) =>
                     item.itemName === product.itemName
                         ? { ...item, quantity: item.quantity + 1 }
                         : item
                 );
             } else {
-                // 존재하지 않으면 새로 추가
                 return [...prevItems, { ...product, quantity: 1 }];
             }
         });
     };
-
 
     const handleIncrement = (itemName) => {
         setCartItems((prevItems) =>
@@ -59,26 +61,40 @@ const KioskMainScreen = () => {
         setCartItems((prevItems) => prevItems.filter((item) => item.itemName !== itemName));
     };
 
-
-    // 총 금액 계산 함수
     const calculateTotalPrice = () => {
-        return cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
+        return cartItems.reduce((total, item) => total + item.price * item.quantity, 0) - discount;
     };
 
-    const handleOpenPopup = () => setIsPopupOpen(true);
-    const handleClosePopup = () => setIsPopupOpen(false);
-
     const handleConfirmPayment = (method) => {
-        alert(`${method}로 결제가 완료되었습니다.`);
-        setIsPopupOpen(false);
+        setIsPaymentPopupOpen(false); // 결제 팝업 닫기
         setCartItems([]); // 결제 후 장바구니 초기화
+        setDiscount(0); // 할인 초기화
+        setIsPaymentFinish(true);
+    };
+
+    const handleApplyCoupon = (couponAmount) => {
+        setDiscount(couponAmount);
+        alert(`쿠폰이 적용되었습니다! ${couponAmount.toLocaleString()}원 할인`);
+        setIsCouponPopupOpen(false); // 쿠폰 팝업 닫기
+    };
+
+    const handleCancelCoupon = () => {
+        setDiscount(0); // 할인 초기화
+        alert("쿠폰이 취소되었습니다.");
     };
 
     return (
         <div className="kioskmainscreen">
-            <div className="mainscreencontainer"><KioskHeaderContainer /></div>
-            <div className="mainscreennotice">장 바 구 니</div>
-            <div className="mainscreenkiosklist"><KioskList /></div>
+            <div className="mainscreencontainer"><KioskHeaderContainer/></div>
+            <div className="mainscreennotice">
+                장 바 구 니
+                {discount > 0 ? (
+                    <button onClick={handleCancelCoupon}>쿠폰 적용 취소</button>
+                ) : (
+                    <button onClick={() => setIsCouponPopupOpen(true)}>쿠폰 적용</button>
+                )}
+            </div>
+            <div className="mainscreenkiosklist"><KioskList/></div>
             <div className="mainscreencartpage">
                 <Cartpage
                     cartItems={cartItems}
@@ -89,19 +105,34 @@ const KioskMainScreen = () => {
             </div>
             <div className="kioskpleaproductlist"><KioskFleaproductlist onAddToCart={handleAddToCart}/></div>
             <div className="barcodebuttoncontainer">
-                <div className="mainscreenbarcodescanner"><BarcodeScannerComponent onAddToCart={handleAddToCart} /></div>
+                <div className="mainscreenbarcodescanner"><BarcodeScannerComponent onAddToCart={handleAddToCart}/></div>
                 <div className="buttonzone">
                     <div className="cartpagetotal">총 금액: {calculateTotalPrice().toLocaleString()}원</div>
-                    <button className="mainscreenpayment" onClick={handleOpenPopup}>결제하기</button>
+                    <button className="mainscreenpayment" onClick={() => setIsPaymentPopupOpen(true)}>결제하기</button>
                     <button className="mainscreentohome" onClick={kioskhomeclick}>홈으로</button>
                 </div>
             </div>
 
-            {isPopupOpen && (
-                <PaymentPopup
-                    onClose={handleClosePopup}
-                    onConfirm={handleConfirmPayment}
+            {isPaymentPopupOpen && (
+                <>
+                    <PaymentPopup
+                        onClose={() => setIsPaymentPopupOpen(false)}
+                        onConfirm={handleConfirmPayment}
+                    />
+                </>
+            )}
+
+            {isCouponPopupOpen && (
+                <KioskCouponPopup
+                    onClose={() => setIsCouponPopupOpen(false)}
+                    onApplyCoupon={handleApplyCoupon}
                 />
+            )}
+            {isPaymentFinish && (
+                <KioskPaymentFinishPopup onClose={() => {
+                    setIsPaymentFinish(false);
+                    navigate('/kiosk');
+                }} />
             )}
         </div>
     );
