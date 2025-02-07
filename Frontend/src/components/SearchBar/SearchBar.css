@@ -1,3 +1,9 @@
+/* 부모 요소 */
+.container {
+    display: flex;
+    justify-content: center; /* 중앙 정렬 */
+}
+
 /* 전체 SearchBar 스타일 */
 .search-bar {
     display: flex;
