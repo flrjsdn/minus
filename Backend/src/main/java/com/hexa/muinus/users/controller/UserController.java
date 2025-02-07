@@ -43,4 +43,9 @@ public class UserController {
     public ResponseEntity<UserPageResponseDto> getMyPage(HttpServletRequest request){
         return ResponseEntity.ok().body(userService.getMyPage(request));
     }
+
+    @GetMapping("/api/users/info")
+    public ResponseEntity<?> getUserInfo(HttpServletRequest request){
+        return ResponseEntity.ok().body(userService.getUserInfo(request));
+    }
 }

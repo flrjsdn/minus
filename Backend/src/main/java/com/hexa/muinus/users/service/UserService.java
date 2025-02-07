@@ -6,11 +6,13 @@ import com.hexa.muinus.common.exception.user.UserEmailDuplicateException;
 import com.hexa.muinus.common.jwt.JwtProvider;
 import com.hexa.muinus.store.domain.store.Store;
 import com.hexa.muinus.store.domain.store.repository.StoreRepository;
+import com.hexa.muinus.store.service.StoreService;
 import com.hexa.muinus.users.domain.user.FliUser;
 import com.hexa.muinus.users.domain.user.Users;
 import com.hexa.muinus.users.domain.user.repository.FliUserRepository;
 import com.hexa.muinus.users.domain.user.repository.UserRepository;
 import com.hexa.muinus.users.dto.*;
+import com.nimbusds.openid.connect.sdk.claims.UserInfo;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -140,5 +142,25 @@ public class UserService {
             }
         }
         return new UserPageResponseDto(user, null);
+    }
+
+    @Transactional
+    public UserInfoResponseDto getUserInfo(HttpServletRequest request) {
+        // 쿠키에 담긴 토큰 값으로 유저 확인
+        String userEmail = jwtProvider.getUserEmailFromAccessToken(request);
+        Users user = findUserByEmail(userEmail);
+
+        // 사용자 타입이 만약 점주라면 storeNo 설정
+        Store store = new Store();
+        if (user.getUserType() == Users.UserType.A) {
+            store = storeRepository.findByUser(user);
+        }
+
+        return UserInfoResponseDto.builder()
+                .userNo(user.getUserNo())
+                .userName(user.getUserName())
+                .storeNo(store.getStoreNo())
+                .userType(user.getUserType())
+                .build();
     }
 }
