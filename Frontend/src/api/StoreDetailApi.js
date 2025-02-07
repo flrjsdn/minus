@@ -4,7 +4,7 @@ const StoreDetailApi = async (setProductData) => {
     try {
         const storeNo = 2;
 
-        const response = await apiClient.get('store/detail', {
+        const response = await apiClient.get('api/store/detail', {
             params: { storeNo },
         });
 
