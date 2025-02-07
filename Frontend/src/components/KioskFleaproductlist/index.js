@@ -8,7 +8,7 @@ const FleaProductList = ({ onAddToCart }) => {
             const storeNo = 1;
             const sectionId= 1;
 
-            const response = await apiClient.get('kiosk/flea-item', {
+            const response = await apiClient.get('api/kiosk/flea-item', {
                 params: { storeNo, sectionId },
             });
 
