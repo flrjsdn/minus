@@ -24,6 +24,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                                .requestMatchers("/").permitAll()
+                                .requestMatchers("/api/users/info").permitAll()
                                 .requestMatchers("/", "/api/items/**").permitAll()
                                 .requestMatchers("/api/users/kauth**", "/api/users/consumer", "/api/users/store-owner", "/api/users/logout", "/api/users/login", "/api/users/reissue", "/oauth2/**").permitAll() // 회원 관리
                                 .requestMatchers( "/api/store/**", "/api/store/detail**").permitAll() // 매장 리스트 조회 및 상세 페이지 조회

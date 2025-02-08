@@ -25,6 +25,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         List<String> excludePatterns = List.of(
                 "/favicon.ico",
                 "/api/users/kauth",
+                "/api/users/info",
                 "/api/users/consumer",
                 "/api/users/store-owner",
                 "/api/users/logout",
