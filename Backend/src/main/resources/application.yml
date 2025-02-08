@@ -87,7 +87,7 @@ spring:
 
   # MySQL - 운영 DB
   datasource:
-    url: jdbc:mysql://localhost:3306/hexa?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=UTF-8&serverTimezone=UTC
+    url: jdbc:mysql://3.39.235.66:3306/hexa?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=UTF-8&serverTimezone=UTC
     username: ssafy
     password: ssafy
     driver-class-name: com.mysql.cj.jdbc.Driver
