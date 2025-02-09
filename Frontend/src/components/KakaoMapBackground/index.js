@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import styled from "styled-components";
 
 const apiKey = process.env.REACT_APP_KAKAO_JS_API_KEY;
 
@@ -47,7 +48,6 @@ const KakaoMapBackground = ({ address, coords }) => {
 
         document.head.appendChild(script);
 
-        // 컴포넌트 언마운트 시 스크립트 제거
         return () => {
             document.head.removeChild(script);
         };
@@ -66,5 +66,31 @@ const KakaoMapBackground = ({ address, coords }) => {
         ></div>
     );
 };
+
+const MapContainer = styled.div`
+    position: relative;
+    width: 100%;
+    height: 100%;
+`;
+
+const MapDiv = styled.div`
+    width: 100%;
+    height: 100%;
+`;
+
+const SearchBox = styled.input`
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 200px;
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    outline: none;
+    background: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+`;
 
 export default KakaoMapBackground;

@@ -4,8 +4,11 @@ import RegisterButtons from "../../components/RegisterButtons";
 import { useState } from "react";
 import styled from "styled-components";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 function UserSignUp() {
+    const navigate = useNavigate(); 
+
     // 상태 관리 (폼 데이터)
     const [formData, setFormData] = useState({
         userName: '',
@@ -64,7 +67,6 @@ function UserSignUp() {
         }
     };
     
-
     // 실시간 유효성 검사 함수
     const validateField = (name, value) => {
         let formErrors = { ...errors };
@@ -120,6 +122,10 @@ function UserSignUp() {
                 }
             );
                 console.log('서버 응답:', response.data);
+            if (response.status ===200) {
+                alert("가입이 완료되었습니다!")
+                navigate("/")
+            }
             } catch (error) {
                 console.error('가입 실패:', error);
             }

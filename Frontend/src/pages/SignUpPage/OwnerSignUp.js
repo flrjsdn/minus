@@ -4,18 +4,22 @@ import RegisterButtons from "../../components/RegisterButtons";
 import { useState } from "react";
 import styled from "styled-components";
 import axios from "axios";
+import KakaoMapBackground from "../../components/KakaoMapBackground";
+import { useNavigate } from "react-router-dom";
 
 function OwnerSignUp() {
+    const navigate = useNavigate(); 
+
     const [formData, setFormData] = useState({
         userName: '', 
         userEmail: '', 
         userTelephone: '',
         userType: 'A',
-        userPoint: 500,
+        userPoint: 0,
         locationX: 37.5665,
         locationY: 126.9783,
-        userBirth: '',  
-        isFliMarketAllowed: 'N', 
+        userBirth: '',
+        isFliMarketAllowed: 'N',
         storeName: '',
         storeAddress: '',
         registrationNumber: '', 
@@ -30,7 +34,7 @@ function OwnerSignUp() {
         isFliMarketAllowed: '', 
         storeName: '',
         storeAddress: '',
-        registrationNumber: '', 
+        registrationNumber: '',
         fliMarketSectionCount: '',
     });
 
@@ -195,6 +199,17 @@ function OwnerSignUp() {
         validateField(name, value);
     };
 
+    const handleLocationSelect = (lat, lng, storeName, storeAddress) => {
+        setFormData((prevData) => ({
+            ...prevData,
+            locationX: lat,
+            locationY: lng,
+            storeName: storeName || prevData.storeName,  // 가게명 자동 입력
+            storeAddress: storeAddress || prevData.storeAddress, // 주소 자동 입력
+        }));
+        console.log(`선택한 위치 - 위도: ${lat}, 경도: ${lng}, 가게명: ${storeName}, 주소: ${storeAddress}`);
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         console.log("폼 제출 데이터:", formData);
@@ -219,15 +234,20 @@ function OwnerSignUp() {
                     }
                 );
                 console.log('서버 응답:', response.data);
+            if (response.status ===200) {
+                alert("가입이 완료되었습니다!")
+                navigate("/")
+            }
+            
             } catch (error) {
                 console.error('가입 실패:', error);
+                alert("가입 중 오류가 발생했습니다!")
             }
         } else {
             console.log("입력값에 오류가 있습니다.");
         }
     };
     
-
     return (
         <div>
             <HeaderContainer />
@@ -361,6 +381,12 @@ function OwnerSignUp() {
                         {errors.fliMarketSectionCount && <ErrorMessage>{errors.fliMarketSectionCount}</ErrorMessage>}
                     </InputGroup>
                 )}
+                <KakaoMapWrapper>
+                    <KakaoMapBackground
+                        onLocationSelect={handleLocationSelect}
+                    />
+                </KakaoMapWrapper>
+
 
                 <RegisterButtons />
             </form>
@@ -413,6 +439,15 @@ const ErrorMessage = styled.div`
   color: red;
   font-size: 12px;
   margin-top: 5px;
+`;
+
+const KakaoMapWrapper = styled.div`
+  width: 300px;         
+  height: 200px;       
+  display: flex;
+  justify-content: center;
+
+  overflow: hidden;    // 지도 크기 이상으로 확장되지 않도록
 `;
 
 export default OwnerSignUp;
