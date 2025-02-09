@@ -3,90 +3,42 @@ import styled from "styled-components";
 
 const apiKey = process.env.REACT_APP_KAKAO_JS_API_KEY;
 
-const KakaoMapBackground = ({ onLocationSelect }) => {
+const KakaoMapBackground = ({ address, coords }) => {
     useEffect(() => {
+        if (!coords || !address) return;
+
+        // Kakao Maps SDK 스크립트를 동적으로 로드
         const script = document.createElement("script");
-        script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${apiKey}&autoload=false&libraries=services`;
+        script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${apiKey}&libraries=services&autoload=false`;
         script.async = true;
 
         script.onload = () => {
             if (window.kakao && window.kakao.maps) {
                 window.kakao.maps.load(() => {
                     const kakao = window.kakao;
-                    const mapContainer = document.getElementById("map");
+
+                    // 지도 컨테이너와 옵션 설정
+                    const mapContainer = document.getElementById("map"); // 지도를 표시할 div
                     const mapOption = {
-                        center: new kakao.maps.LatLng(37.5665, 126.9783),
-                        level: 3,
+                        center: new kakao.maps.LatLng(coords.lat, coords.lng), // 좌표를 중심으로 설정
+                        level: 3, // 확대 레벨
+                        draggable: true, // 지도 드래그 가능 여부 설정
+                        zoomable: true, // 지도 확대/축소 가능 여부 설정
                     };
 
+                    // 지도 생성
                     const map = new kakao.maps.Map(mapContainer, mapOption);
-                    const ps = new kakao.maps.services.Places();
 
-                    const searchBox = document.getElementById("search-box");
-                    searchBox.addEventListener("keypress", function (event) {
-                        if (event.key === "Enter") {
-                            event.preventDefault();
-                            ps.keywordSearch(searchBox.value, placesSearchCB);
-                        }
+                    // 마커 추가
+                    const marker = new kakao.maps.Marker({
+                        position: new kakao.maps.LatLng(coords.lat, coords.lng),
+                        map,
                     });
-                    
 
-                    const markers = [];
-                    function removeAllMarkers() {
-                        for (let i = 0; i < markers.length; i++) {
-                            markers[i].setMap(null);
-                        }
-                        markers.length = 0;
-                    }
-
-                    function placesSearchCB(data, status) {
-                        if (status === kakao.maps.services.Status.OK) {
-                            removeAllMarkers();
-                            for (let i = 0; i < data.length; i++) {
-                                const place = data[i];
-                                const lat = place.y;
-                                const lng = place.x;
-
-                                const marker = new kakao.maps.Marker({
-                                    map: map,
-                                    position: new kakao.maps.LatLng(lat, lng),
-                                });
-
-                                kakao.maps.event.addListener(marker, "click", () => {
-                                    const infowindow = new kakao.maps.InfoWindow({
-                                        content: `
-                                            <div style="padding:5px;">
-                                                <strong>${place.place_name}</strong><br>
-                                                주소: ${place.address_name || "정보 없음"}<br>
-                                                전화번호: ${place.phone || "정보 없음"}<br>
-                                            </div>
-                                        `,
-                                    });
-                                    infowindow.open(map, marker);
-
-                                    if (onLocationSelect) {
-                                        onLocationSelect(lat, lng, place.place_name, place.address_name);
-                                    }
-                                });
-
-                                map.setCenter(new kakao.maps.LatLng(lat, lng));
-                                markers.push(marker);
-                            }
-                        } else {
-                            console.error("검색 결과가 없습니다.");
-                        }
-                    }
-
-                    kakao.maps.event.addListener(map, "click", function (mouseEvent) {
-                        const lat = mouseEvent.latLng.getLat();
-                        const lng = mouseEvent.latLng.getLng();
-                        if (onLocationSelect) {
-                            onLocationSelect(lat, lng);
-                        }
-                    });
+                    // 줌 컨트롤 추가
+                    const zoomControl = new kakao.maps.ZoomControl();
+                    map.addControl(zoomControl, kakao.maps.ControlPosition.RIGHT);
                 });
-            } else {
-                console.error("Kakao Maps SDK 로드에 실패했습니다.");
             }
         };
 
@@ -99,13 +51,19 @@ const KakaoMapBackground = ({ onLocationSelect }) => {
         return () => {
             document.head.removeChild(script);
         };
-    }, []);
+    }, [coords]); // coords가 변경될 때마다 지도 업데이트
 
     return (
-        <MapContainer>
-            <SearchBox id="search-box" placeholder="장소를 검색하세요" />
-            <MapDiv id="map"></MapDiv>
-        </MapContainer>
+        <div
+            id="map"
+            style={{
+                width: "100vw",
+                height: "100vh",
+                zIndex: "1",
+                position: "fixed",
+                top: "0",
+            }}
+        ></div>
     );
 };
 
