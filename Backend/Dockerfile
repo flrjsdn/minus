@@ -2,6 +2,8 @@
 FROM openjdk:17-jdk-slim
 
 # Gradle 빌드 후 생성된 JAR 파일을 복사
+RUN  echo '안성준의 야물딱진 파일' && \
+     cat src/main/resources/application.yml
 COPY build/libs/muinus-0.0.1-SNAPSHOT.jar /project/muinus-0.0.1-SNAPSHOT.jar
 
 #EXPOSE 8000
