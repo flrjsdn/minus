@@ -1,35 +1,18 @@
 version: '3.8'
 
 services:
-#  mysql:
-#    image: mysql:8
-#    container_name: mysql
-#    restart: always
-#    environment:
-#      MYSQL_ROOT_PASSWORD: root
-#      MYSQL_DATABASE: hexa
-#      MYSQL_USER: ssafy
-#      MYSQL_PASSWORD: ssafy
-#    ports:
-#      - "3306:3306"
-#    volumes:
-#      - mysql_data:/var/lib/mysql
-
   springboot:
     build: ./  # Backend 디렉토리에서 Dockerfile을 사용해 이미지를 빌드
-#    image: muinus-be:latest  # 미리 빌드된 이미지를 사용
+    #    image: muinus-be:latest  # 미리 빌드된 이미지를 사용
     container_name: muinus-be
     restart: always
-#    depends_on:
-#      - muinus-mysql
+    #    depends_on:
+    #      - muinus-mysql
     ports:
-      - "8000:8000"
+      - "8000:8080"
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://3.39.235.66:3306/hexa
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: ssafy
       SPRING_ELASTICSEARCH_REST_URIS: http://3.39.235.66:9200
       SPRING_ELASTICSEARCH_DATA_ELASTICSEARCH_REPOSITORIES_ENABLE: true
-
-#volumes:
-#  mysql_data:
