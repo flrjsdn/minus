@@ -1,4 +1,4 @@
-.mainpagecontents. {
+.mainpagecontents {
     position: relative;
     grid-template-rows: 64px 48px 64px auto auto 68px;
 }
