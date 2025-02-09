@@ -20,8 +20,8 @@ services:
 #    image: muinus-be:latest  # 미리 빌드된 이미지를 사용
     container_name: muinus-be
     restart: always
-    depends_on:
-      - mysql
+#    depends_on:
+#      - muinus-mysql
     ports:
       - "8000:8080"
     environment:
