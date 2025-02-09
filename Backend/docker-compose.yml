@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8
+    container_name: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: hexa
+      MYSQL_USER: ssafy
+      MYSQL_PASSWORD: ssafy
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  springboot:
+    build: ./Backend  # Backend 디렉토리에서 Dockerfile을 사용해 이미지를 빌드
+    container_name: springboot
+    restart: always
+    depends_on:
+      - mysql
+    ports:
+      - "8000:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/hexa
+      SPRING_DATASOURCE_USERNAME: ssafy
+      SPRING_DATASOURCE_PASSWORD: ssafy
+
+volumes:
+  mysql_data:
