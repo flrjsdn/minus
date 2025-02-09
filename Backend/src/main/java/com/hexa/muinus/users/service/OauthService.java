@@ -158,4 +158,12 @@ public class OauthService {
         user.setRefreshToken(null);
         userRepository.save(user);
     }
+
+    public void check() {
+        log.info("check : {}", frontUrl);
+        log.info("check : {}", redirectUrl);
+        log.info("check : {}", tokenUrl);
+        log.info("check : {}", authorizationGrantType);
+        log.info("check : {}", authorizationUri);
+    }
 }

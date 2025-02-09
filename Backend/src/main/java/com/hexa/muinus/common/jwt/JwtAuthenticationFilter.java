@@ -24,6 +24,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
         List<String> excludePatterns = List.of(
                 "/favicon.ico",
+                "api/users/check",
                 "/api/users/kauth",
                 "/api/users/info",
                 "/api/users/consumer",

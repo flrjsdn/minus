@@ -59,4 +59,10 @@ public class OauthController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/api/users/check")
+    public ResponseEntity<?> kakaoCheck(){
+        oauthService.check();
+        return ResponseEntity.ok().build();
+    }
+
 }
