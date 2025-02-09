@@ -5,7 +5,7 @@ import com.hexa.muinus.common.exception.item.SectionFliItemNotFoundException;
 import com.hexa.muinus.store.domain.item.FliItem;
 import com.hexa.muinus.store.domain.item.repository.FliItemRepository;
 import com.hexa.muinus.store.domain.store.Store;
-import com.hexa.muinus.store.dto.FliItemDTO;
+import com.hexa.muinus.store.dto.fli.FliItemDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

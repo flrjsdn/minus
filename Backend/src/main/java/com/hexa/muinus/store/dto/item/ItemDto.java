@@ -1,4 +1,4 @@
-package com.hexa.muinus.store.dto;
+package com.hexa.muinus.store.dto.item;
 
 import com.hexa.muinus.store.domain.item.Item;
 import lombok.AllArgsConstructor;

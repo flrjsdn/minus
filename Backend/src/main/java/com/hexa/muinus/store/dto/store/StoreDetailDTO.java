@@ -1,6 +1,6 @@
 package com.hexa.muinus.store.dto.store;
 
-import com.hexa.muinus.store.dto.FliItemDTO;
+import com.hexa.muinus.store.dto.fli.FliItemDTO;
 import com.hexa.muinus.store.dto.information.AnnouncementDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;

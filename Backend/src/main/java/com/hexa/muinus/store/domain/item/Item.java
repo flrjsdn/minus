@@ -4,6 +4,9 @@ import com.hexa.muinus.common.enums.YesNo;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "item")
 @Data
@@ -50,5 +53,8 @@ public class Item {
     @Enumerated(EnumType.STRING)
     @Column(name = "deleted", nullable = false, columnDefinition = "ENUM('Y', 'N')")
     private YesNo deleted = YesNo.N;
+
+    @Column(name = "updated_at", nullable = false)
+    private LocalDateTime updatedAt;
 
 }

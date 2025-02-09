@@ -12,6 +12,7 @@ import org.elasticsearch.client.RestClientBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.convert.support.GenericConversionService;
 import org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate;
 import org.springframework.data.elasticsearch.core.convert.ElasticsearchConverter;
 import org.springframework.data.elasticsearch.core.convert.MappingElasticsearchConverter;
@@ -75,6 +76,14 @@ public class ElasticsearchConfig {
     @Bean
     public ElasticsearchConverter elasticsearchConverter(SimpleElasticsearchMappingContext mappingContext) {
         return new MappingElasticsearchConverter(mappingContext);
+    }
+
+    @Bean
+    public GenericConversionService conversionService() {
+        GenericConversionService conversionService = new GenericConversionService();
+        // 커스텀 변환기 등록
+        conversionService.addConverter(new StringToLocalDateTimeConverter());
+        return conversionService;
     }
 
     /**

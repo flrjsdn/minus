@@ -1,7 +1,7 @@
 package com.hexa.muinus.store.controller;
 
-import com.hexa.muinus.store.dto.CouponListResponseDto;
-import com.hexa.muinus.store.dto.CouponRequestDto;
+import com.hexa.muinus.store.dto.coupon.CouponListResponseDto;
+import com.hexa.muinus.store.dto.coupon.CouponRequestDto;
 import com.hexa.muinus.store.service.CouponService;
 import com.hexa.muinus.users.dto.*;
 import jakarta.servlet.http.HttpServletRequest;
