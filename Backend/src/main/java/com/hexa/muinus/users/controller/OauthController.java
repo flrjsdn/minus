@@ -12,25 +12,27 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/users")
 public class OauthController {
 
     private final OauthService oauthService;
     private final UserService userService;
     private final JwtProvider jwtProvider;
 
-    @GetMapping("/api/users/login")
+    @GetMapping("/login")
     public void kakaoLogin(HttpServletResponse response) {
         log.info("kakao login");
         oauthService.getAuthorizationCode(response);
     }
 
-    @GetMapping("/api/users/kauth")
+    @GetMapping("/kauth")
     public void kakaoLogin(@RequestParam("code") String authorizationCode, HttpServletResponse response) throws Exception {
         log.info("kakao login redirect for token");
         String accessToken = oauthService.getAccessTokenFromKakao(authorizationCode);
@@ -44,7 +46,7 @@ public class OauthController {
         oauthService.redirectToMainPage(response);
     }
 
-    @GetMapping("/api/users/logout")
+    @GetMapping("/logout")
     public ResponseEntity<?> kakaoLogout(HttpServletRequest request, HttpServletResponse response){
         String userEmail = jwtProvider.getUserEmailFromAccessToken(request);
         Users user = userService.findUserByEmail(userEmail);
@@ -59,7 +61,7 @@ public class OauthController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/api/users/check")
+    @GetMapping("/check")
     public ResponseEntity<?> kakaoCheck(){
         oauthService.check();
         return ResponseEntity.ok().build();

@@ -48,8 +48,8 @@ public class OauthService {
         try {
             log.info("getAuthorizationCode: {}", redirectUrl);
             response.sendRedirect(authorizationUri
-                    + "?client_id=" + clientId
                     + "&redirect_uri=" + redirectUrl
+                    + "?client_id=" + clientId
                     + "&response_type=code");
         } catch (Exception e) {
             log.error(e.getMessage());
