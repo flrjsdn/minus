@@ -74,6 +74,7 @@ public class OauthService {
 
         HttpEntity<MultiValueMap<String, String>> httpEntity = new HttpEntity<>(body, headers);
 
+        log.info("토큰 발급 전");
         // 카카오로 액세스 토큰 발급 요청
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> responseEntity = restTemplate.exchange(
@@ -82,7 +83,7 @@ public class OauthService {
                 httpEntity,
                 String.class
         );
-
+        log.info("토큰 발급 후");
         // 반환 값에서 액세스 토큰 추출
         ObjectMapper objectMapper = new ObjectMapper();
         String accessToken = "";
