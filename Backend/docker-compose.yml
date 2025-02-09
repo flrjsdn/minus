@@ -23,7 +23,7 @@ services:
 #    depends_on:
 #      - muinus-mysql
     ports:
-      - "8000:8000"
+      - "8000:8080"
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://3.39.235.66:3306/hexa
       SPRING_DATASOURCE_USERNAME: root
