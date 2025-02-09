@@ -102,7 +102,7 @@ spring:
     cluster:
       name: my-cluster
     rest:
-      uris: http://localhost:9200
+      uris: http://3.39.235.66:9200
       username: your_username  # 필요 시 설정
       password: your_password  # 필요 시 설정
   data:
