@@ -46,12 +46,13 @@ public class OauthService {
 
     public void  getAuthorizationCode(HttpServletResponse response) {
         try {
+            log.info("getAuthorizationCode: {}", redirectUrl);
             response.sendRedirect(authorizationUri
                     + "?client_id=" + clientId
                     + "&redirect_uri=" + redirectUrl
                     + "&response_type=code");
         } catch (Exception e) {
-
+            log.error(e.getMessage());
         }
     }
 
@@ -68,6 +69,7 @@ public class OauthService {
         body.add("grant_type", authorizationGrantType);
         body.add("client_id", clientId);
         body.add("redirect_uri", redirectUrl);
+        log.info("토큰 발급 시 uri : {}", body);
         body.add("code", authorizationCode);
 
         HttpEntity<MultiValueMap<String, String>> httpEntity = new HttpEntity<>(body, headers);
@@ -143,6 +145,7 @@ public class OauthService {
     }
 
     public void redirectToMainPage(HttpServletResponse response) throws Exception{
+        log.info("redirectToMainPage : {}", frontUrl);
         response.sendRedirect(frontUrl);
     }
 
