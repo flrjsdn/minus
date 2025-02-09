@@ -158,7 +158,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: none   # 운영 환경이라면 'none' 또는 'validate' 권장
+      ddl-auto: validate   # 운영 환경이라면 'none' 또는 'validate' 권장
     show-sql: true
     database-platform: org.hibernate.dialect.MySQL8Dialect
 
