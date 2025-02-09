@@ -152,7 +152,7 @@ spring:
   # MySQL - 운영 DB
   datasource:
     url: jdbc:mysql://3.39.235.66:3306/hexa?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=UTF-8&serverTimezone=UTC
-    username: ssafy
+    username: root
     password: ssafy
     driver-class-name: com.mysql.cj.jdbc.Driver
 
