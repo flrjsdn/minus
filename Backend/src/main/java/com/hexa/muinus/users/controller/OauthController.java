@@ -26,15 +26,21 @@ public class OauthController {
 
     @GetMapping("/api/users/login")
     public void kakaoLogin(HttpServletResponse response) {
+        log.info("kakao login");
         oauthService.getAuthorizationCode(response);
     }
 
     @GetMapping("/api/users/kauth")
     public void kakaoLogin(@RequestParam("code") String authorizationCode, HttpServletResponse response) throws Exception {
+        log.info("kakao login redirect for token");
         String accessToken = oauthService.getAccessTokenFromKakao(authorizationCode);
+        log.info("123123");
         String userEmail = oauthService.getUserKakaoProfile(accessToken);
+        log.info("456456");
         Users user = oauthService.findUser(userEmail, response);
+        log.info("567567");
         jwtProvider.issueTokens(user, response);
+        log.info("789789");
         oauthService.redirectToMainPage(response);
     }
 
