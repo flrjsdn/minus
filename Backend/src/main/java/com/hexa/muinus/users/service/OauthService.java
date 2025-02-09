@@ -49,7 +49,7 @@ public class OauthService {
             log.info("getAuthorizationCode: {}", redirectUrl);
             response.sendRedirect(authorizationUri
                     + "?client_id=" + clientId
-                    + "&redirect_uri=" + redirectUrl
+                    + "&redirect_uri=" + "http://3.39.235.66:8000/api/users/kauth"
                     + "&response_type=code");
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -68,7 +68,7 @@ public class OauthService {
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", authorizationGrantType);
         body.add("client_id", clientId);
-        body.add("redirect_uri", redirectUrl);
+        body.add("redirect_uri", "http://3.39.235.66:8000/api/users/kauth");
         log.info("토큰 발급 시 uri : {}", body);
         body.add("code", authorizationCode);
 
