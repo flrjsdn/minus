@@ -1,6 +1,6 @@
 import apiClient from "./apiClient";
 
-const StoreDetailApi = async (setProductData) => {
+const StoreDetailApi = async (setProductdata) => {
     try {
         const storeNo = 2;
 
@@ -12,7 +12,7 @@ const StoreDetailApi = async (setProductData) => {
 
         if (response.status === 200) {
             alert('API 호출 성공!');
-            setProductData(product); // 가져온 데이터를 setProductData로 전달
+            setProductdata(product); // 가져온 데이터를 setProductData로 전달
         } else {
             console.error('API 요청 실패:', product.message || '알 수 없는 오류');
             alert('API 호출 실패!');
