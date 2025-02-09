@@ -16,8 +16,8 @@ services:
       - mysql_data:/var/lib/mysql
 
   springboot:
-#    build: ./Backend  # Backend 디렉토리에서 Dockerfile을 사용해 이미지를 빌드
-    image: muinus-be:latest  # 미리 빌드된 이미지를 사용
+    build: ./  # Backend 디렉토리에서 Dockerfile을 사용해 이미지를 빌드
+#    image: muinus-be:latest  # 미리 빌드된 이미지를 사용
     container_name: muinus-be
     restart: always
     depends_on:
