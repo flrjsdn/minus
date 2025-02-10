@@ -1,48 +1,27 @@
 import { faBell, faRightToBracket, faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import useAuth from "../../hooks/useAuth"; // useAuth 훅 가져오기
 import "./HeaderContainer.css";
 
 function HeaderContainer() {
     const locationNow = useLocation();
     const navigate = useNavigate();
+    const { logindata } = useAuth(); //로그인 정보 가져오기
     const [showDropdown, setShowDropdown] = useState(false);
-    const [logindata, setLogindata] = useState(null); // 로그인 데이터 상태
-    const [loading, setLoading] = useState(true); // 로딩 상태
-
-    // 로그인 정보 가져오기
-    useEffect(() => {
-        const fetchUserInfo = async () => {
-            try {
-                const response = await fetch("http://i12a506.p.ssafy.io:8000/api/users/info", {
-                    method: "GET",
-                    credentials: "include", // 쿠키 포함 (로그인 상태 유지)
-                });
-
-                if (!response.ok) {
-                    throw new Error("사용자 정보를 가져오는 데 실패했습니다.");
-                }
-
-                const data = await response.json();
-                setLogindata(data); // 로그인 정보 저장
-            } catch (error) {
-                console.error(error);
-                setLogindata(null); // 오류 발생 시 로그인 해제 상태로 설정
-            } finally {
-                setLoading(false); // 로딩 종료
-            }
-        };
-
-        fetchUserInfo();
-    }, []); // 최초 렌더링 시 한 번 실행
 
     const handleConnectBell = () => {
         setShowDropdown(!showDropdown);
     };
 
+    // userType에 따라 마이페이지 이동 경로 설정
     const handleNavigateToMyPage = () => {
-        navigate("/mypage/admin");
+        if (logindata?.userType === "A") {
+            navigate("/mypage/admin");
+        } else if (logindata?.userType === "U") {
+            navigate("/mypage/user");
+        }
     };
 
     return (
@@ -62,15 +41,11 @@ function HeaderContainer() {
                 </div>
 
                 <div className="login">
-                    {loading ? (
-                        <p>로딩 중...</p>
-                    ) : logindata ? (
-                        <>
-                            <Link to="/mypage/user">
-                                <FontAwesomeIcon icon={faUser} className="login-icon" />
-                            </Link>
-                        </>
+                    {logindata ? (
+                        // 로그인된 유저: faUser 아이콘 + 클릭 시 마이페이지 이동
+                        <FontAwesomeIcon icon={faUser} className="login-icon" onClick={handleNavigateToMyPage} />
                     ) : (
+                        // 로그인되지 않은 유저: faRightToBracket 아이콘 + 로그인 페이지 이동
                         <Link to="http://i12a506.p.ssafy.io:8000/api/users/login">
                             <FontAwesomeIcon icon={faRightToBracket} className="login-icon" />
                         </Link>
@@ -82,7 +57,7 @@ function HeaderContainer() {
             {showDropdown && (
                 <div className="dropdown">
                     <p className="welcome-text" onClick={handleNavigateToMyPage}>
-                        {logindata ? `${logindata.username}님 환영합니다.` : "환영합니다."}
+                        {logindata ? `${logindata.userName}님 환영합니다.` : "환영합니다."}
                     </p>
                     <p className="mypage-link" onClick={handleNavigateToMyPage}>
                         마이페이지
