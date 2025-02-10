@@ -1,7 +1,7 @@
 import "./App.css";
 import React from "react";
 
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useNavigate } from "react-router-dom";
 import MainPage from "./pages/MainPage";
 import Kiosk from "./pages/Kiosk"
 import KioskMainScreen from "./pages/Kiosk/main";
@@ -20,8 +20,10 @@ import Map from "./pages/Map";
 import StockRequests from "./pages/StockRequests";
 import FleaRequests from "./pages/FleaRequests";
 import SearchbyNurtrition from "./pages/SearchbyNurtrition";
+import SearchResult from "./pages/SearchResult";
 
 function App() {
+  const navigate = useNavigate();
 
   // function setScreenSize() {
   //   let vh = window.innerHeight * 0.01;
@@ -36,7 +38,6 @@ function App() {
     <div className="App">
 
     <Routes>
-      <Route path="/" element={<MainPage/>}/>
       <Route path="/signup" element={<SignUp/>}/>
       <Route path="/owner-signup" element={<OwnerSignUp/>}/>
       <Route path="/user-signup" element={<UserSignUp/>}/>
@@ -54,9 +55,13 @@ function App() {
 
       <Route path="/kiosk" element={<Kiosk/>}/>
       <Route path="/kmain" element={<KioskMainScreen/>}/>
+
+      <Route path="/" element={<MainPage/>}/>
       <Route path="/search" element={<SearchPage/>}/>
-      <Route path="/storedetail/1" element={<StoreDetail/>}/>
+      <Route path="/search/results" element={<SearchResult/>}/>
+      <Route path="/storedetail" element={<StoreDetail/>}/>
       <Route path="/searchbynutrition" element={<SearchbyNurtrition/>}/>
+
     </Routes>
 
     </div>
