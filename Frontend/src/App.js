@@ -15,12 +15,11 @@ import KakaoRedirect from "./pages/KakaoRedirect";
 import SearchPage from "./pages/Search";
 import StoreDetail from "./pages/StoreDetail"
 import MakeCoupons from "./pages/MakeCoupons";
-import Flea from "./pages/Flea";
-import Stock from "./pages/Stock";
 import Notice from "./pages/Notice";
 import Map from "./pages/Map";
+import StockRequests from "./pages/StockRequests";
+import FleaRequests from "./pages/FleaRequests";
 import SearchbyNurtrition from "./pages/SearchbyNurtrition";
-
 
 function App() {
 
@@ -45,8 +44,8 @@ function App() {
         <Route path="/mypage/user/coupons" element={<Coupons/>}/>
         <Route path="/mypage/user/chats" element={<Chats/>}/>
       <Route path="/mypage/admin" element={<MyPage/>}/>
-        <Route path="/mypage/admin/flea" element={<Flea/>}/>
-        <Route path="/mypage/admin/stock" element={<Stock/>}/>
+        <Route path="/mypage/admin/flea" element={<FleaRequests/>}/>
+        <Route path="/mypage/admin/stock" element={<StockRequests/>}/>
         <Route path="/mypage/admin/coupon" element={<MakeCoupons/>}/>
         <Route path="/mypage/admin/notice" element={<Notice/>}/>
       <Route path="/map" element={<Map/>}/>
