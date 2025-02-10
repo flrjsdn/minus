@@ -36,8 +36,8 @@ public class FliController {
     }
 
     @GetMapping("/list")
-    public ResponseEntity<List<FliResponseDTO>> listFli(@RequestParam("storeId") int storeId) {
-        return ResponseEntity.ok(fliService.listFli(storeId));
+    public ResponseEntity<List<FliResponseDTO>> listFli(@RequestParam("email") String email) {
+        return ResponseEntity.ok(fliService.listFli(email));
     }
 }
 
