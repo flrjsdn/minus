@@ -19,6 +19,7 @@ import Notice from "./pages/Notice";
 import Map from "./pages/Map";
 import StockRequests from "./pages/StockRequests";
 import FleaRequests from "./pages/FleaRequests";
+import SearchbyNurtrition from "./pages/SearchbyNurtrition";
 
 function App() {
 
@@ -55,7 +56,7 @@ function App() {
       <Route path="/kmain" element={<KioskMainScreen/>}/>
       <Route path="/search" element={<SearchPage/>}/>
       <Route path="/storedetail/1" element={<StoreDetail/>}/>
-
+      <Route path="/searchbynutrition" element={<SearchbyNurtrition/>}/>
     </Routes>
 
     </div>
