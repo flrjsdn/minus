@@ -11,7 +11,7 @@
     background-color: #3f72af;
     align-items: center;
     position: relative;
-    z-index: 100;
+    z-index: 99;
 }
 
 .mainpageaddressdetail {

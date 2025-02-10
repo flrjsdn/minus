@@ -1,6 +1,5 @@
 import "./App.css";
-import React from "react";
-
+import React, { useEffect } from "react";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import MainPage from "./pages/MainPage";
 import Kiosk from "./pages/Kiosk"
@@ -25,13 +24,13 @@ import SearchResult from "./pages/SearchResult";
 function App() {
   const navigate = useNavigate();
 
-  // function setScreenSize() {
-  //   let vh = window.innerHeight * 0.01;
-  //   document.documentElement.style.setProperty("--vh", `${vh}px`);
-  // }
-  // useEffect(() => {
-  //   setScreenSize();
-  // });
+  function setScreenSize() {
+    let vh = window.innerHeight * 0.01;
+    document.documentElement.style.setProperty("--vh", `${vh}px`);
+  }
+  useEffect(() => {
+    setScreenSize();
+  });
 
 
   return (

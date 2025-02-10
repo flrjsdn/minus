@@ -12,6 +12,8 @@
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
     position: sticky;
     z-index: 100; /* 다른 요소 위에 나타나도록 높은 z-index 값을 설정 */
+    padding: 0 20px; /* 좌우에 20px의 공백 추가 */
+
 }
 
 
@@ -50,41 +52,67 @@
     align-items: center; /* 세로 중앙 정렬 */
     gap: 30px;      /* 아이콘 간격 조정 */
 }
-
+/* 드롭다운 메뉴 */
 .dropdown {
-    position: absolute;
-    top: 60px;
-    right: 20px;
-    background: white;
-    border: 1px solid #ddd;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-    z-index: 10000000; /* 헤더보다 앞에 표시되도록 */
-    width: 200px;
-}
-
-.dropdown p {
-    margin: 10px 0;
-    cursor: pointer;
+    position: fixed;
+    top: 8%; /* 버튼 바로 아래에 드롭다운 위치 */
+    right: 0;
+    width: 170px; /* 드롭다운의 너비 */
+    padding: 10px;
+    background-color: #ffffff; /* 배경색 */
+    border: 1px solid #ddd; /* 테두리 색상 */
+    border-radius: 8px; /* 모서리 둥글게 */
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* 그림자 효과 */
+    z-index: 100; /* 드롭다운이 다른 요소들 위에 표시되도록 */
+    display: flex;
+    flex-direction: column; /* 세로로 정렬 */
     font-size: 14px;
-    font-weight: 500;
 }
 
-.dropdown p:hover {
-    text-decoration: underline;
+/* 드롭다운 항목 스타일 */
+.dropdown p, .dropdown a, .dropdown button {
+    padding: 8px;
+    margin: 5px 0; /* 항목 간 간격 */
+    text-align: center;
+    cursor: pointer;
+    border: none; /* 기본 테두리 제거 */
+    background-color: transparent; /* 배경 투명 */
+    font-size: 14px;
+    color: #333; /* 기본 텍스트 색상 */
+    transition: background-color 0.3s, color 0.3s; /* 호버시 색상 변화 */
 }
 
+/* 드롭다운 항목 호버 효과 */
+.dropdown p:hover, .dropdown a:hover, .dropdown button:hover {
+    background-color: #f1f1f1; /* 배경색 변경 */
+    color: #3f72af; /* 텍스트 색상 변경 */
+}
+
+/* 로그아웃 버튼 스타일 */
 .logout {
-    background: none;
-    border: none;
-    color: red;
+    background-color: #ff5c5c; /* 빨간색 배경 */
+    color: white; /* 텍스트 흰색 */
+    border-radius: 4px; /* 모서리 둥글게 */
+    border: none; /* 기본 테두리 제거 */
+    padding: 8px;
+    text-align: center;
     cursor: pointer;
-    font-size: 14px;
-    width: 100%;
-    text-align: left;
 }
 
+/* 로그아웃 버튼 호버 효과 */
 .logout:hover {
-    font-weight: bold;
+    background-color: #e04e4e; /* 호버 시 배경 색상 */
+}
+
+
+/* 말풍선 뾰족한 부분을 만들기 위한 삼각형 */
+.dropdown::after {
+    content: "";
+    position: absolute;
+    bottom: 100%; /* 드롭다운 메뉴의 위쪽에 삼각형을 위치시킴 */
+    left: 59%;
+    transform: translateX(-50%); /* 삼각형을 가운데로 조정 */
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 10px solid white; /* 삼각형을 아래쪽으로 향하게 함 */
 }

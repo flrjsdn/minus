@@ -12,12 +12,12 @@ function Notice({ storeNo }) {
     const [noticeContent, setNoticeContent] = useState("");
     const [editNoticeId, setEditNoticeId] = useState(null); // 수정할 공지사항의 ID
     const modalBackground = useRef();
-
+    const email = 'asf@fad.com'
     // storeNo는 변경되지 않기 때문에 useEffect에서 한 번만 사용
     useEffect(() => {
         const fetchNotices = async () => {
             try {
-                const response = await axios.get(`http://i12a506.p.ssafy.io:8000/api/store/detail?storeNo=${storeNo}`);
+                const response = await axios.get(`http://i12a506.p.ssafy.io:8000/api/store/detail?email=${email}`);
                 setNotices(response.data.announcements); // 공지사항 목록만 추출
             } catch (error) {
                 console.error('공지사항 목록 가져오기 실패:', error);
@@ -30,11 +30,12 @@ function Notice({ storeNo }) {
     const handleAddNotice = async () => {
         try {
             const response = await axios.post('http://i12a506.p.ssafy.io:8000/api/store/board', {
-                storeNo: storeNo, 
-                userNo: 1, 
+                storeNo: 39, 
+                userNo: 1,
                 title: noticeTitle,
                 content: noticeContent,
-                boardImageUrl: null, // 이미지 URL은 임시로 null 
+                boardImageUrl: null, // 이미지 URL은 임시로 null
+                userEmail: "asf@fad.com",
             });
 
             if (response.status === 200) {
@@ -260,9 +261,6 @@ const EditButton = styled(Button)`
         background-color: #f39c12;
     }
 `;
-
-
-
 
 // function Notice() {
 //     const [notices, setNotices] = useState(noticesData); // 더미데이터를 상태로 관리

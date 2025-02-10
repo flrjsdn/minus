@@ -387,10 +387,13 @@ function OwnerSignUp() {
                     />
                 </KakaoMapWrapper>
 
-
-                <RegisterButtons />
+                <RegisterButtonsWrapper>
+                    <RegisterButtons />
+                </RegisterButtonsWrapper>
             </form>
-            <BottomNav />
+            <BottomNavWrapper>
+                <BottomNav />
+            </BottomNavWrapper>
         </div>
     );
 }
@@ -433,6 +436,19 @@ const CheckboxWrapper = styled.div`
   margin: 15px 0;
   font-size: 15px;
   font-weight: bold;
+`;
+
+
+const RegisterButtonsWrapper = styled.div`
+    margin-bottom: 90px; /* 하단 버튼과 구분을 위한 간격 */
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+`;
+
+const BottomNavWrapper = styled.div`
+    margin-top: 20px;
+    
 `;
 
 const ErrorMessage = styled.div`
