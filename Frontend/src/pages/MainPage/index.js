@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import HeaderContainer from "../../components/HeaderContainer/HeaderContainer";
-import SearchBar from "../../components/SearchBar/SearchBar";
+import SearchBar from "../../components/SearchBar";
 import KakaoMapBackground from "../../components/KakaoMapBackground";
 import DraggableBottomSheet from "../../components/DraggableBottomSheet/DraggableBottomSheet";
 import BottomNav from "../../components/BottomNav/BottomNav";
@@ -48,7 +48,7 @@ const MainPage = () => {
 
     return (
         <div className="mainpagecontents">
-            <HeaderContainer />
+            {/*<HeaderContainer />*/}
             <div className="mainpagecurrentaddress">
                 <div className="mainpageaddressdetail">
                     현재 주소: {address || addressData.fullAddress}
@@ -57,8 +57,8 @@ const MainPage = () => {
                     주소 찾기
                 </button>
             </div>
-            <SearchBar />
-            <DraggableBottomSheet coords = {coords}/>
+            <SearchBar coords={coords} />
+            {/*<DraggableBottomSheet coords={coords} />*/}
             <BottomNav />
             <KakaoMapBackground
                 address={address || addressData.fullAddress}

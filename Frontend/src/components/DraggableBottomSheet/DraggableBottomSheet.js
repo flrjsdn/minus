@@ -1,72 +1,76 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import MainpageStoreDetailApi from "../../api/MainpageStorelistApi";
 import "./DraggableBottomSheet.css";
 
 const DraggableBottomSheet = ({ coords }) => {
-  // api 호출 useState
-  const [mainpageStorelist, setMainpageStorelist] = useState(() => {
-    if (coords) {
-      // coords가 기본값일 경우 API 호출로 초기 데이터 가져오기
-      let initialData = null;
-      MainpageStoreDetailApi({
-        coords,
-        receivedData: (data) => {
-          initialData = data;
-        },
-      });
-      return initialData;
-    }
-    return null; // coords가 없을 경우 null로 초기화
-  });
-
-  // 바텀시트 동작 useState
-  const [panelHeight, setPanelHeight] = useState(10); // 기본 10% 높이
+  const [mainpageStorelist, setMainpageStorelist] = useState(null);
+  const [panelHeight, setPanelHeight] = useState(10); // 기본 높이 10%
   const [startY, setStartY] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const panelRef = useRef(null);
 
-  const NAV_HEIGHT = 69; // ✅ 바텀 네비게이션 높이 설정
-  const PANEL_WIDTH = "100%"; // ✅ 바텀 네비와 동일한 너비로 설정
+  const NAV_HEIGHT = 69; // 네비게이션 높이
+  const PANEL_WIDTH = "100%"; // 바텀시트 너비
 
-  // 드래그 시작
+  // 드래그 시작 핸들러
   const handlePointerDown = (e) => {
-    e.preventDefault(); // 기본 동작 방지 (예: 스크롤)
+    e.preventDefault();
+    e.stopPropagation();
     const startY = e.clientY || e.touches?.[0]?.clientY;
     setStartY(startY);
     setIsDragging(true);
   };
 
-  // 드래그 중 (위아래 이동)
-  const handlePointerMove = (e) => {
+  // 드래그 중 핸들러
+  const handlePointerMove = useCallback((e) => {
     if (!isDragging) return;
-    e.preventDefault(); // 기본 동작 방지
+    e.preventDefault();
+    e.stopPropagation();
+
     const currentY = e.clientY || e.touches?.[0]?.clientY;
-    const deltaY = startY - currentY;
-    let newHeight = panelHeight + (deltaY / window.innerHeight) * 100;
+    const deltaY = currentY - startY;
 
-    // 최소 높이: 네비게이션 위 (10%), 최대: 전체 화면의 85%
-    if (newHeight < 10) newHeight = 10;
-    if (newHeight > 85) newHeight = 50;
+    requestAnimationFrame(() => {
+      let newHeight = panelHeight + (deltaY / window.innerHeight) * 100;
+      newHeight = Math.max(10, Math.min(newHeight, 85)); // 최소 10%, 최대 85%
+      setPanelHeight(newHeight);
+    });
+  }, [isDragging, startY, panelHeight]);
 
-    setPanelHeight(newHeight);
-  };
-
-  // 드래그 종료 (자동 위치 조절)
+  // 드래그 종료 핸들러
   const handlePointerUp = () => {
     setIsDragging(false);
-    if (panelHeight > 20) setPanelHeight(50); // 중간 위치로 스냅
-    else setPanelHeight(10); // 최소 위치로 스냅
+    if (panelHeight > 20) {
+      setPanelHeight(50); // 중간 위치로 스냅
+    } else {
+      setPanelHeight(10); // 최소 위치로 스냅
+    }
   };
 
-  // API 호출: coords가 변경될 때마다 실행
+  // coords가 변경될 때 API 호출
   useEffect(() => {
+    let isMounted = true; // 컴포넌트가 마운트 상태인지 확인
     if (coords) {
       MainpageStoreDetailApi({
         coords,
-        receivedData: setMainpageStorelist, // 데이터를 업데이트하는 콜백 함수 전달
+        receivedData: (data) => {
+          if (isMounted) setMainpageStorelist(data);
+        },
       });
     }
+    return () => {
+      isMounted = false; // 언마운트 시 상태 업데이트 방지
+    };
   }, [coords]);
+
+  // 드래그 중 transition 비활성화
+  useEffect(() => {
+    if (isDragging) {
+      panelRef.current.classList.add("dragging");
+    } else {
+      panelRef.current.classList.remove("dragging");
+    }
+  }, [isDragging]);
 
   return (
       <div
@@ -76,17 +80,14 @@ const DraggableBottomSheet = ({ coords }) => {
             height: `${panelHeight}%`,
             bottom: `${NAV_HEIGHT}px`,
             width: `${PANEL_WIDTH}`,
-          }} // ✅ 네비게이션 위로 조정
+          }}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
       >
         {/* 드래그 핸들 */}
-        <div
-            className="drag-handle"
-            onPointerDown={handlePointerDown}
-            onPointerMove={handlePointerMove}
-            onPointerUp={handlePointerUp}
-        ></div>
+        <div className="drag-handle" onPointerDown={handlePointerDown}></div>
 
-        {/* 바텀 시트 내용 */}
+        {/* 바텀시트 내용 */}
         <div className="bottom-sheet-content">
           <h2>매장 리스트</h2>
           <p>위도: {coords?.lat}</p>
