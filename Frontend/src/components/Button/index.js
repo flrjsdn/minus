@@ -18,9 +18,6 @@ const Button = styled.button`
   font-weight: bold;
   font-size: 18px;
 
-
-  margin-top: 20px; /* 버튼 위 간격 */
-
   border: ${({ type }) =>
     type === 'TERTIARY'
       ? `1px solid ${TERTIARY.BUTTON.DEFAULT.BORDER}`

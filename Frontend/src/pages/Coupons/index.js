@@ -56,9 +56,6 @@ function CouponList() {
 
 export default CouponList;
 
-
-
-
 // // import { couponsData } from "../../dummydata/coupons"; // 더미 데이터
 // import HeaderContainer from "../../components/HeaderContainer/HeaderContainer";
 // import BottomNav from "../../components/BottomNav/BottomNav";

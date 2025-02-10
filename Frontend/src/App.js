@@ -1,6 +1,5 @@
 import "./App.css";
-import React from "react";
-
+import React, { useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
 import MainPage from "./pages/MainPage";
 import Kiosk from "./pages/Kiosk"
@@ -23,13 +22,13 @@ import SearchbyNurtrition from "./pages/SearchbyNurtrition";
 
 function App() {
 
-  // function setScreenSize() {
-  //   let vh = window.innerHeight * 0.01;
-  //   document.documentElement.style.setProperty("--vh", `${vh}px`);
-  // }
-  // useEffect(() => {
-  //   setScreenSize();
-  // });
+  function setScreenSize() {
+    let vh = window.innerHeight * 0.01;
+    document.documentElement.style.setProperty("--vh", `${vh}px`);
+  }
+  useEffect(() => {
+    setScreenSize();
+  });
 
 
   return (
