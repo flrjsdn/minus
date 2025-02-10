@@ -19,6 +19,8 @@ import Flea from "./pages/Flea";
 import Stock from "./pages/Stock";
 import Notice from "./pages/Notice";
 import Map from "./pages/Map";
+import SearchbyNurtrition from "./pages/SearchbyNurtrition";
+
 
 function App() {
 
@@ -55,7 +57,7 @@ function App() {
       <Route path="/kmain" element={<KioskMainScreen/>}/>
       <Route path="/search" element={<SearchPage/>}/>
       <Route path="/storedetail/1" element={<StoreDetail/>}/>
-
+      <Route path="/searchbynutrition" element={<SearchbyNurtrition/>}/>
     </Routes>
 
     </div>
