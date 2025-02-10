@@ -48,7 +48,7 @@ const MainPage = () => {
 
     return (
         <div className="mainpagecontents">
-            {/*<HeaderContainer />*/}
+            <HeaderContainer />
             <div className="mainpagecurrentaddress">
                 <div className="mainpageaddressdetail">
                     현재 주소: {address || addressData.fullAddress}
@@ -58,7 +58,7 @@ const MainPage = () => {
                 </button>
             </div>
             <SearchBar coords={coords} />
-            {/*<DraggableBottomSheet coords={coords} />*/}
+            <DraggableBottomSheet coords={coords} />
             <BottomNav />
             <KakaoMapBackground
                 address={address || addressData.fullAddress}

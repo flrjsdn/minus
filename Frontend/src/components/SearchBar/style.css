@@ -17,9 +17,8 @@
     background-color: white;
     box-sizing: border-box;
     padding-left: 50px; /* 버튼과의 간격 확보 */
-
     position: relative;
-    z-index: 100;
+    z-index: 99;
 }
 
 /* 뒤로가기 버튼 스타일 */

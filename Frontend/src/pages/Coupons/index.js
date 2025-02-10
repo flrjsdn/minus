@@ -1,137 +1,61 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
-import styled from "styled-components";
-import HeaderContainer from "../../components/HeaderContainer/HeaderContainer";
-import BottomNav from "../../components/BottomNav/BottomNav";
-import MyPageHeader from "../../components/MyPageHeader";
 
-function Coupons() {
-    const [coupons, setCoupons] = useState([]); // API에서 가져온 쿠폰 데이터
-    const [loading, setLoading] = useState(true); // 로딩 상태
-    const [error, setError] = useState(null); // 에러 상태
-    const [selectedCoupon, setSelectedCoupon] = useState(null); // 선택된 쿠폰
+function CouponList() {
+    const [coupons, setCoupons] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         const fetchCoupons = async () => {
             try {
-                const response = await axios.get("http://i12a506.p.ssafy.io:8000/api/coupon/receive/list"); 
-                setCoupons(response.data); // API 응답 데이터 저장
+                const response = await axios.get("http://i12a506.p.ssafy.io:8000/api/coupon/receive/list", {
+                    withCredentials:true, // 쿠키를 함께 전송
+                });
+
+                // 응답 데이터 콘솔 출력
+                console.log("응답 데이터:", response.data);
+                
+                setCoupons(response.data);
             } catch (err) {
-                setError("쿠폰 데이터를 가져오는데 실패했습니다.");
+                console.error("쿠폰 데이터를 불러오는 중 오류 발생:", err);
+                setError("쿠폰 데이터를 불러올 수 없습니다.");
             } finally {
                 setLoading(false);
             }
         };
-
-        fetchCoupons(); // API 호출
+    
+        fetchCoupons();
     }, []);
 
-    // 쿠폰 클릭 시 선택된 쿠폰 정보 업데이트
-    const handleCouponClick = (coupon) => {
-        setSelectedCoupon(coupon);
-    };
-
-    if (loading) return <p>로딩 중...</p>;
+    if (loading) return <p>쿠폰을 불러오는 중...</p>;
     if (error) return <p>{error}</p>;
 
     return (
         <div>
-            <HeaderContainer />
-            <MyPageHeader />
-
-            <CouponsContainer>
-                <h2>보유 쿠폰 목록</h2>
-
-                {coupons.length === 0 ? (
-                    <p>현재 보유한 쿠폰이 없습니다.</p>
-                ) : (
-                    <CouponList>
-                        {coupons.map((coupon) => (
-                            <CouponCard
-                                key={coupon.couponId}
-                                onClick={() => handleCouponClick(coupon)}
-                                used={coupon.usedAt !== null} // 사용 여부 체크
-                            >
-                                <CouponContent>
-                                    <h3>{coupon.storeName} - {coupon.couponName}</h3>
-                                    <p>{coupon.content}</p>
-                                    <ExpirationDate>
-                                        유효기간: {new Date(coupon.expirationDate).toLocaleDateString()}
-                                    </ExpirationDate>
-                                    {coupon.usedAt && <UsedTag>이미 사용한 쿠폰</UsedTag>}
-                                </CouponContent>
-                            </CouponCard>
-                        ))}
-                    </CouponList>
-                )}
-
-                {selectedCoupon && (
-                    <CouponDetails>
-                        <h3>선택한 쿠폰 상세 정보</h3>
-                        <p><strong>가게명:</strong> {selectedCoupon.storeName}</p>
-                        <p><strong>쿠폰명:</strong> {selectedCoupon.couponName}</p>
-                        <p><strong>할인율:</strong> {selectedCoupon.discountRate}%</p>
-                        <p><strong>설명:</strong> {selectedCoupon.content}</p>
-                        <p><strong>유효기간:</strong> {new Date(selectedCoupon.expirationDate).toLocaleDateString()}</p>
-                        {selectedCoupon.usedAt && <p style={{ color: "red" }}>✅ 이미 사용한 쿠폰</p>}
-                    </CouponDetails>
-                )}
-            </CouponsContainer>
-
-            <BottomNav />
+            <h2>받은 쿠폰 목록</h2>
+            <ul>
+                {coupons.map((coupon) => (
+                    <li key={coupon.couponId} style={{ border: "1px solid #ccc", padding: "10px", marginBottom: "10px" }}>
+                        <h3>{coupon.couponName}</h3>
+                        <p>{coupon.content}</p>
+                        <p><strong>가게:</strong> {coupon.storeName}</p>
+                        <p><strong>할인율:</strong> {coupon.discountRate}%</p>
+                        <p><strong>유효기간:</strong> {new Date(coupon.expirationDate).toLocaleDateString()}</p>
+                        {coupon.usedAt ? (
+                            <p style={{ color: "red" }}><strong>사용됨:</strong> {new Date(coupon.usedAt).toLocaleDateString()}</p>
+                        ) : (
+                            <p style={{ color: "green" }}>사용 가능</p>
+                        )}
+                    </li>
+                ))}
+            </ul>
         </div>
     );
 }
 
-// 💡 스타일 정의
-const CouponsContainer = styled.div`
-  padding: 16px;
-`;
+export default CouponList;
 
-const CouponList = styled.div`
-  margin-top: 16px;
-`;
-
-const CouponCard = styled.div`
-  background: ${(props) => (props.used ? "#d3d3d3" : "#e3efff")}; /* 사용한 쿠폰은 회색 */
-  padding: 20px;
-  border-radius: 12px;
-  margin-bottom: 16px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  cursor: pointer;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-
-  &:hover {
-    transform: scale(1.02);
-  }
-`;
-
-const CouponContent = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-
-const ExpirationDate = styled.p`
-  font-size: 12px;
-  color: #ff6347;
-  margin-top: 5px;
-`;
-
-const UsedTag = styled.span`
-  color: red;
-  font-weight: bold;
-  margin-top: 5px;
-`;
-
-const CouponDetails = styled.div`
-  margin-top: 20px;
-  padding: 20px;
-  background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-`;
-
-export default Coupons;
 
 
 

@@ -24,6 +24,36 @@ function HeaderContainer() {
         }
     };
 
+    const renderDropdownMenu = () => {
+        if (logindata?.userType === "A") {
+            return (
+                <>
+                <p className="welcome-text">
+                    {logindata ? `${logindata.userName}님 환영합니다.` : "환영합니다."}
+                </p>
+                <Link to="/mypage/admin/flea">플리마켓</Link>
+                <Link to="/mypage/admin/stock">입고</Link>
+                <Link to="/mypage/admin/coupon">쿠폰</Link>
+                <Link to="/mypage/admin/notice">공지사항</Link>
+            </>
+            );
+        } else if (logindata?.userType === "U") {
+            return (
+                <>
+                <p className="welcome-text" onClick={handleNavigateToMyPage}>
+                    {logindata ? `${logindata.userName}님 환영합니다.` : "환영합니다."}
+                </p>
+                <Link to="/mypage/user/chats">채팅목록</Link>
+                <Link to="/mypage/user/coupons">쿠폰함</Link>
+            </>
+            );
+        } else {
+            return (
+                <Link to="http://i12a506.p.ssafy.io:8000/api/users/login">회원가입</Link>
+            );
+        }
+    };
+
     return (
         <header className="header">
             <Link to="/" className="link">
@@ -56,16 +86,9 @@ function HeaderContainer() {
             {/* 드롭다운 메뉴 */}
             {showDropdown && (
                 <div className="dropdown">
-                    <p className="welcome-text" onClick={handleNavigateToMyPage}>
-                        {logindata ? `${logindata.userName}님 환영합니다.` : "환영합니다."}
-                    </p>
-                    <p className="mypage-link" onClick={handleNavigateToMyPage}>
-                        마이페이지
-                    </p>
-                    <Link to="/mypage/coupon">쿠폰함</Link>
-                    <Link to="/mypage/chat">채팅목록</Link>
-                    <button className="logout">로그아웃</button>
-                </div>
+                {renderDropdownMenu()}
+                <button className="logout">로그아웃</button>
+            </div>
             )}
         </header>
     );
