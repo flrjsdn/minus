@@ -24,8 +24,8 @@ public class ItemController {
     }
 
     @GetMapping("/regist_list")
-    public ResponseEntity<List<ItemResponseDTO>> getRegistList(@RequestParam("storeNo") Integer storeNo) {
-        List<ItemResponseDTO> result = requestReceivingService.getItemRequestCounts(storeNo);
+    public ResponseEntity<List<ItemResponseDTO>> getRegistList(@RequestParam("email") String email) {
+        List<ItemResponseDTO> result = requestReceivingService.getItemRequestCounts(email);
         return ResponseEntity.ok(result);
     }
 }

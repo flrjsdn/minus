@@ -49,5 +49,14 @@ public class ESItemController {
         List<ESStoreItem> results = esItemService.searchStoreItemsByRange(itemId, lat, lon);
         return ResponseEntity.ok(results);
     }
+
+    @GetMapping("/store-list")
+    public ResponseEntity<List<ESStoreItem>> searchStore(
+            @RequestParam("lat") double lat,
+            @RequestParam("lon") double lon) {
+
+        List<ESStoreItem> results = esItemService.searchStoreByRange(lat, lon);
+        return ResponseEntity.ok(results);
+    }
 }
 

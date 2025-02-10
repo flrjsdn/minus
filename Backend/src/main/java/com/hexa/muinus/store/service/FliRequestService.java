@@ -111,8 +111,12 @@ public class FliRequestService {
         }
     }
 
-    public List<FliResponseDTO> listFli(int storeId) {
-        return fliItemRepository.findPendingFliResponseByStoreId(storeId);
+    public List<FliResponseDTO> listFli(String userEmail) {
+        Store store = storeRepository.findStoreByUser_Email(userEmail);
+        if(store == null) {
+            throw new StoreNotFoundException(store.getStoreNo());
+        }
+        return fliItemRepository.findPendingFliResponseByStoreId(store.getStoreNo());
     }
 }
 

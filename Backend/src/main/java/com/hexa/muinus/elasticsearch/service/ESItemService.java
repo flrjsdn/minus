@@ -97,4 +97,24 @@ public class ESItemService {
                 .map(SearchHit::getContent)
                 .collect(Collectors.toList());
     }
+
+    /**
+     * 현 위치 근처의 매장 탐색
+     * @param lat
+     * @param lon
+     * @return
+     */
+    public List<ESStoreItem> searchStoreByRange(double lat, double lon) {
+        double delta = 0.01; // 대략 1km 반경 (예시 값)
+        Criteria criteria = new Criteria("lat").greaterThanEqual(lat - delta)
+                .lessThanEqual(lat + delta)
+                .and(new Criteria("lon").greaterThanEqual(lon - delta)
+                        .lessThanEqual(lon + delta));
+        CriteriaQuery query = new CriteriaQuery(criteria);
+        SearchHits<ESStoreItem> searchHits = elasticsearchOperations.search(query, ESStoreItem.class);
+        return searchHits.getSearchHits()
+                .stream()
+                .map(SearchHit::getContent)
+                .collect(Collectors.toList());
+    }
 }

@@ -58,4 +58,6 @@ public interface StoreRepository extends JpaRepository<Store, Integer> {
     @Query(value = "INSERT INTO store (user_no, name, location_x, location_y, address, registration_no, flimarket_yn, flimarket_section_cnt) " +
             "VALUES (:userNo, :name, :longitude, :latitude, :address, :registrationNo, :flimarketYn, :fliMarketSectionCount)", nativeQuery = true)
     int saveStore(Integer userNo, String name, Double longitude, Double latitude, String address, String registrationNo, String flimarketYn, Byte fliMarketSectionCount);
+
+    Store findStoreByUser_Email(String userEmail);
 }

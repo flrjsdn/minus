@@ -19,6 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static com.hexa.muinus.common.exception.APIErrorCode.STORE_NOT_FORBIDDEN;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -57,8 +59,12 @@ public class RequestReceivingService {
     }
 
     @Transactional(readOnly = true)
-    public List<ItemResponseDTO> getItemRequestCounts(Integer storeNo) {
-        return requestReceivingRepository.findItemRequestCountsByStoreNo(storeNo);
+    public List<ItemResponseDTO> getItemRequestCounts(String userEmail) {
+        Store store = storeRepository.findStoreByUser_Email(userEmail);
+        if(store == null) {
+            throw new StoreNotFoundException(store.getStoreNo());
+        }
+        return requestReceivingRepository.findItemRequestCountsByStoreNo(store.getStoreNo());
     }
 }
 
