@@ -105,7 +105,7 @@ public class StoreController {
      * - 실패 : Exception
      */
     @PostMapping("/board")
-    public ResponseEntity<Void> writeAnnouncement(@Valid @RequestBody AnnouncementWriteDTO announcementWriteDTO){
+    public ResponseEntity<Void> writeAnnouncement(@RequestBody AnnouncementWriteDTO announcementWriteDTO){
         log.info("StoreController > writeAnnouncement: {}", announcementWriteDTO);
         storeService.writeAnnouncement(announcementWriteDTO);
         return ResponseEntity.ok().build();

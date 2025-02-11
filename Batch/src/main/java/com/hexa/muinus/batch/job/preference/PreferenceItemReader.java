@@ -4,98 +4,87 @@ import com.hexa.muinus.batch.domain.Preference;
 import com.hexa.muinus.batch.domain.PreferenceId;
 import com.hexa.muinus.batch.exeption.BatchErrorCode;
 import com.hexa.muinus.batch.exeption.BatchProcessingException;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.item.ItemReader;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.redis.core.HashOperations;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.ResourceAccessException;
-import org.springframework.web.reactive.function.client.WebClient;
 
-import javax.sql.DataSource;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 
-@Slf4j
 @Component
 public class PreferenceItemReader implements ItemReader<Preference> {
-    private final String baseUrl = "http://localhost:8090";
-    private final String apiUri = "/api/batch/preferences";
 
-    private final JdbcTemplate jdbcTemplate;
-    private final WebClient webClient; // 비동기식 API 호출 -> 속도 개선
-    private Iterator<Preference> preferenceIterator;
+    // MySQL 구매 횟수 + 기존 월간(29일치) 점수 조회
+    private final static String mySqlQuery = """
+                SELECT  ui.user_no, ui.item_id,
+                        IFNULL(SUM(td.quantity), 0) AS daily_purchase_count,
+                        IFNULL(SUM(up.monthly_score), 0) AS monthly_score 
+                FROM (SELECT u.user_no, i.item_id FROM users u CROSS JOIN item i) AS ui 
+                LEFT JOIN hexa.transactions t ON t.user_no = ui.user_no
+                AND t.created_at >= CURDATE() - INTERVAL 1 DAY
+                AND t.created_at < CURDATE()                     
+                LEFT JOIN hexa.transaction_details td ON td.transaction_id = t.transaction_id
+                AND td.store_item_id IS NOT NULL                
+                LEFT JOIN ( SELECT p.user_no, p.item_id, SUM(p.daily_score) AS monthly_score
+                            FROM preference p
+                            WHERE p.updated_at >= CURDATE() - INTERVAL 30 DAY
+                            AND p.updated_at < CURDATE()            
+                            GROUP BY p.user_no, p.item_id ) up ON up.user_no = ui.user_no
+                AND up.item_id = ui.item_id
+                GROUP BY ui.user_no, ui.item_id
+                ORDER BY ui.user_no, ui.item_id
+            """;
 
-    private final AtomicBoolean dataFetched = new AtomicBoolean(false);
+        private final RedisTemplate<String, Object> redisTemplate;
+        private final JdbcTemplate jdbcTemplate;
+        private final Iterator<Map.Entry<String, Integer>> redisDataIterator;
 
-    @Autowired
-    public PreferenceItemReader(@Qualifier("dataDBSource") DataSource dataDBSource, WebClient.Builder webClientBuilder) {
-        this.jdbcTemplate = new JdbcTemplate(dataDBSource);
-        this.webClient = webClientBuilder.baseUrl(baseUrl).build();
-    }
+        public PreferenceItemReader(RedisTemplate<String, Object> redisTemplate, JdbcTemplate jdbcTemplate) {
+            this.redisTemplate = redisTemplate;
+            this.jdbcTemplate = jdbcTemplate;
 
-    @Override
-    public Preference read() {
-        if (!dataFetched.get()) {
-            List<Preference> preferences = fetchPreferencesFromAPI();
-            this.preferenceIterator = preferences.iterator();
-            dataFetched.set(true);
-        }
-        return preferenceIterator != null && preferenceIterator.hasNext() ? preferenceIterator.next() : null;
-    }
+            // Redis 데이터 로드 (userNo:itemId)
+            HashOperations<String, String, Integer> hashOps = redisTemplate.opsForHash();
+            String redisKey = "SEARCH_COUNT";
+            Map<String, Integer> redisData = hashOps.entries(redisKey);
 
-    // ITEM READ (API 호출 및 데이터 가공)
-    private List<Preference> fetchPreferencesFromAPI() {
-        List<Long> users = jdbcTemplate.query("SELECT user_no FROM users", (rs, rowNum) -> rs.getLong("user_no"));
-        List<Long> items = jdbcTemplate.query("SELECT item_id FROM item", (rs, rowNum) -> rs.getLong("item_id"));
-
-        log.info("배치 API 호출 - Size(Users): {}, Size(Items): {}", users.size(), items.size());
-        log.debug("배치 Users : {}" , users);
-        log.debug("배치 Items : {}" , items);
-
-        LocalDate today = LocalDate.now();
-        List<Preference> preferences = new ArrayList<>();
-
-        try {
-            ResponseEntity<List<Map<Long, Map<Long, BigDecimal>>>> response = webClient.post()
-                    .uri(apiUri)
-                    .bodyValue(Map.of("users", users, "items", items))
-                    .retrieve()
-                    .toEntity(new ParameterizedTypeReference<List<Map<Long, Map<Long, BigDecimal>>>>() {})
-                    .block(); // block : 동기 - API 응답이 올 때까지 동기적으로 대기
-
-            if (response.getBody() == null) {
-                log.warn("API 응답이 비어있습니다.");
-                throw new BatchProcessingException(BatchErrorCode.API_CALL_FAILED);
-            }
-
-            log.info("API 호출 성공 - 응답 크기: {}", response.getBody().size());
-
-            // 데이터 변환
-            for (Map<Long, Map<Long, BigDecimal>> userMap : response.getBody()) {
-                userMap.forEach((userNo, itemMap) ->
-                        itemMap.forEach((itemId, score) ->
-                                preferences.add(new Preference(new PreferenceId(userNo, itemId), score, today))
-                        )
-                );
-            }
-        } catch (HttpClientErrorException e) {
-            log.error("API 요청 실패 (HTTP 오류): StatusCode={}, Message={}", e.getStatusCode(), e.getMessage(), e);
-            throw new BatchProcessingException(BatchErrorCode.API_CALL_FAILED, e);
-        } catch (ResourceAccessException e) {
-            log.error("API 요청 실패 (네트워크 오류): {}", e.getMessage(), e);
-            throw new BatchProcessingException(BatchErrorCode.API_CALL_FAILED, e);
-        } catch (Exception e) {
-            log.error("알 수 없는 오류 발생: {}", e.getMessage(), e);
-            throw new BatchProcessingException(BatchErrorCode.UNKNOWN_ERROR, e);
+            this.redisDataIterator = redisData.entrySet().iterator();
         }
 
-        return preferences;
+        @Override
+        public Preference read() {
+            if (!redisDataIterator.hasNext()) return null;
+
+            Map.Entry<String, Integer> entry = redisDataIterator.next();
+            String key = entry.getKey();
+            int searchCount = entry.getValue() != null ? entry.getValue() : 0;
+
+            try {
+                String[] parts = key.split(":");
+                Long userNo = Long.parseLong(parts[0]);
+                Long itemId = Long.parseLong(parts[1]);
+
+                Map<String, Object> result = jdbcTemplate.queryForMap(mySqlQuery);
+                int purchaseCount = ((Number) result.get("daily_purchase_count")).intValue();
+                BigDecimal monthlyScore = (BigDecimal) result.get("monthly_score");
+
+                // 점수 계산
+                BigDecimal dailyScore = BigDecimal.valueOf(searchCount + purchaseCount);
+                BigDecimal updatedMonthlyScore = monthlyScore.add(dailyScore);
+
+                LocalDate yesterday = LocalDate.now().minusDays(1);
+                PreferenceId id = new PreferenceId(userNo, itemId, yesterday);
+                return Preference.builder()
+                        .id(id)
+                        .dailyScore(dailyScore)
+                        .monthlyScore(updatedMonthlyScore)
+                        .build();
+
+            } catch (Exception e) {
+                throw new BatchProcessingException(BatchErrorCode.ROW_MAPPER_ERROR, e);
+            }
+        }
     }
-}

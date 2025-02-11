@@ -41,25 +41,25 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        log.info("uri : {} ",request.getRequestURI());
-        log.info("JWT Authentication Filter");
-        String accessToken = jwtProvider.getCookieValue(request, "AccessToken");
-        log.info("JWT Access Token: {}", accessToken);
-        if (accessToken != null) {
-            try {
-                // JWT 유효성 검사
-                if (jwtProvider.validateToken(accessToken)) {
-                    log.info("JWT Authentication Success");
-                    // 유효한 토큰이면 Authentication 객체 생성
-                    Authentication authentication = jwtProvider.getAuthentication(accessToken);
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-                }
-            } catch (Exception e) {
-                log.info("Access Token validation error: {}", e.getMessage());
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                return;
-            }
-        }
-        filterChain.doFilter(request, response);
+//        log.info("uri : {} ",request.getRequestURI());
+//        log.info("JWT Authentication Filter");
+//        String accessToken = jwtProvider.getCookieValue(request, "AccessToken");
+//        log.info("JWT Access Token: {}", accessToken);
+//        if (accessToken != null) {
+//            try {
+//                // JWT 유효성 검사
+////                if (jwtProvider.validateToken(accessToken)) {
+////                    log.info("JWT Authentication Success");
+////                    // 유효한 토큰이면 Authentication 객체 생성
+////                    Authentication authentication = jwtProvider.getAuthentication(accessToken);
+////                    SecurityContextHolder.getContext().setAuthentication(authentication);
+////                }
+//            } catch (Exception e) {
+//                log.info("Access Token validation error: {}", e.getMessage());
+//                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+//                return;
+//            }
+//        }
+//        filterChain.doFilter(request, response);
     }
 }

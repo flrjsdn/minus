@@ -15,14 +15,14 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class AnnouncementWriteDTO {
 
-    @NotNull(message = "유효한 email을 입력해주세요.")
-    @Email
+//    @NotNull(message = "유효한 email을 입력해주세요.")
+//    @Email
     private String userEmail;
 
-    @NotBlank(message = "제목을 입력해주세요")
+//    @NotBlank(message = "제목을 입력해주세요")
     private String title;
 
-    @NotNull(message = "내용을 입력해주세요")
+//    @NotNull(message = "내용을 입력해주세요")
     private String content;
 
     private String boardImageUrl;
