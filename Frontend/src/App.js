@@ -15,7 +15,6 @@ import SearchPage from "./pages/Search";
 import StoreDetail from "./pages/StoreDetail"
 import MakeCoupons from "./pages/MakeCoupons";
 import Notice from "./pages/Notice";
-import Map from "./pages/Map";
 import StockRequests from "./pages/StockRequests";
 import FleaRequests from "./pages/FleaRequests";
 import SearchbyNurtrition from "./pages/SearchbyNurtrition";
@@ -48,7 +47,6 @@ function App() {
         <Route path="/mypage/admin/stock" element={<StockRequests/>}/>
         <Route path="/mypage/admin/coupon" element={<MakeCoupons/>}/>
         <Route path="/mypage/admin/notice" element={<Notice/>}/>
-      <Route path="/map" element={<Map/>}/>
 
       <Route path="/oauth/kakao" element={<KakaoRedirect />} />
 
