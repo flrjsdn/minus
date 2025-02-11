@@ -21,10 +21,10 @@ public class PreferenceItemWriterConfig {
     private static final String QUERY = """
         INSERT INTO preference (user_no, item_id, updated_at, daily_score, monthly_score)
         VALUES (:id.userNo, :id.itemId, :id.updatedAt, :dailyScore, :monthlyScore)
-        ON DUPLICATE KEY UPDATE
-        daily_score = VALUES(daily_score),
-        monthly_score = VALUES(monthly_score)
     """;
+//    ON DUPLICATE KEY UPDATE
+//    daily_score = VALUES(daily_score),
+//    monthly_score = VALUES(monthly_score)
 
     public PreferenceItemWriterConfig(@Qualifier("dataDBSource") DataSource dataDBSource) {
         this.dataDBSource = dataDBSource;

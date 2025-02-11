@@ -30,7 +30,7 @@ public class BatchJobScheduler {
     /**
      * 매일 자정 실행
      */
-    @Scheduled(cron = "0 53 21 * * ?")
+    @Scheduled(cron = "0 0 0 * * ?")
     public void runBatchJobs() {
         log.info("배치 Job 실행 시작: {}", new Date());
         try {
