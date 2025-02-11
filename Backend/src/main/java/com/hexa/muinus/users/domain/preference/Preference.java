@@ -20,14 +20,15 @@ public class Preference {
     @EmbeddedId
     @AttributeOverrides({
             @AttributeOverride(name = "userNo", column = @Column(name = "user_no", nullable = false)),
-            @AttributeOverride(name = "itemId", column = @Column(name = "item_id", nullable = false))
+            @AttributeOverride(name = "itemId", column = @Column(name = "item_id", nullable = false)),
+            @AttributeOverride(name = "updatedAt", column = @Column(name = "updated_at", nullable = false))
     })
     private PreferenceId id;
 
-    @Column(name = "score", nullable = false, precision = 4, scale = 1)
-    private BigDecimal score;
+    @Column(name = "daily_score", nullable = false, precision = 4, scale = 1)
+    private BigDecimal dailyScore;
 
-    @Column(name = "updated_at", nullable = false)
-    private LocalDate updatedAt;
+    @Column(name = "monthly_score", nullable = false, precision = 4, scale = 1)
+    private BigDecimal monthlyScore;
 
 }
