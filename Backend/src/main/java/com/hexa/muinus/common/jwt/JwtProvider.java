@@ -95,7 +95,8 @@ public class JwtProvider {
                 .secure(true)
                 .build();
 
-        response.addHeader("Set-Cookie", responseCookie.toString());
+        response.setHeader("Set-Cookie", responseCookie.toString());
+//        response.addHeader("Set-Cookie", responseCookie.toString());
         log.info("쿠키에 액세스 토큰 : {}", response.getHeader("Set-Cookie"));
     }
 
@@ -109,16 +110,16 @@ public class JwtProvider {
 //
 //        response.addCookie(refreshTokenCookie);
 
-        ResponseCookie responseCookie = ResponseCookie.from("RefreshToken", refreshToken)
-                .maxAge(refreshTokenExpiration)
-                .path("/")
-                .sameSite("None")
-                .httpOnly(true)
-                .secure(true)
-                .build();
-
-        response.addHeader("Set-Cookie", responseCookie.toString());
-        log.info("쿠키에 리프레시 토큰 : {}", response.getHeader("Set-Cookie"));
+//        ResponseCookie responseCookie = ResponseCookie.from("RefreshToken", refreshToken)
+//                .maxAge(refreshTokenExpiration)
+//                .path("/")
+//                .sameSite("None")
+//                .httpOnly(true)
+//                .secure(true)
+//                .build();
+//
+//        response.addHeader("Set-Cookie", responseCookie.toString());
+//        log.info("쿠키에 리프레시 토큰 : {}", response.getHeader("Set-Cookie"));
     }
 
     /**
