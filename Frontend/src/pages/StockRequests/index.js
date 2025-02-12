@@ -35,6 +35,7 @@ const StockRequests = () => {
       <HeaderContainer />
       <MyPageHeader />
       <Title>상품 요청 목록</Title>
+      <Container>
       {items.length > 0 ? ( // 아이템 배열이 비어있지 않으면 출력
         items.map((item, index) => ( // 아이템 배열을 반복하여 출력
           <ItemCard key={index}>
@@ -49,6 +50,7 @@ const StockRequests = () => {
       ) : (
         <NoRequests>입고 요청 내역이 없습니다</NoRequests>
       )}
+      </Container>
       <BottomNav />
     </div>
   );
@@ -56,6 +58,14 @@ const StockRequests = () => {
 
 export default StockRequests;
 
+const Container = styled.div`
+  font-family: 'Arial', sans-serif;
+  background-color: #f4f7fc;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
 
 const Title = styled.h2`
   font-size: 24px;

@@ -36,6 +36,7 @@ const FleaRequests = () => {
       <HeaderContainer />
       <MyPageHeader />
       <Title>플리마켓 요청 목록</Title>
+      <Container>
       {requests.length > 0 ? (
         requests.map((request, index) => ( // 요청 목록을 반복하여 출력
           <RequestCard key={index}>
@@ -50,6 +51,7 @@ const FleaRequests = () => {
       ) : (
         <NoRequests>플리마켓 요청이 없습니다</NoRequests>
       )}
+      </Container>
       <BottomNav />
       </div>
   );

@@ -3,14 +3,18 @@ import HeaderContainer from "../../components/HeaderContainer/HeaderContainer";
 import BottomNav from "../../components/BottomNav/BottomNav";
 import MyPageHeader from "../../components/MyPageHeader";
 import styled from "styled-components";
-import axios from "axios";
+// import axios from "axios";
+import { DummyCouponTypes } from "../../dummydata/coupontypes";
+// import { DummyMakeCoupons } from "../../dummydata/makecoupons";
+import { DummyMadeCoupons } from "../../dummydata/madecoupons";
 
 function MakeCoupons() {
     const [count, setCount] = useState(0);
     const [expirationDate, setExpirationDate] = useState("");
     const [couponTypes, setCouponTypes] = useState([]);  // API에서 가져온 쿠폰 유형 리스트
     const [selectedCouponType, setSelectedCouponType] = useState("");  // 선택한 쿠폰 유형
-    const [issuedCoupons, setIssuedCoupons] = useState([]); // 발급된 쿠폰 목록 상태
+    // const [issuedCoupons, setIssuedCoupons] = useState([]); // 발급된 쿠폰 목록 상태
+    const [issuedCoupons, setIssuedCoupons] = useState([...DummyMadeCoupons]); // 더미데이터 발급된 쿠폰 목록 상태
 
     // 쿠폰 등록 함수
     const handleAddCoupon = async () => {
@@ -20,31 +24,43 @@ function MakeCoupons() {
         }
 
         const newCoupon = {
-            couponType: selectedCouponType,
+            // couponType: selectedCouponType,
+            content : selectedCouponType,
             count: parseInt(count, 10),
             expirationDate,
         };
 
-        try {
-            const response = await axios.post(
-                "http://i12a506.p.ssafy.io:8000/api/coupon/create",
-                newCoupon
-            );
+        DummyMadeCoupons.push(newCoupon);
 
-            if (response.status === 201) {
-                alert("쿠폰이 성공적으로 등록되었습니다!");
-                fetchIssuedCoupons(); // 최신 쿠폰 목록 다시 불러오기
+        alert("쿠폰이 성공적으로 등록되었습니다!");
+        fetchIssuedCoupons(); // 최신 쿠폰 목록 다시 불러오기
 
-                // 입력 필드 초기화
-                setSelectedCouponType("");
-                setCount(0);
-                setExpirationDate("");
-            }
-        } catch (error) {
-            console.error("쿠폰 등록 실패:", error);
-            alert("쿠폰 등록에 실패했습니다.");
-        }
+        // 입력 필드 초기화
+        setSelectedCouponType("");
+        setCount(0);
+        setExpirationDate("");
     };
+
+    //     try {
+    //         const response = await axios.post(
+    //             "http://i12a506.p.ssafy.io:8000/api/coupon/create",
+    //             newCoupon
+    //         );
+
+    //         if (response.status === 201) {
+    //             alert("쿠폰이 성공적으로 등록되었습니다!");
+    //             fetchIssuedCoupons(); // 최신 쿠폰 목록 다시 불러오기
+
+    //             // 입력 필드 초기화
+    //             setSelectedCouponType("");
+    //             setCount(0);
+    //             setExpirationDate("");
+    //         }
+    //     } catch (error) {
+    //         console.error("쿠폰 등록 실패:", error);
+    //         alert("쿠폰 등록에 실패했습니다.");
+    //     }
+    // };
 
     // 쿠폰 개수 증감
     const increaseCount = () => {
@@ -57,33 +73,47 @@ function MakeCoupons() {
         }
     };
 
-    // 쿠폰 유형을 가져오는 함수
+    // 쿠폰 유형을 가져오는 함수 (더미 데이터 사용)
     useEffect(() => {
-        const fetchCouponTypes = async () => {
-            try {
-                const response = await axios.get(
-                    "http://i12a506.p.ssafy.io:8000/api/coupon/type"
-                );
-                setCouponTypes(response.data);  // 받아온 데이터를 상태에 저장
-            } catch (error) {
-                console.error("쿠폰 유형 데이터를 가져오는 데 실패했습니다", error);
-            }
-        };
-
-        fetchCouponTypes();
+        setCouponTypes(DummyCouponTypes);  // 더미 데이터로 초기화
     }, []);
 
-    // 발급된 쿠폰 목록을 가져오는 함수
-    const fetchIssuedCoupons = async () => {
-        try {
-            const response = await axios.get(
-                "http://i12a506.p.ssafy.io:8000/api/coupon/list"
-            );
-            setIssuedCoupons(response.data); // 받은 데이터를 발급된 쿠폰 상태에 저장
-        } catch (error) {
-            console.error("발급된 쿠폰 데이터를 가져오는 데 실패했습니다", error);
-        }
+    // 발급된 쿠폰 목록을 가져오는 함수 (더미 데이터 사용)
+    const fetchIssuedCoupons = () => {
+        setIssuedCoupons([...DummyMadeCoupons]);  // 더미 데이터로 초기화
     };
+    
+    useEffect(() => {
+        fetchIssuedCoupons();
+    }, []);
+
+    // // 쿠폰 유형을 가져오는 함수
+    // useEffect(() => {
+    //     const fetchCouponTypes = async () => {
+    //         try {
+    //             const response = await axios.get(
+    //                 "http://i12a506.p.ssafy.io:8000/api/coupon/type"
+    //             );
+    //             setCouponTypes(response.data);  // 받아온 데이터를 상태에 저장
+    //         } catch (error) {
+    //             console.error("쿠폰 유형 데이터를 가져오는 데 실패했습니다", error);
+    //         }
+    //     };
+
+    //     fetchCouponTypes();
+    // }, []);
+
+    // // 발급된 쿠폰 목록을 가져오는 함수
+    // const fetchIssuedCoupons = async () => {
+    //     try {
+    //         const response = await axios.get(
+    //             "http://i12a506.p.ssafy.io:8000/api/coupon/list"
+    //         );
+    //         setIssuedCoupons(response.data); // 받은 데이터를 발급된 쿠폰 상태에 저장
+    //     } catch (error) {
+    //         console.error("발급된 쿠폰 데이터를 가져오는 데 실패했습니다", error);
+    //     }
+    // };
 
     useEffect(() => {
         fetchIssuedCoupons();
@@ -120,6 +150,14 @@ function MakeCoupons() {
             <Form>
                 <CountWrapper>
                     <Input
+                        type="date"
+                        placeholder="만료일"
+                        value={expirationDate}
+                        onChange={(e) => setExpirationDate(e.target.value)}
+                        max="9999-12-31"
+                        min="1900-01-01"
+                    />
+                    <Input
                         type="number"
                         placeholder="쿠폰 수량"
                         value={count}
@@ -129,14 +167,6 @@ function MakeCoupons() {
                     <Button onClick={increaseCount}>+</Button>
                 </CountWrapper>
 
-                <Input
-                    type="date"
-                    placeholder="만료일"
-                    value={expirationDate}
-                    onChange={(e) => setExpirationDate(e.target.value)}
-                    max="9999-12-31"
-                    min="1900-01-01"
-                />
                 <Button onClick={handleAddCoupon}>쿠폰 등록</Button>
             </Form>
 
@@ -193,6 +223,16 @@ const Input = styled.input`
     font-size: 1rem;
     border: 1px solid #ccc;
     border-radius: 8px;
+     /* 기본 증감 버튼 숨기기 */
+    -moz-appearance: textfield; /* Firefox */
+    appearance: textfield; /* 기본 브라우저 */
+    
+    /* Chrome, Safari, Edge에서 증감 버튼 제거 */
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
 `;
 
 const CountWrapper = styled.div`

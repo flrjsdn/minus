@@ -1,4 +1,4 @@
-export const MadeCoupons = [
+export const DummyMadeCoupons = [
 {
   name: "선착순 쿠폰",
   discountRate: 5,

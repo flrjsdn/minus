@@ -1,4 +1,4 @@
-export const CouponTypes = [
+export const DummyCouponTypes = [
 {
     couponId: 1,
     name: "선착순 쿠폰",

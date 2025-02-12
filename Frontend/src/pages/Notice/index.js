@@ -4,6 +4,7 @@ import styled from "styled-components";
 import HeaderContainer from "../../components/HeaderContainer/HeaderContainer";
 import BottomNav from "../../components/BottomNav/BottomNav";
 import MyPageHeader from "../../components/MyPageHeader";
+import { DummyNotices } from "../../dummydata/notice";
 
 const email = "jun9048@naver.com"; 
 
@@ -12,20 +13,28 @@ const Notice = () => {
     const [noticeTitle, setNoticeTitle] = useState("");
     const [noticeContent, setNoticeContent] = useState("");
     const [noticeImage, setNoticeImage] = useState(null);
-    const [announcements, setAnnouncements] = useState([]); // 공지사항 목록 상태 추가
+    // const [announcements, setAnnouncements] = useState([]); // 공지사항 목록 상태 추가
+    const [announcements, setAnnouncements] = useState(DummyNotices[0]?.announcements || []); // 더미데이터 공지사항 목록 상태 추가
+
     const modalBackground = useRef();
 
+    // 서버에서 데이터를 받아오는 대신 더미 데이터 활용
     useEffect(() => {
-        const fetchAnnouncements = async () => {
-            try {
-                const response = await axios.get(`http://i12a506.p.ssafy.io:8000/api/store/board/list?email=${email}`);
-                setAnnouncements(response.data.announcements || []); // 받은 공지사항 데이터를 상태에 저장, 없으면 빈 배열
-            } catch (error) {
-                console.error("공지사항 목록을 가져오지 못했습니다", error);
-            }
-        };
-        fetchAnnouncements();
+        setAnnouncements(DummyNotices[0]?.announcements || []);
     }, []);
+    
+
+    // useEffect(() => {
+    //     const fetchAnnouncements = async () => {
+    //         try {
+    //             const response = await axios.get(`http://i12a506.p.ssafy.io:8000/api/store/board/list?email=${email}`);
+    //             setAnnouncements(response.data.announcements || []); // 받은 공지사항 데이터를 상태에 저장, 없으면 빈 배열
+    //         } catch (error) {
+    //             console.error("공지사항 목록을 가져오지 못했습니다", error);
+    //         }
+    //     };
+    //     fetchAnnouncements();
+    // }, []);
 
     const handleImageChange = (e) => {
         const file = e.target.files[0];
@@ -42,26 +51,43 @@ const Notice = () => {
         formData.append("content", noticeContent);
         formData.append("boardImageUrl", noticeImage ? noticeImage : null);            
 
-        try {
-            const response = await axios.post("http://i12a506.p.ssafy.io:8000/api/store/board", formData, {
-                headers: { 'Content-Type': 'application/json' }
-            });
+        // 더미데이터 공지
+        const newAnnouncement = {
+            boardId: announcements.length + 1,
+            title: noticeTitle,
+            content: noticeContent,
+            boardImageUrl: noticeImage ? URL.createObjectURL(noticeImage) : null, // 이미지 미리보기 URL 저장
+            createdAt: new Date().toISOString(),
+        };
 
-            if (response.status === 200) {
-                alert("공지사항이 등록되었습니다.");
-                setNoticeTitle(""); // 입력 데이터 초기화
-                setNoticeContent("");
-                setNoticeImage(null); 
-                setModalIsOpen(false);
-                // 공지사항 목록을 다시 불러옵니다.
-                const updatedAnnouncements = await axios.get(`http://i12a506.p.ssafy.io:8000/api/store/board/list?email=${email}`);
-                setAnnouncements(updatedAnnouncements.data.announcements || []);
-            }
-        } catch (error) {
-            const errorMessage = error.response?.data?.message || error.message;
-            console.error("공지사항 등록 실패:", errorMessage);
-            alert(`공지사항 등록에 실패했습니다. (${errorMessage})`);
-        }
+        // 더미 데이터에 추가
+        setAnnouncements([...announcements, newAnnouncement]);
+        alert("공지사항이 등록되었습니다.");
+        setNoticeTitle("");
+        setNoticeContent("");
+        setNoticeImage(null);
+        setModalIsOpen(false);
+
+        // try {
+        //     const response = await axios.post("http://i12a506.p.ssafy.io:8000/api/store/board", formData, {
+        //         headers: { 'Content-Type': 'application/json' }
+        //     });
+
+        //     if (response.status === 200) {
+        //         alert("공지사항이 등록되었습니다.");
+        //         setNoticeTitle(""); // 입력 데이터 초기화
+        //         setNoticeContent("");
+        //         setNoticeImage(null); 
+        //         setModalIsOpen(false);
+        //         // 공지사항 목록을 다시 불러옵니다.
+        //         const updatedAnnouncements = await axios.get(`http://i12a506.p.ssafy.io:8000/api/store/board/list?email=${email}`);
+        //         setAnnouncements(updatedAnnouncements.data.announcements || []);
+        //     }
+        // } catch (error) {
+        //     const errorMessage = error.response?.data?.message || error.message;
+        //     console.error("공지사항 등록 실패:", errorMessage);
+        //     alert(`공지사항 등록에 실패했습니다. (${errorMessage})`);
+        // }
     };
 
     const handleCloseModal = () => {
