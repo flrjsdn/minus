@@ -38,8 +38,8 @@ public class OauthController {
         ResponseCookie cookie = jwtProvider.issueAccessToken(accessToken);
 //        jwtProvider.issueTokens(user, response);
 //        oauthService.redirectToMainPage(response);
-
-        return ResponseEntity.status(HttpStatus.PERMANENT_REDIRECT)
+        log.info("AccessToken : {}", cookie.getValue());
+        return ResponseEntity.status(HttpStatus.FOUND)
                 .header(HttpHeaders.LOCATION, "https://i12a506.p.ssafy.io")
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
                 .build();
