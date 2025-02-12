@@ -169,7 +169,7 @@ public class JwtProvider {
 //                .secure(true)
                 .sameSite("Lax")
                 .path("/")
-                .domain("i12a506.p.ssafy.io")
+//                .domain("i12a506.p.ssafy.io")
                 .build();
     }
 
