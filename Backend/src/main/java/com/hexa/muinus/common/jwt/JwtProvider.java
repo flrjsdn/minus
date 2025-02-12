@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -79,24 +80,42 @@ public class JwtProvider {
 
     public void setAccessTokensInCookie(HttpServletResponse response, String accessToken) {
         // 액세스 토큰 쿠키 설정
-        Cookie accessTokenCookie = new Cookie("AccessToken", accessToken);
-        accessTokenCookie.setHttpOnly(true);
-        accessTokenCookie.setSecure(true);
-        accessTokenCookie.setPath("/");
-        accessTokenCookie.setMaxAge((int) (accessTokenExpiration / 1000));
-        // 쿠키 응답에 추가
-        response.addCookie(accessTokenCookie);
+//        Cookie accessTokenCookie = new Cookie("AccessToken", accessToken);
+//        accessTokenCookie.setHttpOnly(true);
+//        accessTokenCookie.setSecure(true);
+//        accessTokenCookie.setPath("/");
+//        accessTokenCookie.setMaxAge((int) (accessTokenExpiration / 1000));
+//        // 쿠키 응답에 추가
+//        response.addCookie(accessTokenCookie);
+
+        ResponseCookie responseCookie = ResponseCookie.from("AccessToken", accessToken)
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("None")
+                .path("/")
+                .build();
+        response.addHeader("Set-Cookie", responseCookie.toString());
+        log.info("쿠키에 액세스 토큰 심어짐 : {}", response.getHeader("Set-Cookie"));
     }
 
     public void setRefreshTokensInCookie(HttpServletResponse response, String refreshToken) {
         // 리프레시 토큰 쿠키 설정
-        Cookie refreshTokenCookie = new Cookie("RefreshToken", refreshToken);
-        refreshTokenCookie.setHttpOnly(true);
-        refreshTokenCookie.setSecure(true);
-        refreshTokenCookie.setPath("/api/users/refresh");
-        refreshTokenCookie.setMaxAge((int) (refreshTokenExpiration / 1000));
+//        Cookie refreshTokenCookie = new Cookie("RefreshToken", refreshToken);
+//        refreshTokenCookie.setHttpOnly(true);
+//        refreshTokenCookie.setSecure(true);
+//        refreshTokenCookie.setPath("/api/users/refresh");
+//        refreshTokenCookie.setMaxAge((int) (refreshTokenExpiration / 1000));
+//
+//        response.addCookie(refreshTokenCookie);
 
-        response.addCookie(refreshTokenCookie);
+        ResponseCookie responseCookie = ResponseCookie.from("RefreshToken", refreshToken)
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("None")
+                .path("/")
+                .build();
+        response.addHeader("Set-Cookie", responseCookie.toString());
+        log.info("쿠키에 리프레시 토큰 심어짐 : {}", response.getHeader("Set-Cookie"));
     }
 
     /**
