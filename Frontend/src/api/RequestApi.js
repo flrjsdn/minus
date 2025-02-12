@@ -1,6 +1,6 @@
 import apiClient from "./apiClient";
 
-const RecommendApi = async ({ storeId, itemId, userId }) => {
+const RequestApi = async ({ storeId, itemId, userId }) => {
     try {
         const response = await apiClient.post(`/api/item/register`, {
             storeId: storeId,
@@ -19,4 +19,4 @@ const RecommendApi = async ({ storeId, itemId, userId }) => {
     }
 };
 
-export default RecommendApi;
+export default RequestApi;

@@ -1,8 +1,7 @@
 import apiClient from "./apiClient";
 
-const StoreDetailApi = async (setProductdata) => {
+const StoreDetailApi = async (storeNo, setProductdata) => {
     try {
-        const storeNo = 2;
 
         const response = await apiClient.get('api/store/detail', {
             params: { storeNo },

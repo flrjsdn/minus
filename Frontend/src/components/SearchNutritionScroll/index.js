@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import './style.css'
+
 
 const SearchNutritionScroll = () => {
     const apiUrl = process.env.REACT_APP_BACKEND_API_URL;
@@ -34,13 +36,11 @@ const SearchNutritionScroll = () => {
     }, [maxSugar, maxCal]);
 
     return (
-        <div>
-            <h1>영양분으로 검색하기</h1>
-
-            {/* 스크롤바 UI */}
-            <div>
+        <div className="scrollcontents">
+            <div className="scrollnotice">영양분으로 검색하기</div>
+            <div className="scrollui">
                 <label>
-                    Sugar (Max): {maxSugar}
+                    Sugar (Max): {maxSugar}&nbsp;&nbsp;&nbsp;
                     <input
                         type="range"
                         min="0"
@@ -61,8 +61,7 @@ const SearchNutritionScroll = () => {
                 </label><br/>
             </div>
 
-            {/* 데이터 출력 */}
-            <div>
+            <div className="nutritionsearchresult">
                 {error && <p style={{ color: 'red' }}>{error}</p>}
                 {!error && items.length === 0 && <p>데이터가 없습니다.</p>}
                 {!error && items.length > 0 && (

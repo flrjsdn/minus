@@ -3,8 +3,8 @@ import { useLocation } from "react-router-dom";
 import HeaderContainer from "../../components/HeaderContainer/HeaderContainer";
 import ResultBottomSheet from "../../components/ResultBottomSheet";
 import BottomNav from "../../components/BottomNav/BottomNav";
-import KakaoMapBackground from "../../components/KakaoMapBackground";
-import KakaoMapMarkers from "../../components/KakaoMapMarkers";
+import KakaoMapBackgroundResult from "../../components/KakaoMapBackgroundResult";
+import KakaoMapMarkersResult from "../../components/KakaoMapMarkersResult";
 import './style.css'
 
 const SearchResult = () => {
@@ -18,7 +18,6 @@ const SearchResult = () => {
     const coords = {lat: queryParams.get('lat'), lng: queryParams.get('lng')}
     const itemId = queryParams.get('itemId');
 
-
     return (
         <div className="result-page">
             <div className="resultpagecontents">
@@ -30,10 +29,10 @@ const SearchResult = () => {
                 <BottomNav/>
             </div>
             <div className="resultpagemap">
-                <KakaoMapBackground coords={coords} onMapLoad={setMap} />
+                <KakaoMapBackgroundResult coords={coords} onMapLoad={setMap} />
             </div>
             <div className="resultpagemarker">
-                {map && <KakaoMapMarkers map={map} storelist={storelist} />}
+                {map && <KakaoMapMarkersResult map={map} storelist={storelist} />}
             </div>
 
         </div>

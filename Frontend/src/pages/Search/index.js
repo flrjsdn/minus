@@ -2,9 +2,11 @@ import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import SearchApi from "../../api/searchApi";
 import SearchBar from "../../components/SearchBar";
+import RecommendList from "../../components/RecommendList";
 import HeaderContainer from "../../components/HeaderContainer/HeaderContainer";
 import SearchDropdownList from "../../components/SearchDropdownList";
 import SearchNavbar from "../../components/SearchNavbar";
+
 import './style.css';
 
 // 디바운스 함수 정의
@@ -59,7 +61,8 @@ const Search = () => {
             <div className="searchpagesearchbar">
                 <SearchBar setQuery={handleQueryChange} />
             </div>
-            <SearchNavbar />
+            <div className="searchpagerecommend"><RecommendList/></div>
+            <div className="searchpagenavbar"><SearchNavbar /></div>
             {isDropdownVisible && results?.length > 0 && (
                 <div className="searchpagedropdown">
                     <SearchDropdownList results={results} onItemClick={handleItemClick} />

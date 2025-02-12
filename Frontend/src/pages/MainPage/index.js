@@ -53,6 +53,7 @@ const MainPage = () => {
             console.error("지오코딩 실패:", error);
         }
     };
+    console.log(isManualAddress);
 
     return (
         <div className="mainpagebackground">

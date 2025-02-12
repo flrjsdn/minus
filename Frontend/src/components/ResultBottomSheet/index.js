@@ -48,7 +48,6 @@ const ResultBottomSheet = ({ coords, itemId, setStorelist }) => {
         }
     };
 
-    // 드래그 중 transition 비활성화
     useEffect(() => {
         if (isDragging) {
             panelRef.current.classList.add("dragging");
@@ -56,6 +55,8 @@ const ResultBottomSheet = ({ coords, itemId, setStorelist }) => {
             panelRef.current.classList.remove("dragging");
         }
     }, [isDragging]);
+
+
 
     const [localstorelist, setLocalStorelist] = useState([]);
 
@@ -84,7 +85,7 @@ const ResultBottomSheet = ({ coords, itemId, setStorelist }) => {
         return () => {
             isMounted = false;
         };
-    }, [coords, setStorelist]);
+    }, []);
 
     return (
         <div
