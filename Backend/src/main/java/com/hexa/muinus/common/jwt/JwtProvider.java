@@ -92,7 +92,7 @@ public class JwtProvider {
                 .path("/")
                 .sameSite("None")
                 .httpOnly(true)
-                .secure(true)
+//                .secure(true)
                 .build();
 
         response.setHeader("Set-Cookie", responseCookie.toString());
