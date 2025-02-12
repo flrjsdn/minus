@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
-import axios from "axios";
+// import axios from "axios";
 import styled from "styled-components";
 import HeaderContainer from "../../components/HeaderContainer/HeaderContainer";
 import BottomNav from "../../components/BottomNav/BottomNav";
 import MyPageHeader from "../../components/MyPageHeader";
 import { DummyNotices } from "../../dummydata/notice";
 
-const email = "jun9048@naver.com"; 
+// const email = "jun9048@naver.com"; 
 
 const Notice = () => {
     const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -15,6 +15,8 @@ const Notice = () => {
     const [noticeImage, setNoticeImage] = useState(null);
     // const [announcements, setAnnouncements] = useState([]); // 공지사항 목록 상태 추가
     const [announcements, setAnnouncements] = useState(DummyNotices[0]?.announcements || []); // 더미데이터 공지사항 목록 상태 추가
+    const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
+    const [editingNoticeId, setEditingNoticeId] = useState(null); // 수정할 공지사항 ID 추가
 
     const modalBackground = useRef();
 
@@ -23,7 +25,7 @@ const Notice = () => {
         setAnnouncements(DummyNotices[0]?.announcements || []);
     }, []);
     
-
+    // 공지사항 목록 가져오기
     // useEffect(() => {
     //     const fetchAnnouncements = async () => {
     //         try {
@@ -33,7 +35,7 @@ const Notice = () => {
     //             console.error("공지사항 목록을 가져오지 못했습니다", error);
     //         }
     //     };
-    //     fetchAnnouncements();
+    //     fetchAnnouncements(); // 컴포넌트가 마운트되면 공지사항 목록을 요청
     // }, []);
 
     const handleImageChange = (e) => {
@@ -45,11 +47,11 @@ const Notice = () => {
     };
 
     const handleAddNotice = async () => {
-        const formData = new FormData();
-        formData.append("userEmail", email);
-        formData.append("title", noticeTitle);
-        formData.append("content", noticeContent);
-        formData.append("boardImageUrl", noticeImage ? noticeImage : null);            
+        // const formData = new FormData();
+        // formData.append("userEmail", email);
+        // formData.append("title", noticeTitle);
+        // formData.append("content", noticeContent);
+        // formData.append("boardImageUrl", noticeImage ? noticeImage : null);            
 
         // 더미데이터 공지
         const newAnnouncement = {
@@ -67,6 +69,7 @@ const Notice = () => {
         setNoticeContent("");
         setNoticeImage(null);
         setModalIsOpen(false);
+        setEditingNoticeId(null);
 
         // try {
         //     const response = await axios.post("http://i12a506.p.ssafy.io:8000/api/store/board", formData, {
@@ -95,21 +98,71 @@ const Notice = () => {
         setNoticeContent(""); // 내용 초기화
         setNoticeImage(null); // 이미지 초기화
         setModalIsOpen(false); // 모달 닫기
+        setEditingNoticeId(null); // 수정 상태 리셋
+
     };
     
+    // 공지사항 수정 처리
+    const handleEditNotice = (announcement) => {
+        setEditingNoticeId(announcement.boardId); // 수정할 공지사항 ID 설정
+        setNoticeTitle(announcement.title);
+        setNoticeContent(announcement.content);
+        setNoticeImage(announcement.boardImageUrl); // 이미지 미리보기 URL 설정
+        setModalIsOpen(true); // 모달 열기
+    };
+
+
+    // const handleEditNotice = (announcementId) => {
+    //     const announcement = announcements.find(item => item.boardId === announcementId); // 클릭된 공지사항 찾기
+    //     setSelectedAnnouncement(announcement); // 상태에 저장 (폼에 표시하기 위해)
+    
+    //     // 폼에 채울 데이터 설정
+    //     setNoticeTitle(announcement.title);
+    //     setNoticeContent(announcement.content);
+    //     setNoticeImage(announcement.boardImageUrl);
+    //     setModalIsOpen(true); // 모달 열기
+    // };
+
+
+    const handleSaveNotice = async () => {
+
+        // 수정된 공지사항을 더미 데이터에 반영
+        const updatedAnnouncements = announcements.map((announcement) => {
+            if (announcement.boardId === editingNoticeId) {
+                return {
+                    ...announcement,
+                    title: noticeTitle,
+                    content: noticeContent,
+                    boardImageUrl: noticeImage ? URL.createObjectURL(noticeImage) : null,
+                    createdAt: new Date().toISOString(),
+                };
+            }
+            return announcement;
+        });
+        setAnnouncements(updatedAnnouncements); // 상태 업데이트
+        alert("공지사항이 수정되었습니다.");
+        setNoticeTitle("");
+        setNoticeContent("");
+        setNoticeImage(null);
+        setModalIsOpen(false);
+        setEditingNoticeId(null); // 수정 상태 리셋
+    };
+
     return (
         <div>
             <HeaderContainer />
-            <Container>
                 <MyPageHeader />
                 <Title>공지사항</Title>
-                <Button onClick={() => setModalIsOpen(true)}>공지사항 작성하기</Button>
+                <ButtonWrapper>
+                    <EditButton onClick={() => setModalIsOpen(true)}>공지 작성하기</EditButton>
+                </ButtonWrapper>
 
+            <Container>
                 {/* 공지사항 목록 */}
                 <NoticeList>
                     {announcements && announcements.length > 0 ? (
                         announcements.map((announcement) => (
-                            <NoticeItem key={announcement.boardId}>
+                            <NoticeItem key={announcement.boardId} onClick={()=>handleEditNotice(announcement)}>
                                 <h3>{announcement.title}</h3>
                                 <p>{announcement.content}</p>
                                 {announcement.boardImageUrl && (
@@ -134,7 +187,7 @@ const Notice = () => {
                         }}
                     >
                         <ModalContent>
-                            <h2>공지 등록</h2>
+                            <h2>{editingNoticeId ? "공지 수정" : "공지 등록"}</h2>
                             <Input
                                 type="text"
                                 placeholder="공지 제목"
@@ -162,7 +215,9 @@ const Notice = () => {
                             </UploadContainer>
                             <ButtonContainer>
                                 <CloseButton onClick={handleCloseModal}>닫기</CloseButton>
-                                <Button onClick={handleAddNotice}>등록</Button>
+                                <Button onClick={editingNoticeId? handleSaveNotice : handleAddNotice}>
+                                    {editingNoticeId ? "수정" : "등록"}
+                                    </Button>
                             </ButtonContainer>
                         </ModalContent>
                     </ModalBackground>
@@ -181,7 +236,11 @@ const Title = styled.h2`
 `;
 
 const Container = styled.div`
-    background-color: #f8f9fa;
+  font-family: 'Arial', sans-serif;
+  background-color: #f4f7fc;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
 `;
 
 const ModalBackground = styled.div`
@@ -198,7 +257,7 @@ const ModalBackground = styled.div`
 
 const ModalContent = styled.div`
     background-color: #ffffff;
-    width: 70%;
+    width: 80%;
     height: 70%;
     padding: 20px;
     border-radius: 12px;
@@ -255,24 +314,30 @@ const ImagePreview = styled.div`
 const UploadContainer = styled.div`
     display: flex;
     gap: 10px;
-    margin-top: 10px;
+    margin-top: 15px;
     width: 60%;
 `;
 
 const ButtonContainer = styled.div`
     display: flex;
     justify-content: center;
-    margin-top: 70px;
+    margin-top: 60px;
     gap: 30px;
 `;
 
+const ButtonWrapper = styled.div`
+  display: flex;
+  justify-content: flex-end;  /* 버튼을 우측으로 정렬 */
+  margin: 10px 5px;
+`;
+
 const Button = styled.button`
-    padding: 10px 20px;
+    padding: 12px 20px;
     font-size: 1rem;
-    background-color: #3f72af;
+    background-color:rgb(117, 153, 202);
     color: white;
     border: none;
-    border-radius: 8px;
+    border-radius: 7px;
     cursor: pointer;
     transition: background-color 0.3s ease;
 
@@ -289,14 +354,44 @@ const CloseButton = styled(Button)`
     }
 `;
 
+const EditButton = styled(Button)`
+    padding: 5px 10px;
+    font-size: 0.9rem;
+    background-color:rgb(130, 138, 150);
+`;
+
 const NoticeList = styled.div`
-    margin-top: 20px;
+  margin-top: 20px;
 `;
 
 const NoticeItem = styled.div`
-    padding: 12px;
-    margin-bottom: 15px;
-    background-color: #fff;
+  background-color: white;
+  padding: 15px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  }
+
+  h3 {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+
+  p {
+    font-size: 16px;
+    color: #555;
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
     border-radius: 8px;
-    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+    margin-top: 10px;
+  }
 `;
