@@ -41,10 +41,12 @@ const Notice = () => {
     const handleImageChange = (e) => {
         const file = e.target.files[0];
         if (file) {
-            const imageUrl = URL.createObjectURL(file); // 이미지 URL로 변환
-            setNoticeImage(imageUrl); // URL을 상태에 저장
+            convertFileToBase64(file, (base64Image) => {
+                setNoticeImage(base64Image); // Base64 문자열 저장
+            });
         }
     };
+    
 
     const handleAddNotice = async () => {
         // const formData = new FormData();
@@ -147,6 +149,14 @@ const Notice = () => {
         setModalIsOpen(false);
         setEditingNoticeId(null); // 수정 상태 리셋
     };
+
+    const convertFileToBase64 = (file, callback) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => callback(reader.result);  // Base64 문자열 반환
+        reader.onerror = (error) => console.error("Error converting file to Base64:", error);
+    };
+    
 
     return (
         <div>
