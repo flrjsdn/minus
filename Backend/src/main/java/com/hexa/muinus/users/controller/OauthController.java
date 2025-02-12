@@ -40,8 +40,10 @@ public class OauthController {
 //        oauthService.redirectToMainPage(response);
         log.info("AccessToken : {}", cookie.getValue());
         return ResponseEntity.status(HttpStatus.FOUND)
-                .header(HttpHeaders.LOCATION, "https://i12a506.p.ssafy.io/success")
-                .body(userEmail);
+                .header("UserEmail", userEmail)
+                .header(HttpHeaders.LOCATION, "https://i12a506.p.ssafy.io")
+                .build();
+//                .body(userEmail);
 //        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString()).body("로그인 성공");
     }
 
