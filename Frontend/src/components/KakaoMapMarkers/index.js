@@ -7,7 +7,7 @@ const KakaoMapMarkers = ({ map, storelist }) => {
         // 마커 생성 함수
         const createMarker = (store) => {
             const kakao = window.kakao;
-            const markerPosition = new kakao.maps.LatLng(store.lat, store.lon);
+            const markerPosition = new kakao.maps.LatLng(store.locationX, store.locationY);
 
             const marker = new kakao.maps.Marker({
                 position: markerPosition,

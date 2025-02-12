@@ -1,10 +1,19 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import './style.css'
 
 
 const SearchNutritionScroll = () => {
     const apiUrl = process.env.REACT_APP_BACKEND_API_URL;
+
+    const navigate = useNavigate();
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+
+    const lat = queryParams.get('lat');
+    const lng = queryParams.get('lng');
+
 
     // 상태 관리
     const [maxSugar, setMaxSugar] = useState(100);
@@ -65,9 +74,13 @@ const SearchNutritionScroll = () => {
                 {error && <p style={{ color: 'red' }}>{error}</p>}
                 {!error && items.length === 0 && <p>데이터가 없습니다.</p>}
                 {!error && items.length > 0 && (
-                    <ul>
+                    <ul className="nutritionul">
                         {items.map((item) => (
-                            <li key={item.itemId}>{item.itemName}</li>
+                            <li className='nutritionli'
+                                key={item.itemId}
+                                onClick={() => navigate(`search/results?lat=${lat}&lng=${lng}&itemId=${item.itemId}`)}>
+                                {item.itemName}
+                            </li>
                         ))}
                     </ul>
                 )}

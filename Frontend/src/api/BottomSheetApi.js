@@ -5,9 +5,9 @@ const apiUrl = process.env.REACT_APP_BACKEND_API_URL;
 const BottomSheetApi = async ({ coords, receivedData }) => {
     try {
         // API 호출
-        const response = await axios.get(`${apiUrl}/api/items/store-list`, {
-            params: { lat: coords.lat,
-                      lon: coords.lng },
+        const response = await axios.get(`${apiUrl}/api/store/list/near`, {
+            params: { x: coords.lat,
+                      y: coords.lng },
         });
 
         const nearStorelist = response.data;

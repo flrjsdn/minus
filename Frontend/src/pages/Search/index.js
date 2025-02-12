@@ -62,7 +62,10 @@ const Search = () => {
                 <SearchBar setQuery={handleQueryChange} />
             </div>
             <div className="searchpagerecommend"><RecommendList/></div>
-            <div className="searchpagenavbar"><SearchNavbar /></div>
+            <div className="searchpagenavbar"><SearchNavbar
+                                                lat = {lat}
+                                                lng = {lng}
+            /></div>
             {isDropdownVisible && results?.length > 0 && (
                 <div className="searchpagedropdown">
                     <SearchDropdownList results={results} onItemClick={handleItemClick} />
