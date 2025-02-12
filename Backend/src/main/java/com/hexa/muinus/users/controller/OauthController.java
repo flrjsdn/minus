@@ -39,10 +39,11 @@ public class OauthController {
 //        jwtProvider.issueTokens(user, response);
 //        oauthService.redirectToMainPage(response);
         log.info("AccessToken : {}", cookie.getValue());
-        return ResponseEntity.status(HttpStatus.FOUND)
-                .header(HttpHeaders.LOCATION, "https://i12a506.p.ssafy.io")
-                .header(HttpHeaders.SET_COOKIE, cookie.toString())
-                .build();
+//        return ResponseEntity.status(HttpStatus.FOUND)
+//                .header(HttpHeaders.LOCATION, "https://i12a506.p.ssafy.io")
+//                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+//                .build();
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString()).body("로그인 성공");
     }
 
     @GetMapping("/api/users/logout")
