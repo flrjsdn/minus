@@ -163,6 +163,16 @@ public class JwtProvider {
         setRefreshTokensInCookie(response, refreshToken);
     }
 
+    public ResponseCookie issueAccessToken(String accessToken) {
+        return ResponseCookie.from("AccessToken", accessToken)
+                .httpOnly(true)
+//                .secure(true)
+                .sameSite("Lax")
+                .path("/")
+                .domain("i12a506.p.ssafy.io")
+                .build();
+    }
+
     /**
      * 로그아웃 시 쿠키에서 토큰 삭제
      */

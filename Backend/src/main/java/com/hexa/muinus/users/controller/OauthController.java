@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -30,12 +31,18 @@ public class OauthController {
     }
 
     @GetMapping("/api/users/kauth")
-    public void kakaoLogin(@RequestParam("code") String authorizationCode, HttpServletResponse response) throws Exception {
+    public ResponseEntity<?> kakaoLogin(@RequestParam("code") String authorizationCode, HttpServletResponse response) throws Exception {
         String accessToken = oauthService.getAccessTokenFromKakao(authorizationCode);
         String userEmail = oauthService.getUserKakaoProfile(accessToken);
         Users user = oauthService.findUser(userEmail, response);
-        jwtProvider.issueTokens(user, response);
-        oauthService.redirectToMainPage(response);
+        ResponseCookie cookie = jwtProvider.issueAccessToken(accessToken);
+//        jwtProvider.issueTokens(user, response);
+//        oauthService.redirectToMainPage(response);
+
+        return ResponseEntity.status(HttpStatus.PERMANENT_REDIRECT)
+                .header(HttpHeaders.LOCATION, "https://i12a506.p.ssafy.io")
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .build();
     }
 
     @GetMapping("/api/users/logout")
