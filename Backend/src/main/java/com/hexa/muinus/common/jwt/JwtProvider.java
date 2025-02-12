@@ -90,7 +90,8 @@ public class JwtProvider {
         ResponseCookie responseCookie = ResponseCookie.from("AccessToken", accessToken)
                 .maxAge(accessTokenExpiration)
                 .path("/")
-                .sameSite("Lax")
+                .domain("i12a506.p.ssafy.io")
+                .sameSite("None")
                 .httpOnly(true)
                 .secure(true)
                 .build();
