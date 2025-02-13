@@ -10,6 +10,7 @@ function HeaderContainer() {
     const navigate = useNavigate();
     const { logindata } = useAuth(); //로그인 정보 가져오기
     const [showDropdown, setShowDropdown] = useState(false);
+    const apiUrl = process.env.REACT_APP_BACKEND_API_URL;
 
     const handleConnectBell = () => {
         setShowDropdown(!showDropdown);
@@ -49,7 +50,7 @@ function HeaderContainer() {
             );
         } else {
             return (
-                <Link to="https://i12a506.p.ssafy.io/api/users/login">회원가입</Link>
+                <Link to={`${apiUrl}/api/users/login`}>회원가입</Link>
             );
         }
     };
@@ -76,7 +77,7 @@ function HeaderContainer() {
                         <FontAwesomeIcon icon={faUser} className="login-icon" onClick={handleNavigateToMyPage} />
                     ) : (
                         // 로그인되지 않은 유저: faRightToBracket 아이콘 + 로그인 페이지 이동
-                        <Link to="https://i12a506.p.ssafy.io/api/users/login">
+                        <Link to={`${apiUrl}/api/users/login`}>
                             <FontAwesomeIcon icon={faRightToBracket} className="login-icon" />
                         </Link>
                     )}

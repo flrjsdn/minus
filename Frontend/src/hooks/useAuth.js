@@ -3,11 +3,12 @@ import axios from "axios";
 
 function useAuth() {
     const [logindata, setLogindata] = useState(null);
+    const apiUrl = process.env.REACT_APP_BACKEND_API_URL;
 
     useEffect(() => {
         const checkLoginStatus = async () => {
             try {
-                const response = await axios.get("https://i12a506.p.ssafy.io/api/users/info", {
+                const response = await axios.get(`${apiUrl}/api/users/info`, {
                     withCredentials: true, // 쿠키 포함
                 });
 

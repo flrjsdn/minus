@@ -12,10 +12,12 @@ function CouponList() {
     const [barcode, setBarcode] = useState(null);
     const [selectedCoupon, setSelectedCoupon] = useState(null);
 
+    const apiUrl = process.env.REACT_APP_BACKEND_API_URL;
+
     useEffect(() => {
         const fetchCoupons = async () => {
             try {
-                const response = await axios.get("https://i12a506.p.ssafy.io/api/coupon/receive/list", {
+                const response = await axios.get(`${apiUrl}/api/coupon/receive/list`, {
                     withCredentials: true,
                 });
                 console.log("응답 데이터:", response.data);
@@ -34,7 +36,7 @@ function CouponList() {
         setSelectedCoupon(coupon);
         setModalIsOpen(true);
         try {
-            const response = await axios.post("https://i12a506.p.ssafy.io/api/coupon/barcode", {
+            const response = await axios.post(`${apiUrl}/api/coupon/barcode`, {
                 couponId: coupon.couponId,
                 storeNo: coupon.storeNo,
                 userNo: coupon.userNo,

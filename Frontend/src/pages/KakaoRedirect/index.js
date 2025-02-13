@@ -7,6 +7,7 @@ export function KakaoRedirect() {
   const code = new URL(window.location.href).searchParams.get("code");
   console.log(code);
 
+  const apiUrl = process.env.REACT_APP_BACKEND_API_URL;
   useEffect(() => {
     // 코드가 없으면 리다이렉트
     if (!code) {
@@ -15,7 +16,7 @@ export function KakaoRedirect() {
     }
 
     // 요청 보낼 URL
-    const url = "https://i12a506.p.ssafy.io/api/users/login"; // 백엔드 API 주소
+    const url = `${apiUrl}/api/users/login`; // 백엔드 API 주소
 
     // POST 요청을 보내기 위한 데이터
     const data = { code };
