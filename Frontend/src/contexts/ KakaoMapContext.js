@@ -6,22 +6,51 @@ export const KakaoMapProvider = ({ children }) => {
     const [map, setMap] = useState(null);
     const [isSDKLoaded, setIsSDKLoaded] = useState(false);
 
-    useEffect(() => {
-        const script = document.createElement("script");
-        // ✅ libraries=services 추가
-        script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.REACT_APP_KAKAO_JS_API_KEY}&libraries=services&autoload=false`;
-        script.async = true;
+    // SDK 로딩 로직을 함수로 분리
+    const loadKakaoSDK = () => {
+        // 이미 스크립트가 존재하면 재사용, 없으면 추가
+        const existingScript = document.querySelector(
+            `script[src^="https://dapi.kakao.com/v2/maps/sdk.js"]`
+        );
+        if (existingScript) {
+            // 이미 스크립트가 로드된 경우, SDK의 load 메서드를 재호출
+            if (window.kakao && window.kakao.maps) {
+                window.kakao.maps.load(() => {
+                    setIsSDKLoaded(true);
+                });
+            }
+        } else {
+            const script = document.createElement("script");
+            script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.REACT_APP_KAKAO_JS_API_KEY}&libraries=services&autoload=false`;
+            script.async = true;
 
-        script.onload = () => {
-            window.kakao.maps.load(() => {
-                setIsSDKLoaded(true);
-            });
+            script.onload = () => {
+                window.kakao.maps.load(() => {
+                    setIsSDKLoaded(true);
+                });
+            };
+
+            script.onerror = () => console.error("Kakao Maps SDK 로드 실패");
+
+            document.head.appendChild(script);
+        }
+    };
+
+    useEffect(() => {
+        // 처음 로드 시 SDK 로딩
+        loadKakaoSDK();
+
+        // bfcache(뒤로가기 등)에서 복원될 때 SDK 재로드 처리
+        const handlePageShow = (event) => {
+            if (event.persisted) {
+                loadKakaoSDK();
+            }
         };
 
-        script.onerror = () => console.error("Kakao Maps SDK 로드 실패");
-
-        document.head.appendChild(script);
-        return () => document.head.removeChild(script);
+        window.addEventListener("pageshow", handlePageShow);
+        return () => {
+            window.removeEventListener("pageshow", handlePageShow);
+        };
     }, []);
 
     return (
