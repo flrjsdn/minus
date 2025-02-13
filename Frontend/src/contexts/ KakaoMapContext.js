@@ -42,9 +42,8 @@ export const KakaoMapProvider = ({ children }) => {
 
         // bfcache(뒤로가기 등)에서 복원될 때 SDK 재로드 처리
         const handlePageShow = (event) => {
-            if (event.persisted) {
-                loadKakaoSDK();
-            }
+            // event.persisted 조건 없이 항상 SDK 재로딩 시도
+            loadKakaoSDK();
         };
 
         window.addEventListener("pageshow", handlePageShow);
