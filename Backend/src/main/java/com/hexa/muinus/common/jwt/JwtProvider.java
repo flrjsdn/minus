@@ -110,15 +110,15 @@ public class JwtProvider {
 //
 //        response.addCookie(refreshTokenCookie);
 
-//        ResponseCookie responseCookie = ResponseCookie.from("RefreshToken", refreshToken)
-//                .maxAge(refreshTokenExpiration)
-//                .path("/")
-//                .sameSite("None")
-//                .httpOnly(true)
-//                .secure(true)
-//                .build();
-//
-//        response.addHeader("Set-Cookie", responseCookie.toString());
+        ResponseCookie responseCookie = ResponseCookie.from("RefreshToken", refreshToken)
+                .maxAge(refreshTokenExpiration)
+                .path("/")
+                .sameSite("None")
+                .httpOnly(true)
+                .secure(true)
+                .build();
+
+        response.addHeader("Set-Cookie", responseCookie.toString());
 //        log.info("쿠키에 리프레시 토큰 : {}", response.getHeader("Set-Cookie"));
     }
 
