@@ -42,7 +42,8 @@ public class OauthController {
         return ResponseEntity.status(HttpStatus.FOUND)
 //                .header("UserEmail", userEmail)
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
-                .header(HttpHeaders.LOCATION, "https://i12a506.p.ssafy.io")
+//                .header(HttpHeaders.LOCATION, "https://i12a506.p.ssafy.io")
+                .header(HttpHeaders.LOCATION, "http://localhost:3000")
                 .build();
 //                .body(userEmail);
 //        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString()).body("로그인 성공");
