@@ -116,7 +116,7 @@ function UserSignUp() {
         try {
             // JSON 형식으로 데이터를 변환
             const response = await axios.post(
-                `${apiUrl}`,
+                `${apiUrl}users/consumer`,
                 formData, // JSON 데이터 전달
                 {
                     headers: {
