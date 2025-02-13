@@ -31,22 +31,19 @@ public class OauthController {
     }
 
     @GetMapping("/api/users/kauth")
-    public ResponseEntity<?> kakaoLogin(@RequestParam("code") String authorizationCode, HttpServletResponse response) throws Exception {
+    public void kakaoLogin(@RequestParam("code") String authorizationCode, HttpServletResponse response) throws Exception {
         String accessToken = oauthService.getAccessTokenFromKakao(authorizationCode);
         String userEmail = oauthService.getUserKakaoProfile(accessToken);
         Users user = oauthService.findUser(userEmail, response);
-        ResponseCookie cookie = jwtProvider.issueAccessToken(user);
-//        jwtProvider.issueTokens(user, response);
-//        oauthService.redirectToMainPage(response);
-        log.info("AccessToken : {}", cookie.getValue());
-        return ResponseEntity.status(HttpStatus.FOUND)
-//                .header("UserEmail", userEmail)
-                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+        jwtProvider.issueTokens(user, response);
+        oauthService.redirectToMainPage(response);
+//        ResponseCookie accessCookie = jwtProvider.issueAccessToken(user);
+//        ResponseCookie refreshCookie = jwtProvider.issueRefreshToken(user);
+//        return ResponseEntity.status(HttpStatus.FOUND)
+//                .header(HttpHeaders.SET_COOKIE, accessCookie.toString())
+//                .header(HttpHeaders.LOCATION, refreshCookie.toString())
 //                .header(HttpHeaders.LOCATION, "https://i12a506.p.ssafy.io")
-                .header(HttpHeaders.LOCATION, "http://localhost:3000")
-                .build();
-//                .body(userEmail);
-//        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString()).body("로그인 성공");
+//                .build();
     }
 
     @GetMapping("/api/users/logout")

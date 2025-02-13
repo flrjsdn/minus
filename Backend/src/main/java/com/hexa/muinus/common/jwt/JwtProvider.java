@@ -170,7 +170,16 @@ public class JwtProvider {
                 .secure(true)
                 .sameSite("None")
                 .path("/")
-//                .domain("i12a506.p.ssafy.io")
+                .build();
+    }
+
+    public ResponseCookie issueRefreshToken(Users user) {
+        String refreshToken = createRefreshToken(user);
+        return ResponseCookie.from("RefreshToken", refreshToken)
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("None")
+                .path("/")
                 .build();
     }
 
