@@ -41,7 +41,7 @@ public class OauthController {
         log.info("AccessToken : {}", cookie.getValue());
         return ResponseEntity.status(HttpStatus.FOUND)
 //                .header("UserEmail", userEmail)
-                .header(HttpHeaders.SET_COOKIE, cookie.getValue())
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
                 .header(HttpHeaders.LOCATION, "https://i12a506.p.ssafy.io")
                 .build();
 //                .body(userEmail);
