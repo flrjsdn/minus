@@ -13,6 +13,7 @@ const Notice = () => {
     const [noticeTitle, setNoticeTitle] = useState("");
     const [noticeContent, setNoticeContent] = useState("");
     const [noticeImage, setNoticeImage] = useState(null);
+    const [NoticeImagePreview, setNoticeImagePreview] = useState(null);
     // const [announcements, setAnnouncements] = useState([]); // 공지사항 목록 상태 추가
     const [announcements, setAnnouncements] = useState(DummyNotices[0]?.announcements || []); // 더미데이터 공지사항 목록 상태 추가
     const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
@@ -40,12 +41,32 @@ const Notice = () => {
 
     const handleImageChange = (e) => {
         const file = e.target.files[0];
+        
         if (file) {
+            if (NoticeImagePreview) {
+                URL.revokeObjectURL(NoticeImagePreview); // 기존 URL 정리
+            }
+    
+            // 미리보기 URL을 설정하기 전에 유효한 파일인지 확인
+            const imageUrl = URL.createObjectURL(file);
+            setNoticeImagePreview(imageUrl); // 미리보기 URL 설정
+    
+            // Base64로 변환 후 noticeImage에 저장
             convertFileToBase64(file, (base64Image) => {
-                setNoticeImage(base64Image); // Base64 문자열 저장
+                setNoticeImage(base64Image);
             });
         }
     };
+    
+    
+    // 메모리 정리
+    useEffect(() => {
+        return () => {
+            if (NoticeImagePreview) {
+                URL.revokeObjectURL(NoticeImagePreview);
+            }
+        };
+    }, [NoticeImagePreview]);
     
 
     const handleAddNotice = async () => {
@@ -157,7 +178,6 @@ const Notice = () => {
         reader.onerror = (error) => console.error("Error converting file to Base64:", error);
     };
     
-
     return (
         <div>
             <HeaderContainer />
@@ -217,9 +237,9 @@ const Notice = () => {
                                     accept="image/*"
                                     onChange={handleImageChange}
                                 />
-                                {noticeImage && (
+                                {NoticeImagePreview && (
                                     <ImagePreview>
-                                        <img src={URL.createObjectURL(noticeImage)} alt="Preview" />
+                                        <img src={URL.createObjectURL(NoticeImagePreview)} alt="Preview" />
                                     </ImagePreview>
                                 )}
                             </UploadContainer>
