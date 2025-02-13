@@ -166,8 +166,8 @@ public class JwtProvider {
     public ResponseCookie issueAccessToken(String accessToken) {
         return ResponseCookie.from("AccessToken", accessToken)
                 .httpOnly(true)
-//                .secure(true)
-                .sameSite("Lax")
+                .secure(true)
+                .sameSite("None")
                 .path("/")
 //                .domain("i12a506.p.ssafy.io")
                 .build();

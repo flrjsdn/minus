@@ -36,11 +36,12 @@ public class OauthController {
         String userEmail = oauthService.getUserKakaoProfile(accessToken);
         Users user = oauthService.findUser(userEmail, response);
         ResponseCookie cookie = jwtProvider.issueAccessToken(accessToken);
-        jwtProvider.issueTokens(user, response);
+//        jwtProvider.issueTokens(user, response);
 //        oauthService.redirectToMainPage(response);
         log.info("AccessToken : {}", cookie.getValue());
         return ResponseEntity.status(HttpStatus.FOUND)
-                .header("UserEmail", userEmail)
+//                .header("UserEmail", userEmail)
+                .header(HttpHeaders.SET_COOKIE, cookie.getValue())
                 .header(HttpHeaders.LOCATION, "https://i12a506.p.ssafy.io")
                 .build();
 //                .body(userEmail);
