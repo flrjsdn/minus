@@ -53,9 +53,4 @@ public class UserController {
         return ResponseEntity.ok().body(userService.getUserInfo(request));
     }
 
-//    @GetMapping("/token")
-//    public ResponseEntity<?> getToken(HttpServletRequest request, HttpServletResponse response){
-////        ResponseCookie cookie = jwtProvider.issueAccessToken()
-//        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString()).body("로그인 성공");
-//    }
 }

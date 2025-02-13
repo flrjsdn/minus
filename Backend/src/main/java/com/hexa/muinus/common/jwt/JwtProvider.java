@@ -78,38 +78,18 @@ public class JwtProvider {
     }
 
     public void setAccessTokensInCookie(HttpServletResponse response, String accessToken) {
-//        // 액세스 토큰 쿠키 설정
-//        Cookie accessTokenCookie = new Cookie("AccessToken", accessToken);
-//        accessTokenCookie.setHttpOnly(true);
-//        accessTokenCookie.setSecure(true);
-//        accessTokenCookie.setPath("/");
-//        accessTokenCookie.setMaxAge((int) (accessTokenExpiration / 1000));
-//        // 쿠키 응답에 추가
-//        response.addCookie(accessTokenCookie);
-
         ResponseCookie responseCookie = ResponseCookie.from("AccessToken", accessToken)
                 .maxAge(accessTokenExpiration)
                 .path("/")
                 .sameSite("Lax")
                 .httpOnly(true)
-//                .secure(true)
+                .secure(true)
                 .build();
 
-        response.setHeader("Set-Cookie", responseCookie.toString());
-//        response.addHeader("Set-Cookie", responseCookie.toString());
-        log.info("쿠키에 액세스 토큰 : {}", response.getHeader("Set-Cookie"));
+        response.addHeader("Set-Cookie", responseCookie.toString());
     }
 
     public void setRefreshTokensInCookie(HttpServletResponse response, String refreshToken) {
-//        // 리프레시 토큰 쿠키 설정
-//        Cookie refreshTokenCookie = new Cookie("RefreshToken", refreshToken);
-//        refreshTokenCookie.setHttpOnly(true);
-//        refreshTokenCookie.setSecure(true);
-//        refreshTokenCookie.setPath("/api/users/refresh");
-//        refreshTokenCookie.setMaxAge((int) (refreshTokenExpiration / 1000));
-//
-//        response.addCookie(refreshTokenCookie);
-
         ResponseCookie responseCookie = ResponseCookie.from("RefreshToken", refreshToken)
                 .maxAge(refreshTokenExpiration)
                 .path("/")
@@ -119,7 +99,6 @@ public class JwtProvider {
                 .build();
 
         response.addHeader("Set-Cookie", responseCookie.toString());
-//        log.info("쿠키에 리프레시 토큰 : {}", response.getHeader("Set-Cookie"));
     }
 
     /**
@@ -161,26 +140,6 @@ public class JwtProvider {
         user.updateRefreshToken(refreshToken);
         setAccessTokensInCookie(response, accessToken);
         setRefreshTokensInCookie(response, refreshToken);
-    }
-
-    public ResponseCookie issueAccessToken(Users user) {
-        String accessToken = createAccessToken(user);
-        return ResponseCookie.from("AccessToken", accessToken)
-                .httpOnly(true)
-                .secure(true)
-                .sameSite("None")
-                .path("/")
-                .build();
-    }
-
-    public ResponseCookie issueRefreshToken(Users user) {
-        String refreshToken = createRefreshToken(user);
-        return ResponseCookie.from("RefreshToken", refreshToken)
-                .httpOnly(true)
-                .secure(true)
-                .sameSite("None")
-                .path("/")
-                .build();
     }
 
     /**

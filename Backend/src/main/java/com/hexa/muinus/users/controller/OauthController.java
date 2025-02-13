@@ -37,13 +37,6 @@ public class OauthController {
         Users user = oauthService.findUser(userEmail, response);
         jwtProvider.issueTokens(user, response);
         oauthService.redirectToMainPage(response);
-//        ResponseCookie accessCookie = jwtProvider.issueAccessToken(user);
-//        ResponseCookie refreshCookie = jwtProvider.issueRefreshToken(user);
-//        return ResponseEntity.status(HttpStatus.FOUND)
-//                .header(HttpHeaders.SET_COOKIE, accessCookie.toString())
-//                .header(HttpHeaders.LOCATION, refreshCookie.toString())
-//                .header(HttpHeaders.LOCATION, "https://i12a506.p.ssafy.io")
-//                .build();
     }
 
     @GetMapping("/api/users/logout")
