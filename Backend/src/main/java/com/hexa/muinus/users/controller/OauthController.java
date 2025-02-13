@@ -35,7 +35,7 @@ public class OauthController {
         String accessToken = oauthService.getAccessTokenFromKakao(authorizationCode);
         String userEmail = oauthService.getUserKakaoProfile(accessToken);
         Users user = oauthService.findUser(userEmail, response);
-        ResponseCookie cookie = jwtProvider.issueAccessToken(accessToken);
+        ResponseCookie cookie = jwtProvider.issueAccessToken(user);
 //        jwtProvider.issueTokens(user, response);
 //        oauthService.redirectToMainPage(response);
         log.info("AccessToken : {}", cookie.getValue());

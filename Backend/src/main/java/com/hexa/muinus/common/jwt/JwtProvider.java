@@ -163,7 +163,8 @@ public class JwtProvider {
         setRefreshTokensInCookie(response, refreshToken);
     }
 
-    public ResponseCookie issueAccessToken(String accessToken) {
+    public ResponseCookie issueAccessToken(Users user) {
+        String accessToken = createAccessToken(user);
         return ResponseCookie.from("AccessToken", accessToken)
                 .httpOnly(true)
                 .secure(true)
