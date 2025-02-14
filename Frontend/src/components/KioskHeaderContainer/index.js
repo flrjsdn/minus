@@ -4,14 +4,17 @@ import "./style.css";
 
 const apiUrl = process.env.REACT_APP_BACKEND_API_URL;
 
-const KioskHeaderContainer = () => {
+const KioskHeaderContainer = ({ onstoreNoReceived }) => {
     const { logindata } = useAuth();
 
     useEffect(() => {
-        if (logindata && logindata.usertype !== 'A') {
-            window.location.href = `${apiUrl}/api/users/logout`;
+        if (logindata) {
+            // 유효성 검사 후 storeNo 전달
+            if (logindata.usertype === 'A' && logindata.storeNo) {
+                onstoreNoReceived(logindata.storeNo);
+            }
         }
-    }, [logindata]);
+    }, [logindata, onstoreNoReceived]);
 
     return (
         <div className="headercontainer">
