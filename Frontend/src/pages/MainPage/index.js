@@ -54,6 +54,8 @@ const MainPage = () => {
         }
     };
 
+    console.log(coords)
+
     return (
         <div className="mainpagebackground">
             <div className="mainpagecontents">
