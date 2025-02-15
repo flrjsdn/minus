@@ -284,7 +284,6 @@ function OwnerSignUp() {
                         navigate("/");
                     });
                 }
-            
             } catch (error) {
                 console.error('가입 실패:', error);
                 Swal.fire({
