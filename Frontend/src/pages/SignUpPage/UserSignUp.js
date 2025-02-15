@@ -88,7 +88,7 @@ function UserSignUp() {
                     ? "이메일 형식이 올바르지 않습니다. (예: lee@ssafy.com)"
                     : "";
                 break;
-            case "phoneNumber":
+            case "userTelephone":
                 const phoneRegex = /^\d{3}-\d{4}-\d{4}$/;
                 formErrors.userTelephone = !value || !phoneRegex.test(value)
                     ? "전화번호 형식이 올바르지 않습니다. (예: 010-1234-5678)"
@@ -162,7 +162,7 @@ function UserSignUp() {
                 Swal.fire({
                     icon: "error",
                     title: "가입 실패!",
-                    text: "가입 중 오류가 발생했습니다. 다시 시도해주세요!",
+                    text: "가입 중 오류가 발생했습니다. !",
                     confirmButtonText: "확인",
                 }) 
             }
@@ -232,7 +232,7 @@ function UserSignUp() {
                     {errors.userBirth && <ErrorMessage>{errors.userBirth}</ErrorMessage>}
                 </InputGroup>
                 <ButtonWrapper>
-                    <RegisterButtons />
+                    <RegisterButtons onSubmit={handleSubmit} />
                 </ButtonWrapper>
             </form>
             <BottomNav />
