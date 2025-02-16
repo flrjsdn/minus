@@ -42,7 +42,7 @@ const VideoChat = () => {
       try {
         // 세션 존재 여부 확인
         const checkResponse = await fetch(
-          `http://localhost:8080/api/sessions/${storeNo}`,
+          `https://i12a506.p.ssafy.io/api/sessions/${storeNo}`,
           { method: "GET" }
         );
 
@@ -81,7 +81,7 @@ const VideoChat = () => {
   const createSession = async () => {
     try {
       const sessionResponse = await fetch(
-        `http://localhost:8080/api/sessions?storeNo=${storeNo}`,
+        `https://i12a506.p.ssafy.io/api/sessions?storeNo=${storeNo}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -103,7 +103,7 @@ const VideoChat = () => {
   const getToken = async (sessionId) => {
     try {
       const tokenResponse = await fetch(
-        `http://localhost:8080/api/sessions/${sessionId}/connections`,
+        `https://i12a506.p.ssafy.io/api/sessions/${sessionId}/connections`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
