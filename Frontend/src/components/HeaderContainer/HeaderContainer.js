@@ -70,7 +70,6 @@ function HeaderContainer() {
           <p className="welcome-text" onClick={handleNavigateToMyPage}>
             {logindata ? `${logindata.userName}님 환영합니다.` : "환영합니다."}
           </p>
-          <Link to="/mypage/user/chats">채팅목록</Link>
           <Link to="/mypage/user/coupons">쿠폰함</Link>
         </>
       );
