@@ -6,7 +6,6 @@ import SearchBar from "../../components/SearchBar";
 import HeaderContainer from "../../components/HeaderContainer/HeaderContainer";
 import SearchDropdownList from "../../components/SearchDropdownList";
 import SearchNavbar from "../../components/SearchNavbar";
-import useAuth from "../../hooks/useAuth";
 import './style.css';
 
 const debounce = (func, delay) => {
@@ -25,7 +24,6 @@ const Search = () => {
     const [isDropdownVisible, setDropdownVisible] = useState(false);
     const navigate = useNavigate();
     const location = useLocation();
-    const { logindata } = useAuth();
     const queryParams = new URLSearchParams(location.search);
 
     const lat = queryParams.get('lat');
