@@ -47,6 +47,7 @@
     border: none;
     font-size: 60px;
     cursor: pointer;
+    border-radius: 30px;
 }
 
 .description {
