@@ -36,6 +36,31 @@ const VideoChat = () => {
   }, []);
 
   useEffect(() => {
+    const handleBeforeUnload = (event) => {
+      // 세션이 존재하면 종료 처리
+      if (session) {
+        session.disconnect();
+        setSession(null);
+        setPublisher(null);
+        setSubscriber(null);
+        setSessionId("");
+      }
+
+      // 기본 동작을 취소하는 방법:
+      event.preventDefault(); // 일부 브라우저에서 경고 메시지가 뜨도록 해줌
+      return (event.returnValue =
+        "세션을 종료하려면 페이지를 벗어나기 전에 확인이 필요합니다.");
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    // cleanup: 컴포넌트가 unmount될 때 이벤트 리스너 제거
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [session]); // session이 변경될 때마다 새로 등록
+
+  useEffect(() => {
     const autoJoinSession = async () => {
       if (!storeNo) return;
 
@@ -52,6 +77,10 @@ const VideoChat = () => {
           setSessionId(storeNo);
           setMode("join");
           await joinSession();
+        } else if (checkResponse.status === 403) {
+          console.log("현재 통화중");
+          alert("현재 통화중입니다.");
+          window.history.back(); // 이전 페이지로 돌아가기
         } else {
           // 세션이 없으면 생성 후 참가
           setMode("create");
@@ -225,7 +254,7 @@ const VideoChat = () => {
         <div className="button-container">
           <p className="session-info">현재 가게: {sessionId}</p>
           <button onClick={leaveSession} className="leave-button">
-            세션 나가기
+            통화 종료
           </button>
         </div>
       )}
