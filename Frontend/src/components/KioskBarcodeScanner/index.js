@@ -6,7 +6,6 @@ import apiClient from '../../api/apiClient';
 
 
 const BarcodeScannerComponent = ({ onAddToCart }) => {
-    const [isCameraActive, setIsCameraActive] = useState(true);
     const [isScanningAllowed, setIsScanningAllowed] = useState(true);
     const { storeNo } = useParams();
 
@@ -15,7 +14,7 @@ const BarcodeScannerComponent = ({ onAddToCart }) => {
         if (!isScanningAllowed) return;
 
         setIsScanningAllowed(false);
-        setTimeout(() => setIsScanningAllowed(true), 3000);
+        setTimeout(() => setIsScanningAllowed(true), 4000);
 
         try {
             const barcode = scannedData;

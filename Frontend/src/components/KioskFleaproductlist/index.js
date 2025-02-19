@@ -59,7 +59,7 @@ const FleaProductList = ({ onAddToCart }) => {
                     ))}
                 </ul>
             ) : (
-                <div className="fleaemptynotice">등록된 플리마켓 제품이 없습니다.</div>
+                <div className="fleaemptynotice"><br/><br/><br/><br/><h1>등록된 플리마켓 제품이 없습니다.</h1></div>
             )}
         </div>
     );

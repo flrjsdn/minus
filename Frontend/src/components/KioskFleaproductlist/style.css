@@ -74,3 +74,11 @@
         height: 160px;
     }
 }
+
+.fleaemptynotice {
+    width: 100%;
+    height: auto;
+    font-size: 25px;
+    align-self: center;
+    justify-self: center;
+}
