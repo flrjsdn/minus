@@ -51,10 +51,10 @@ const StoredetailRequestPopup = () => {
     };
 
     const handleItemClick = (item) => {
-        console.log(item)
         setProductImage(item.itemImageUrl)
-        setSelectedItem(item.itemId);
+        setSelectedItem(item.item_id);
         setMessage(`${item.item_name}을 원하시는군요!`);
+        setQuery('')
         setDropdownVisible(false); // 선택 후 드롭다운 숨김
     };
 

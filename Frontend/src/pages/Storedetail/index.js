@@ -6,7 +6,6 @@ import StoreDetailApi from "../../api/StoreDetailApi";
 import CouponGetApi from "../../api/CouponGetApi";
 import CouponListApi from "../../api/CouponListApi";
 import useAuth from "../../hooks/useAuth";
-import axios from "axios";
 import Button from "../../components/Button";
 import "./style.css";
 import Swal from "sweetalert2";
@@ -20,7 +19,7 @@ const StoreDetail = () => {
   const nStoreNo = Number(storeNo);
   const navigate = useNavigate();
   const { logindata } = useAuth();
-  const apiUrl = process.env.REACT_APP_BACKEND_API_URL;
+  const url = encodeURI(window.location.href);
 
   const handleTabClick = (tab) => {
     setActiveTab(tab); // 활성화된 탭 업데이트
@@ -29,55 +28,57 @@ const StoreDetail = () => {
   // 수정 필요
   const checkLogin = () => {
     if (!logindata) {
-      // alert("로그인이 필요한 서비스입니다. 로그인 페이지로 이동합니다.");
       Swal.fire({
         icon: "error",
         title: "오류 발생!",
         text: "로그인이 필요한 서비스입니다. 로그인 페이지로 이동합니다",
+    }).then(()=>{
+      window.location.href = `https://i12a506.p.ssafy.io/api/users/login?redirect=${url}`;
     });
-      axios.get(`${apiUrl}/api/users/login`, {});
       return false;
     }
     return true;
   };
 
   const handleCouponGet = async (nStoreNo) => {
-    // if (!checkLogin()) return;
-
-    try {
-      const couponList = await CouponListApi(nStoreNo);
-      if (!couponList || couponList.length === 0 || !couponList[0]?.couponId) {
-        // alert("사용 가능한 쿠폰이 없습니다");
-        Swal.fire({
-          icon: "error",
-          title: "오류 발생!",
-          text: "사용 가능한 쿠폰이 없습니다",
-      });
-        return;
+    if (checkLogin()) {
+      try {
+        const couponList = await CouponListApi(nStoreNo);
+        if (!couponList || couponList.length === 0 || !couponList[0]?.couponId) {
+          // alert("사용 가능한 쿠폰이 없습니다");
+          Swal.fire({
+            icon: "error",
+            title: "오류 발생!",
+            text: "사용 가능한 쿠폰이 없습니다",
+        });
+          return;
+        }
+  
+        const couponId = couponList[0].couponId;
+        const receivedCoupon = await CouponGetApi(nStoreNo, couponId); // 순서 변경
+        return receivedCoupon;
+      } catch (error) {
+        console.error("쿠폰 처리 실패:", error);
       }
-
-      const couponId = couponList[0].couponId;
-      const receivedCoupon = await CouponGetApi(nStoreNo, couponId); // 순서 변경
-      return receivedCoupon;
-    } catch (error) {
-      console.error("쿠폰 처리 실패:", error);
+    };
     }
-  };
+
 
   // 3. 페이지 이동 함수들
   const navigateRequestPage = () => {
-    // if (!checkLogin()) return; // 로그인 체크
-    navigate(`/storedetail/${storeNo}/request`);
-  };
+    if (checkLogin()) {
+      navigate(`/storedetail/${storeNo}/request`);
+    }};
 
   const navigateFlearequest = () => {
-    // if (!checkLogin()) return; // 로그인 체크
-    navigate(`/storeDetail/${storeNo}/flearequest`);
-  };
+    if (checkLogin()) {
+      navigate(`/storeDetail/${storeNo}/flearequest`);
+  }};
 
   const navigateToVideoCall = () => {
+    if (checkLogin()) {
     navigate(`/${storeNo}/videocall`);
-  };
+  }};
 
   const handleItemClick = (item, type) => {
     setSelectedItem(item); // 선택된 아이템 데이터 저장
