@@ -28,9 +28,10 @@
 .coupon-popup-content {
   /* composes: popup-content; CSS 모듈 사용시 */
   background-color: white;
-  width: 400px;
+  width: 80%;
   padding: 25px;
   display: block; /* 기본 팝업의 flex 설정 제거 */
+  border-radius: 10px;
 }
 
 /* ============ 쿠폰 팝업 컴포넌트 스타일 ============ */
@@ -56,7 +57,7 @@
   padding: 15px;
   background: #f8f9fa;
   border-radius: 8px;
-  transition: background 0.3s ease;
+  gap: 50px;
 }
 
 .coupon-item:hover {
@@ -108,6 +109,11 @@
 .coupon-item:hover {
   transform: translateX(5px);
   background: #f8f9fa;
+}
+
+.used-coupon {
+  filter: grayscale(100%); /* 흑백 효과 */
+  opacity: 0.6; /* 약간 투명하게 */
 }
 
 /* ============ 기존 팝업 내부 요소 ============ */

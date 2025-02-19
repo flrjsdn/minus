@@ -53,7 +53,11 @@ const StoreDetail = () => {
     try {
       const coupons = await CouponListApi(nStoreNo);
       if (!coupons || coupons.length === 0) {
-        alert("사용 가능한 쿠폰이 없습니다");
+        Swal.fire({
+          icon: "error",
+          title: "오류 발생!",
+          text: "사용 가능한 쿠폰이 없습니다",
+        })
         return;
       }
       setCouponList(coupons);
@@ -67,20 +71,77 @@ const StoreDetail = () => {
   const handleCouponReceive = async (coupon) => {
     try {
       const result = await CouponGetApi(nStoreNo, coupon.couponId);
-
-      if (!result?.isError) {
-        alert("쿠폰이 성공적으로 발급되었습니다");
-        // 쿠폰 리스트 갱신
-        const updatedList = couponList.filter(
-          (c) => c.couponId !== coupon.couponId
-        );
-        setCouponList(updatedList);
-        setSelectedCoupon(null);
+  
+      if (result?.isError) {
+        // 오류 코드에 따라 처리
+        if (result.errorCode === 40930) {
+          // 이미 수령한 쿠폰인 경우
+          setCouponList((prev) =>
+            prev.map((c) =>
+              c.couponId === coupon.couponId ? { ...c, isUsed: true } : c // 사용된 쿠폰 상태 추가
+            )
+          );
+          Swal.fire({
+            icon: "error",
+            title: "오류 발생!",
+            text: "이미 쿠폰을 수령하였습니다.",
+          });
+        } else if (result.errorCode === 41030) {
+          // 더 이상 발급 가능한 쿠폰이 없는 경우
+          setCouponList((prev) =>
+            prev.map((c) =>
+              c.couponId === coupon.couponId ? { ...c, isUsed: true } : c // 사용된 쿠폰 상태 추가
+            )
+          );
+          Swal.fire({
+            icon: "error",
+            title: "오류 발생!",
+            text: "더 이상 발급 가능한 쿠폰이 없습니다.",
+          });
+        }
+        return;
       }
+  
+      // 성공적으로 발급된 경우
+      Swal.fire({
+        icon: 'success',
+        title: '성공!',
+        text: '쿠폰이 성공적으로 발급되었습니다!',
+      });  
+  
+      // 사용된 쿠폰 상태 업데이트
+      setCouponList((prev) =>
+        prev.map((c) =>
+          c.couponId === coupon.couponId ? { ...c, isUsed: true } : c // 사용된 쿠폰 상태 추가
+        )
+      );
+      setSelectedCoupon(null);
     } catch (error) {
       console.error("쿠폰 수령 실패:", error);
     }
   };
+  
+  // const handleCouponReceive = async (coupon) => {
+  //   try {
+  //     const result = await CouponGetApi(nStoreNo, coupon.couponId);
+
+  //     if (!result?.isError) {
+  //       Swal.fire({
+  //           icon: 'success',
+  //           title: '성공!',
+  //           text: '쿠폰이 성공적으로 발급되었습니다!',  // 성공 메시지
+  //       });  
+  //       // 쿠폰 리스트 갱신
+  //       const updatedList = couponList.filter(
+  //         (c) => c.couponId !== coupon.couponId
+  //       );
+  //       setCouponList(updatedList);
+  //       setSelectedCoupon(null);
+  //     }
+  //   } catch (error) {
+  //     console.error("쿠폰 수령 실패:", error);
+  //   }
+  // };
 
   // 페이지 이동 함수들
   const navigateRequestPage = (storeNo) =>
@@ -361,7 +422,8 @@ const StoreDetail = () => {
               {couponList.map((coupon) => (
                 <div
                   key={coupon.couponId}
-                  className="coupon-item"
+                  // className="coupon-item"
+                  className={`coupon-item ${coupon.isUsed ? "used-coupon" : ""}`} // 사용된 쿠폰에 클래스 추가
                   onClick={() => handleCouponReceive(coupon)}
                 >
                   <div className="coupon-info">
