@@ -15,4 +15,5 @@ services:
 #   muinus-network:
 #     external: true
 
-volumes: shared-volume
+volumes:
+  shared-volume:
