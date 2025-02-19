@@ -6,6 +6,7 @@ import StoreDetailApi from "../../api/StoreDetailApi";
 import CouponGetApi from "../../api/CouponGetApi";
 import CouponListApi from "../../api/CouponListApi";
 import useAuth from "../../hooks/useAuth";
+import axios from "axios";
 import Button from "../../components/Button";
 import "./style.css";
 import Swal from "sweetalert2";
@@ -24,6 +25,7 @@ const StoreDetail = () => {
   const nStoreNo = Number(storeNo);
   const navigate = useNavigate();
   const { logindata } = useAuth();
+  const apiUrl = process.env.REACT_APP_BACKEND_API_URL;
   const url = encodeURI(window.location.href);
 
   // 상태 관리 함수들
@@ -35,8 +37,8 @@ const StoreDetail = () => {
 
   // 로그인 확인 함수
   const checkLogin = () => {
+    console.log("로그인체크중")
     if (!logindata) {
-      // alert("로그인이 필요한 서비스입니다. 로그인 페이지로 이동합니다.");
       Swal.fire({
         icon: "error",
         title: "오류 발생!",
@@ -51,8 +53,6 @@ const StoreDetail = () => {
 
   // 쿠폰 처리 핸들러
   const handleCouponListGet = async (nStoreNo) => {
-    if (!checkLogin()) return;
-
     try {
       const coupons = await CouponListApi(nStoreNo);
       if (!coupons || coupons.length === 0) {
@@ -65,11 +65,9 @@ const StoreDetail = () => {
       console.error("쿠폰 처리 실패:", error);
       alert("쿠폰 조회 중 오류가 발생했습니다");
     }
-
+  };
 
   const handleCouponReceive = async (coupon) => {
-    if (!checkLogin()) return;
-
     try {
       const result = await CouponGetApi(nStoreNo, coupon.couponId);
 
@@ -107,7 +105,6 @@ const StoreDetail = () => {
     StoreDetailApi(storeNo, setProductData);
   }, []);
 
-
   return (
       <div className="searchpagedom">
         <div className="storedetailheadercontainer">
@@ -137,10 +134,10 @@ const StoreDetail = () => {
 
         {/* 액션 버튼 그룹 */}
         <div className="storedetail-btnlist">
-          <button className="couponrequestbtn" onClick={() => handleCouponListGet(nStoreNo)}>쿠폰수령</button>
-          <button className="requestbtn" onClick={navigateRequestPage}>입고요청</button>
-          <button className="flearequestbtn" onClick={navigateFlearequest}>플리신청</button>
-          <button className="videocallbtn" onClick={navigateToVideoCall}>화상통화</button>
+          <button className="couponrequestbtn" onClick={() => checkLogin() && handleCouponListGet(nStoreNo)}>쿠폰수령</button>
+          <button className="requestbtn" onClick={()=> checkLogin() && navigateRequestPage}>입고요청</button>
+          <button className="flearequestbtn" onClick={()=> checkLogin() && navigateFlearequest}>플리신청</button>
+          <button className="videocallbtn" onClick={()=> checkLogin() && navigateToVideoCall}>화상통화</button>
         </div>
 
         {/* 네비게이션 바 */}
@@ -229,9 +226,10 @@ const StoreDetail = () => {
                           onError={(e) => (e.target.src = "/logo.png")}
                       />
                       <div>
-                        <p className="store-item-price">💰 가격: <strong>{selectedItem.finalPrice}원</strong></p>
-                        <p className="store-item-quantity">📦 수량: <strong>{selectedItem.quantity}</strong></p>
+                        <p className="store-item-price">💰 가격 : <strong>{selectedItem.finalPrice}원</strong></p>
+                        <p className="store-item-quantity">📦 수량 : <strong>{selectedItem.quantity}</strong></p>
                       </div>
+                      <Button type="SECONDARY" onClick={closePopup}> 닫기</Button>
                     </>
                 )}
 
@@ -252,10 +250,11 @@ const StoreDetail = () => {
                           onError={(e) => (e.target.src = "/logo.png")}
                       />
                       <div className="fliitem-info">
-                        <h3 className="fliitem-price">💰 가격: <strong>{selectedItem.price}원</strong></h3>
-                        <h3 className="fliitem-quantity">📦 수량: <strong>{selectedItem.quantity}</strong></h3>
+                        <h3 className="fliitem-price">💰 가격 : <strong>{selectedItem.price}원</strong></h3>
+                        <h3 className="fliitem-quantity">📦 수량 : <strong>{selectedItem.quantity}</strong></h3>
                         <br />
                       </div>
+                      <Button type="SECONDARY" onClick={closePopup}> 닫기</Button>
                     </>
                 )}
 
@@ -277,14 +276,12 @@ const StoreDetail = () => {
                           }}
                           onError={(e) => (e.target.src = "/logo.png")}
                       />
+                      <Button type="SECONDARY" onClick={closePopup}> 닫기</Button>
                     </>
                 )}
               </div>
             </div>
         )}
-
-
-
         {showCouponPopup && (
             <div className="popup-overlay" onClick={() => setShowCouponPopup(false)}>
               <div className="coupon-popup-content" onClick={(e) => e.stopPropagation()}>
