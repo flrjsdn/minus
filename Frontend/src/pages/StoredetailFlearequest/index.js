@@ -140,7 +140,7 @@ const StoredetailFlearequest = () => {
                       />
                     </ListContainer>
                     <ListContainer>
-                      <label>계좌1:</label>
+                      <label>계좌:</label>
                       <Input
                         type="text"
                         name="userAccount"
@@ -150,7 +150,7 @@ const StoredetailFlearequest = () => {
                       />
                     </ListContainer>
                     <ListContainer>
-                      <label>계좌2:</label>
+                      <label>소유주:</label>
                       <Input
                         type="text"
                         name="accountName"

@@ -24,7 +24,7 @@ const CouponScannerComponent = ({ onConfirm }) => {
 
             const product = response.data;
             if (response.status === 200) {
-                // alert('테스트 API 호출 성공!');
+                // alert('테스트 API 호출 성공!');ㅊㅇ
                 Swal.fire({
                     icon: "success",
                     title: "요청 완료!",
