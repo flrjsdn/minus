@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import NutritionSearchEmptyApi from "../../api/SearchNativeApi";
+import NutritionSearchApi from "../../api/NutritionSearchApi";
 import './style.css'
 
 const SearchNutritionScroll = ({ coords, searchQuery }) => {
@@ -14,7 +14,7 @@ const SearchNutritionScroll = ({ coords, searchQuery }) => {
         const fetchData = async () => {
             try {
                 // 항상 기본 필터 API 호출
-                const result = await NutritionSearchEmptyApi(maxSugar, maxCal);
+                const result = await NutritionSearchApi(maxSugar, maxCal);
 
                 // 검색어가 있을 경우 클라이언트 측 필터링
                 const filteredResult = searchQuery
@@ -33,7 +33,7 @@ const SearchNutritionScroll = ({ coords, searchQuery }) => {
         fetchData();
     }, [maxSugar, maxCal, searchQuery]); // 모든 의존성 유지
 
-
+    console.log(items);
 
     return (
         <div className="scrollcontents">

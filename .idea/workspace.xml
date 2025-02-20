@@ -4,11 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f896b346-e63a-4955-9c5d-cb4b97fbcc7e" name="Changes" comment="[FE/FIX] 키오스크 css flex로 수정 (#135)">
+    <list default="true" id="f896b346-e63a-4955-9c5d-cb4b97fbcc7e" name="Changes" comment="[FE/FIX] 햣">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Frontend/src/App.css" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/App.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Frontend/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/App.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Frontend/src/pages/MainPage/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/pages/MainPage/style.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frontend/src/api/NutritionSearchApi.js" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/api/NutritionSearchApi.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frontend/src/components/SearchNutritionScroll/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/components/SearchNutritionScroll/index.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -115,7 +114,8 @@
       <workItem from="1739882723898" duration="12236000" />
       <workItem from="1739904889326" duration="338000" />
       <workItem from="1739923276863" duration="41280000" />
-      <workItem from="1740041198600" duration="2786000" />
+      <workItem from="1740041198600" duration="3552000" />
+      <workItem from="1740049167405" duration="566000" />
     </task>
     <task id="LOCAL-00001" summary="[FE/FIX] 배포 테스트 (#68)">
       <option name="closed" value="true" />
