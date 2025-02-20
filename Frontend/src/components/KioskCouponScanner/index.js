@@ -12,9 +12,15 @@ const CouponScannerComponent = ({ onConfirm }) => {
         setTimeout(() => setIsScanningAllowed(true), 5000);
 
         try {
-            const response = await apiClient.post('api/coupon/check', {
-                QRData: scannedData,
-            });
+            const response = await apiClient.post(
+                'api/coupon/check',
+                { qrData: scannedData }, // 대문자 필드 유지
+                {
+                    headers: {
+                        'Content-Type': 'application/json' // 헤더 필수 추가
+                    }
+                }
+            );
 
             const product = response.data;
             if (response.status === 200) {
