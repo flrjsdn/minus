@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import NutritionSearchEmptyApi from "../../api/NutritionSearchEmptyApi";
-import NutritionSearchApi from "../../api/NutritionSearchApi";
+import NutritionSearchEmptyApi from "../../api/SearchNativeApi";
 import './style.css'
 
 const SearchNutritionScroll = ({ coords, searchQuery }) => {
@@ -11,20 +10,20 @@ const SearchNutritionScroll = ({ coords, searchQuery }) => {
     const [items, setItems] = useState([]);
     const [error, setError] = useState(null);
 
-    console.log(searchQuery);
-
     useEffect(() => {
         const fetchData = async () => {
             try {
-                let result;
-                if (searchQuery) {
-                    // 검색어 있을 때: 일반 검색 API 사용
-                    result = await NutritionSearchApi(maxSugar, maxCal, searchQuery);
-                } else {
-                    // 검색어 없을 때: 기본 필터 API 사용
-                    result = await NutritionSearchEmptyApi(maxSugar, maxCal);
-                }
-                setItems(result || []);
+                // 항상 기본 필터 API 호출
+                const result = await NutritionSearchEmptyApi(maxSugar, maxCal);
+
+                // 검색어가 있을 경우 클라이언트 측 필터링
+                const filteredResult = searchQuery
+                    ? result.filter(item =>
+                        item.item_name.toLowerCase().includes(searchQuery.toLowerCase())
+                    )
+                    : result;
+
+                setItems(filteredResult || []);
                 setError(null);
             } catch (err) {
                 setError('데이터 로딩에 실패했습니다');
@@ -32,7 +31,8 @@ const SearchNutritionScroll = ({ coords, searchQuery }) => {
             }
         };
         fetchData();
-    }, [maxSugar, maxCal, searchQuery]); // 검색어 변경 감지
+    }, [maxSugar, maxCal, searchQuery]); // 모든 의존성 유지
+
 
 
     return (

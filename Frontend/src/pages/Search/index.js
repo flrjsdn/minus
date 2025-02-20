@@ -5,6 +5,7 @@ import SearchBar from "../../components/SearchBar";
 import HeaderContainer from "../../components/HeaderContainer/HeaderContainer";
 import SearchDropdownList from "../../components/SearchDropdownList";
 import SearchNavbar from "../../components/SearchNavbar";
+import SearchNativeApi from "../../api/SearchNativeApi";
 import './style.css';
 
 const debounce = (func, delay) => {
@@ -55,6 +56,16 @@ const Search = () => {
         navigate(`/search/results?lat=${lat}&lng=${lng}&itemId=${item.item_id}&itemName=${item.item_name}`);
     };
 
+    const handleNativeSearch = async (searchQuery) => {
+        try {
+            const data = await SearchNativeApi(searchQuery);
+            setResults(data);
+            setDropdownVisible(data.length > 0);
+        } catch (error) {
+            console.error("네이티브 검색 오류:", error);
+        }
+    };
+
     return (
         <div className="searchpage">
             <div className="searchpageheader"><HeaderContainer /></div>
@@ -62,6 +73,7 @@ const Search = () => {
                 <SearchBar
                     setQuery={handleQueryChange}
                     onClear={handleClear}
+                    onSearch={handleNativeSearch}
                 />
 
                 {isDropdownVisible && results?.length > 0 && (

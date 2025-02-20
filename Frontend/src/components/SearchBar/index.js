@@ -7,6 +7,7 @@ const SearchBar = ({
                        coords,
                        setQuery,
                        onClear,
+                       onSearch,
                        address,
                        error,
                        onAddressComplete,
@@ -37,6 +38,15 @@ const SearchBar = ({
         }
     };
 
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            if (localQuery.trim()) {
+                onSearch?.(localQuery.trim());
+            }
+        }
+    };
+
     return (
         <div className="searchbar">
             {(isSearchPage || isStoreDetailPage) && (
@@ -48,6 +58,7 @@ const SearchBar = ({
                         placeholder="검색어를 입력하세요"
                         value={localQuery}
                         onChange={handleInputChange}
+                        onKeyDown={handleKeyPress}
                     />
                     <button
                         className="clear-btn"

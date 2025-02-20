@@ -1,0 +1,398 @@
+Index: Frontend/src/components/SearchBar/index.js
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import { useState } from \"react\";\nimport { useNavigate, useLocation, useMatch } from \"react-router-dom\";\nimport AddressSearchTrigger from \"../AddressSearchTrigger\";\nimport './style.css';\n\nconst SearchBar = ({\n                       coords,\n                       setQuery,\n                       onClear,\n                       address,\n                       error,\n                       onAddressComplete,\n                       setIsManualAddress\n                   }) => {\n    const [localQuery, setLocalQuery] = useState(\"\");\n    const navigate = useNavigate();\n    const isStoreDetailPage = useMatch('/storedetail/*');\n    const isSearchPage = useLocation().pathname === '/search';\n\n    const handleSearch = () => {\n        if (coords) {\n            navigate(`/search?lat=${coords.lat}&lng=${coords.lng}`);\n        }\n    };\n\n    const handleInputChange = (e) => {\n        setLocalQuery(e.target.value);\n        setQuery?.(e.target.value);\n    };\n\n    const handleClear = () => {\n        if (localQuery) { //검색어 있으면 검색어 비움움\n            onClear?.();\n            setLocalQuery(\"\");\n        } else { // 없으면 메인페이지\n            navigate(\"/\");\n        }\n    };\n\n    return (\n        <div className=\"searchbar\">\n            {(isSearchPage || isStoreDetailPage) && (\n                <div className=\"search-container\">\n                    <input\n                        autoFocus\n                        type=\"text\"\n                        className=\"search-input-searchpage\"\n                        placeholder=\"검색어를 입력하세요\"\n                        value={localQuery}\n                        onChange={handleInputChange}\n                    />\n                    <button\n                        className=\"clear-btn\"\n                        onClick={handleClear}\n                        aria-label=\"검색어 지우기\"\n                    >\n                        ×\n                    </button>\n                </div>\n            )}\n\n            {!isSearchPage && !isStoreDetailPage && (\n                <div className=\"main-search-container\">\n                    <input\n                        type=\"text\"\n                        className=\"search-input-mainpage\"\n                        placeholder=\"원하는 제품을 이름으로 검색해보세요\"\n                        onClick={handleSearch}\n                    />\n                    <AddressSearchTrigger\n                        className=\"search-input-address-search\"\n                        address={address}\n                        error={error}\n                        onAddressComplete={onAddressComplete}\n                        setIsManualAddress={setIsManualAddress}\n                    />\n                </div>\n            )}\n        </div>\n    );\n};\n\nexport default SearchBar;\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Frontend/src/components/SearchBar/index.js b/Frontend/src/components/SearchBar/index.js
+--- a/Frontend/src/components/SearchBar/index.js	(revision cd2f5e7611f096d104cd664f0a2372fa6671b055)
++++ b/Frontend/src/components/SearchBar/index.js	(date 1740040210698)
+@@ -7,6 +7,7 @@
+                        coords,
+                        setQuery,
+                        onClear,
++                       onSearch,
+                        address,
+                        error,
+                        onAddressComplete,
+@@ -37,6 +38,15 @@
+         }
+     };
+ 
++    const handleKeyPress = (e) => {
++        if (e.key === 'Enter') {
++            e.preventDefault();
++            if (localQuery.trim()) {
++                onSearch?.(localQuery.trim());
++            }
++        }
++    };
++
+     return (
+         <div className="searchbar">
+             {(isSearchPage || isStoreDetailPage) && (
+@@ -48,6 +58,7 @@
+                         placeholder="검색어를 입력하세요"
+                         value={localQuery}
+                         onChange={handleInputChange}
++                        onKeyDown={handleKeyPress}
+                     />
+                     <button
+                         className="clear-btn"
+Index: Frontend/src/pages/SearchResult/index.js
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import { useState, useMemo, useEffect, useCallback } from \"react\";\nimport { useLocation, useNavigate } from \"react-router-dom\";\nimport HeaderContainer from \"../../components/HeaderContainer/HeaderContainer\";\nimport DraggableBottomSheet from \"../../components/DraggableBottomSheet/DraggableBottomSheet\";\nimport KakaoMapMarkers from \"../../components/KakaoMapMarkers\";\nimport KakaoMapContainer from \"../../components/KakaoMapContainer\";\nimport AddressSearchTrigger from \"../../components/AddressSearchTrigger\";\nimport { useBaseMap } from \"../../contexts/KakaoMapContext\";\nimport useReverseGeocoding from \"../../hooks/useReverseGeocoding\";\nimport useGeocoding from \"../../hooks/useGeocoding\";\nimport SearchDropdownList from \"../../components/SearchDropdownList\";\nimport searchApi from \"../../api/searchApi\";\nimport './style.css'\n\nconst SearchResult = () => {\n    const { isSDKLoaded } = useBaseMap()\n    const { coordToAddress } = useReverseGeocoding();\n    const { addressToCoord } = useGeocoding();\n    const navigate = useNavigate();\n    const location = useLocation();\n    const queryParams = new URLSearchParams(location.search);\n\n    // 상태 관리 추가\n    const [address, setAddress] = useState(\"\");\n    const [searchQuery, setSearchQuery] = useState(\"\"); // 검색어 상태 추가\n    const [searchResults, setSearchResults] = useState([]); // 검색 결과 상태 추가\n    const [isManualAddress, setIsManualAddress] = useState(false);\n    const [storelist, setStorelist] = useState([]);\n\n    // 좌표 객체 메모이제이션\n    const coords = useMemo(() => ({\n        lat: parseFloat(queryParams.get('lat')),\n        lng: parseFloat(queryParams.get('lng'))\n    }), [queryParams.get('lat'), queryParams.get('lng')]);\n\n    const itemId = queryParams.get('itemId');\n    const itemName = queryParams.get('itemName');\n\n    // 검색어 변경 핸들러\n    const handleSearchChange = useCallback(async (query) => {\n        if (!query) {\n            setSearchResults([]);\n            return;\n        }\n        try {\n            const results = await searchApi(query);\n            setSearchResults(results);\n        } catch (error) {\n            console.error(\"검색 실패:\", error);\n            setSearchResults([]);\n        }\n    }, []);\n\n// 검색어 디바운싱 효과\n    useEffect(() => {\n        const debounceTimer = setTimeout(() => {\n            // 검색어가 있을 때만 API 호출\n            if (searchQuery) {\n                handleSearchChange(searchQuery);\n            } else {\n                setSearchResults([]); // 검색어가 비면 결과 초기화\n            }\n        }, 300);\n\n        return () => clearTimeout(debounceTimer);\n    }, [searchQuery, handleSearchChange]);\n\n    // 주소 초기화 효과\n    useEffect(() => {\n        const fetchAddress = async () => {\n            try {\n                const newAddress = await coordToAddress(coords);\n                setAddress(newAddress);\n            } catch (err) {\n                console.error(\"주소 변환 실패:\", err);\n                setAddress(\"주소 정보 불러오기 실패\");\n            }\n        };\n\n        if (isSDKLoaded) {\n            fetchAddress();\n        }\n    }, [coords, isSDKLoaded, coordToAddress]);\n\n    // 주소 변경 핸들러\n    const handleAddressComplete = async (fullAddress) => {\n        try {\n            const newCoords = await addressToCoord(fullAddress);\n            if (newCoords) {\n                navigate({\n                    pathname: location.pathname,\n                    search: `?lat=${newCoords.lat}&lng=${newCoords.lng}&itemId=${itemId}&itemName=${itemName}`\n                });\n                setAddress(fullAddress);\n                setIsManualAddress(true);\n            }\n        } catch (err) {\n            console.error(\"주소 변환 오류:\", err);\n        }\n    };\n\n    // 드롭다운 아이템 선택 핸들러\n    const handleItemSelect = (selectedItem) => {\n        navigate({\n            pathname: location.pathname,\n            search: `?lat=${coords.lat}&lng=${coords.lng}&itemId=${selectedItem.item_id}&itemName=${selectedItem.item_name}`\n        });\n        setSearchQuery(selectedItem.item_name);\n        setSearchResults([]);\n    };\n\n    return (\n        <div className=\"result-page\">\n                <div className=\"resultheader\"><HeaderContainer/></div>\n                <div className=\"search-input-container\">\n                    <div className=\"resultsearchbar\">\n                        <input\n                            className=\"resultsearchinput\"\n                            value={searchQuery}\n                            onChange={(e) => setSearchQuery(e.target.value)}\n                            placeholder={itemName}\n                        />\n                        <button className=\"resultclearbutton\" \n                                           onClick={() => {\n                                            if (searchQuery) {\n                                                setSearchQuery('');\n                                            } else {\n                                                window.history.back();\n                                            }\n                                        }}>x</button>\n                        <div className=\"search-result-controls\">\n                            <AddressSearchTrigger\n                                address={address}\n                                onAddressComplete={handleAddressComplete}\n                                setIsManualAddress={setIsManualAddress}\n                            />\n                        </div>\n                    </div>\n                    {searchQuery && (  // 검색어가 있을 때만 드롭다운 표시\n                        <div className=\"searchresultdropdown\">\n                            <SearchDropdownList\n                            results={searchResults}\n                            onItemClick={handleItemSelect}\n                            /></div>\n                    )}\n                </div>\n                <DraggableBottomSheet\n                    coords={coords}\n                    setStorelist={setStorelist}\n                    itemId={itemId}\n                />\n            {isSDKLoaded && (\n                <>\n                    <KakaoMapContainer coords={coords} />\n                    <KakaoMapMarkers storelist={storelist} />\n                </>\n            )}\n        </div>\n    )\n}\n\nexport default SearchResult;\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Frontend/src/pages/SearchResult/index.js b/Frontend/src/pages/SearchResult/index.js
+--- a/Frontend/src/pages/SearchResult/index.js	(revision cd2f5e7611f096d104cd664f0a2372fa6671b055)
++++ b/Frontend/src/pages/SearchResult/index.js	(date 1740040015635)
+@@ -10,6 +10,7 @@
+ import useGeocoding from "../../hooks/useGeocoding";
+ import SearchDropdownList from "../../components/SearchDropdownList";
+ import searchApi from "../../api/searchApi";
++import SearchNativeApi from "../../api/SearchNativeApi";
+ import './style.css'
+ 
+ const SearchResult = () => {
+@@ -108,6 +109,28 @@
+         setSearchQuery(selectedItem.item_name);
+         setSearchResults([]);
+     };
++
++    const handleNativeSearch = useCallback(async (query) => {
++        try {
++            const data = await SearchNativeApi(query);
++            setSearchResults(data);
++        } catch (error) {
++            console.error("네이티브 검색 오류:", error);
++            setSearchResults([]);
++        }
++    }, []);
++
++    // input 요소에 추가할 핸들러
++    const handleKeyDown = (e) => {
++        if (e.key === 'Enter') {
++            e.preventDefault();
++            const searchTerm = e.target.value.trim();
++            if (searchTerm) {
++                handleNativeSearch(searchTerm);
++            }
++        }
++    };
++
+ 
+     return (
+         <div className="result-page">
+@@ -119,6 +142,7 @@
+                             value={searchQuery}
+                             onChange={(e) => setSearchQuery(e.target.value)}
+                             placeholder={itemName}
++                            onKeyDown={handleKeyDown}  // 이 부분 추가
+                         />
+                         <button className="resultclearbutton" 
+                                            onClick={() => {
+Index: Frontend/src/api/SearchNativeApi.js
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import axios from \"axios\";\n\nconst SearchNativeApi = async( query ) => {\n    const apiUrl = process.env.REACT_APP_BACKEND_API_URL;\n\n    try {\n        const response = await axios.get(`${apiUrl}/api/items/search?query=${query}`);\n        return response.data\n\n    } catch (err) {\n        console.error('API 호출 중 오류 발생:', err);\n    }\n};\n\nexport default SearchNativeApi;
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Frontend/src/api/SearchNativeApi.js b/Frontend/src/api/SearchNativeApi.js
+--- a/Frontend/src/api/SearchNativeApi.js	(revision cd2f5e7611f096d104cd664f0a2372fa6671b055)
++++ b/Frontend/src/api/SearchNativeApi.js	(date 1740040359243)
+@@ -4,7 +4,7 @@
+     const apiUrl = process.env.REACT_APP_BACKEND_API_URL;
+ 
+     try {
+-        const response = await axios.get(`${apiUrl}/api/items/search?query=${query}`);
++        const response = await axios.get(`${apiUrl}/api/items/search-native?query=${query}`);
+         return response.data
+ 
+     } catch (err) {
+Index: Frontend/src/pages/Search/index.js
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import { useState } from \"react\";\nimport { useLocation, useNavigate } from \"react-router-dom\";\nimport SearchApi from \"../../api/searchApi\";\nimport SearchBar from \"../../components/SearchBar\";\nimport HeaderContainer from \"../../components/HeaderContainer/HeaderContainer\";\nimport SearchDropdownList from \"../../components/SearchDropdownList\";\nimport SearchNavbar from \"../../components/SearchNavbar\";\nimport './style.css';\n\nconst debounce = (func, delay) => {\n    let timeoutId;\n    return (...args) => {\n        if (timeoutId) clearTimeout(timeoutId);\n        timeoutId = setTimeout(() => {\n            func(...args);\n        }, delay);\n    };\n};\n\nconst Search = () => {\n\n\n    const [query, setQuery] = useState(\"\");\n    const [results, setResults] = useState([]);\n    const [isDropdownVisible, setDropdownVisible] = useState(false);\n    const navigate = useNavigate();\n    const location = useLocation();\n    const queryParams = new URLSearchParams(location.search);\n\n    const lat = queryParams.get('lat');\n    const lng = queryParams.get('lng');\n\n    const debouncedFetchResults = debounce(async (searchQuery) => {\n        try {\n            const data = await SearchApi(searchQuery);\n            setResults(data);\n            setDropdownVisible(data.length > 0);\n        } catch (error) {\n            console.error(\"검색 오류:\", error);\n        }\n    }, 500);\n\n    const handleQueryChange = (newQuery) => {\n        setQuery(newQuery);\n        debouncedFetchResults(newQuery);\n    };\n\n    const handleClear = () => {\n        setDropdownVisible(false);\n        setResults([]);\n    };\n\n    const handleItemClick = (item) => {\n        setDropdownVisible(false);\n        navigate(`/search/results?lat=${lat}&lng=${lng}&itemId=${item.item_id}&itemName=${item.item_name}`);\n    };\n\n    return (\n        <div className=\"searchpage\">\n            <div className=\"searchpageheader\"><HeaderContainer /></div>\n            <div className=\"searchpagesearchbar\">\n                <SearchBar\n                    setQuery={handleQueryChange}\n                    onClear={handleClear}\n                />\n\n                {isDropdownVisible && results?.length > 0 && (\n                    <div className=\"searchpagedropdown\">\n                        <SearchDropdownList\n                            className=\"search-page-dropdown\"\n                            results={results}\n                            onItemClick={handleItemClick}\n                        />\n                    </div>\n                )}\n            </div>\n            <div className=\"searchpagenavbar\">\n                <SearchNavbar lat={lat} lng={lng} />\n            </div>\n            <div className=\"searchpagerecommend\" style={{ marginTop: \"50px\" }}>\n            <ul style={{ listStyle: \"none\", padding: 0, margin: 0 }}>\n                <li style={{ display: \"flex\", alignItems: \"center\", gap: \"8px\", marginBottom: \"10px\", marginTop:\"20px\", marginLeft: \"3px\" }}>\n                    제품명을 검색하시면 제품을 보유한 근처 매장이 나와요!\n                </li>\n                <li style={{ display: \"flex\", alignItems: \"center\", gap: \"8px\" ,marginLeft: \"3px\"}}>\n                    원하는 영양분으로도 제품을 검색해보세요!\n                </li>\n                <li style={{ display: \"flex\", alignItems: \"center\", gap: \"8px\", marginBottom: \"10px\", marginLeft: \"3px\" }}>\n                    메인페이지에서 \n                    <img src=\"/mylocation.png\" style={{ width: \"18px\", height: \"18px\", verticalAlign: \"middle\" }} alt=\"위치 설정 아이콘\" /> \n                    을 눌러 위치를 재설정할 수 있어요!\n                </li>\n            </ul>\n            </div>\n        </div>\n    );\n};\n\nexport default Search;\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Frontend/src/pages/Search/index.js b/Frontend/src/pages/Search/index.js
+--- a/Frontend/src/pages/Search/index.js	(revision cd2f5e7611f096d104cd664f0a2372fa6671b055)
++++ b/Frontend/src/pages/Search/index.js	(date 1740040098317)
+@@ -5,6 +5,7 @@
+ import HeaderContainer from "../../components/HeaderContainer/HeaderContainer";
+ import SearchDropdownList from "../../components/SearchDropdownList";
+ import SearchNavbar from "../../components/SearchNavbar";
++import SearchNativeApi from "../../api/SearchNativeApi";
+ import './style.css';
+ 
+ const debounce = (func, delay) => {
+@@ -55,6 +56,16 @@
+         navigate(`/search/results?lat=${lat}&lng=${lng}&itemId=${item.item_id}&itemName=${item.item_name}`);
+     };
+ 
++    const handleNativeSearch = async (searchQuery) => {
++        try {
++            const data = await SearchNativeApi(searchQuery);
++            setResults(data);
++            setDropdownVisible(data.length > 0);
++        } catch (error) {
++            console.error("네이티브 검색 오류:", error);
++        }
++    };
++
+     return (
+         <div className="searchpage">
+             <div className="searchpageheader"><HeaderContainer /></div>
+@@ -62,6 +73,7 @@
+                 <SearchBar
+                     setQuery={handleQueryChange}
+                     onClear={handleClear}
++                    onSearch={handleNativeSearch}
+                 />
+ 
+                 {isDropdownVisible && results?.length > 0 && (
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<project version=\"4\">\n  <component name=\"AutoImportSettings\">\n    <option name=\"autoReloadType\" value=\"SELECTIVE\" />\n  </component>\n  <component name=\"ChangeListManager\">\n    <list default=\"true\" id=\"f896b346-e63a-4955-9c5d-cb4b97fbcc7e\" name=\"Changes\" comment=\"[FE/FIX] 키오스크 css flex로 수정 (#135)\">\n      <change beforePath=\"$PROJECT_DIR$/.idea/workspace.xml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.idea/workspace.xml\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/Frontend/src/components/KioskBarcodeScanner/index.js\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/Frontend/src/components/KioskBarcodeScanner/index.js\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/Frontend/src/components/KioskCouponScanner/index.js\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/Frontend/src/components/KioskCouponScanner/index.js\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/Frontend/src/components/KioskHeaderContainer/style.css\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/Frontend/src/components/KioskHeaderContainer/style.css\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/Frontend/src/pages/KioskMain/index.js\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/Frontend/src/pages/KioskMain/index.js\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/Frontend/src/pages/KioskMain/style.css\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/Frontend/src/pages/KioskMain/style.css\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/Frontend/src/pages/StoredetailRequest/style.css\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/Frontend/src/pages/StoredetailRequest/style.css\" afterDir=\"false\" />\n    </list>\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\n  </component>\n  <component name=\"FileTemplateManagerImpl\">\n    <option name=\"RECENT_TEMPLATES\">\n      <list>\n        <option value=\"JavaScript File\" />\n      </list>\n    </option>\n  </component>\n  <component name=\"Git.Rebase.Settings\">\n    <option name=\"NEW_BASE\" value=\"origin/Frontend\" />\n  </component>\n  <component name=\"Git.Settings\">\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\n    <option name=\"UPDATE_TYPE\" value=\"REBASE\" />\n  </component>\n  <component name=\"GitLabMergeRequestFiltersHistory\">{\n  &quot;lastFilter&quot;: {}\n}</component>\n  <component name=\"GitLabMergeRequestsSettings\">{\n  &quot;selectedUrlAndAccountId&quot;: {\n    &quot;first&quot;: &quot;https://lab.ssafy.com/s12-webmobile1-sub1/S12P11A506.git&quot;,\n    &quot;second&quot;: &quot;e33ee6b4-1615-45ef-a98a-173e132f977f&quot;\n  }\n}</component>\n  <component name=\"ProblemsViewState\">\n    <option name=\"selectedTabId\" value=\"CurrentFile\" />\n  </component>\n  <component name=\"ProjectColorInfo\">{\n  &quot;associatedIndex&quot;: 5\n}</component>\n  <component name=\"ProjectId\" id=\"2sfU0UdfCWOTDN8Cw8GdwsNPGOD\" />\n  <component name=\"ProjectLevelVcsManager\">\n    <ConfirmationsSetting value=\"1\" id=\"Add\" />\n  </component>\n  <component name=\"ProjectViewState\">\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\n    <option name=\"showLibraryContents\" value=\"true\" />\n  </component>\n  <component name=\"PropertiesComponent\"><![CDATA[{\n  \"keyToString\": {\n    \"RunOnceActivity.ShowReadmeOnStart\": \"true\",\n    \"RunOnceActivity.git.unshallow\": \"true\",\n    \"git-widget-placeholder\": \"FE/FEAT/#148\",\n    \"kotlin-language-version-configured\": \"true\",\n    \"last_opened_file_path\": \"/Users/mac/Downloads/SSAFY/SSAFY_season2/commonproject\",\n    \"node.js.detected.package.eslint\": \"true\",\n    \"node.js.detected.package.tslint\": \"true\",\n    \"node.js.selected.package.eslint\": \"(autodetect)\",\n    \"node.js.selected.package.tslint\": \"(autodetect)\",\n    \"nodejs_package_manager_path\": \"npm\",\n    \"ts.external.directory.path\": \"/Applications/WebStorm.app/Contents/plugins/javascript-plugin/jsLanguageServicesImpl/external\",\n    \"vue.rearranger.settings.migration\": \"true\"\n  }\n}]]></component>\n  <component name=\"RecentsManager\">\n    <key name=\"CopyFile.RECENT_KEYS\">\n      <recent name=\"$PROJECT_DIR$/Frontend/src/components/KioskCouponPopup\" />\n    </key>\n    <key name=\"MoveFile.RECENT_KEYS\">\n      <recent name=\"$PROJECT_DIR$/Frontend/src/pages/KioskMain\" />\n      <recent name=\"$PROJECT_DIR$/Frontend/src/pages\" />\n    </key>\n  </component>\n  <component name=\"SharedIndexes\">\n    <attachedChunks>\n      <set>\n        <option value=\"bundled-js-predefined-d6986cc7102b-822845ee3bb5-JavaScript-WS-243.23654.157\" />\n      </set>\n    </attachedChunks>\n  </component>\n  <component name=\"SpellCheckerSettings\" RuntimeDictionaries=\"0\" Folders=\"0\" CustomDictionaries=\"0\" DefaultDictionary=\"application-level\" UseSingleDictionary=\"true\" transferred=\"true\" />\n  <component name=\"TaskManager\">\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\n      <changelist id=\"f896b346-e63a-4955-9c5d-cb4b97fbcc7e\" name=\"Changes\" comment=\"\" />\n      <created>1738845899858</created>\n      <option name=\"number\" value=\"Default\" />\n      <option name=\"presentableId\" value=\"Default\" />\n      <updated>1738845899858</updated>\n      <workItem from=\"1738845900970\" duration=\"3670000\" />\n      <workItem from=\"1738886022718\" duration=\"24462000\" />\n      <workItem from=\"1738913909041\" duration=\"306000\" />\n      <workItem from=\"1738914277977\" duration=\"35000\" />\n      <workItem from=\"1738914322054\" duration=\"4199000\" />\n      <workItem from=\"1739081872737\" duration=\"36070000\" />\n      <workItem from=\"1739152824324\" duration=\"47000\" />\n      <workItem from=\"1739152876382\" duration=\"26000\" />\n      <workItem from=\"1739152929279\" duration=\"24000\" />\n      <workItem from=\"1739153054176\" duration=\"42770000\" />\n      <workItem from=\"1739247929410\" duration=\"30265000\" />\n      <workItem from=\"1739291868462\" duration=\"14695000\" />\n      <workItem from=\"1739308289993\" duration=\"36322000\" />\n      <workItem from=\"1739350559470\" duration=\"19822000\" />\n      <workItem from=\"1739426375278\" duration=\"2000\" />\n      <workItem from=\"1739426451033\" duration=\"11909000\" />\n      <workItem from=\"1739452113566\" duration=\"11559000\" />\n      <workItem from=\"1739513711472\" duration=\"63743000\" />\n      <workItem from=\"1739750470079\" duration=\"12985000\" />\n      <workItem from=\"1739781327516\" duration=\"6000\" />\n      <workItem from=\"1739882723898\" duration=\"12236000\" />\n      <workItem from=\"1739904889326\" duration=\"338000\" />\n      <workItem from=\"1739923276863\" duration=\"41280000\" />\n    </task>\n    <task id=\"LOCAL-00001\" summary=\"[FE/FIX] 배포 테스트 (#68)\">\n      <option name=\"closed\" value=\"true\" />\n      <created>1739427567928</created>\n      <option name=\"number\" value=\"00001\" />\n      <option name=\"presentableId\" value=\"LOCAL-00001\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1739427567928</updated>\n    </task>\n    <task id=\"LOCAL-00002\" summary=\"[FE/FIX] 배포 테스트 (#68)\">\n      <option name=\"closed\" value=\"true\" />\n      <created>1739428785456</created>\n      <option name=\"number\" value=\"00002\" />\n      <option name=\"presentableId\" value=\"LOCAL-00002\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1739428785456</updated>\n    </task>\n    <task id=\"LOCAL-00003\" summary=\"[FE/FIX] 배포 테스트 (#68)\">\n      <option name=\"closed\" value=\"true\" />\n      <created>1739432038269</created>\n      <option name=\"number\" value=\"00003\" />\n      <option name=\"presentableId\" value=\"LOCAL-00003\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1739432038269</updated>\n    </task>\n    <task id=\"LOCAL-00004\" summary=\"[FE/FIX] 배포 테스트 (#68)\">\n      <option name=\"closed\" value=\"true\" />\n      <created>1739432340013</created>\n      <option name=\"number\" value=\"00004\" />\n      <option name=\"presentableId\" value=\"LOCAL-00004\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1739432340013</updated>\n    </task>\n    <task id=\"LOCAL-00005\" summary=\"[FE/FIX] 배포 테스트 (#68)\">\n      <option name=\"closed\" value=\"true\" />\n      <created>1739433129149</created>\n      <option name=\"number\" value=\"00005\" />\n      <option name=\"presentableId\" value=\"LOCAL-00005\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1739433129149</updated>\n    </task>\n    <task id=\"LOCAL-00006\" summary=\"[FE/FIX] 지도 호출 흐름 수정 (#68)\">\n      <option name=\"closed\" value=\"true\" />\n      <created>1739435017686</created>\n      <option name=\"number\" value=\"00006\" />\n      <option name=\"presentableId\" value=\"LOCAL-00006\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1739435017686</updated>\n    </task>\n    <task id=\"LOCAL-00007\" summary=\"[FE/FIX] 지도 호출 흐름 수정 (#68)\">\n      <option name=\"closed\" value=\"true\" />\n      <created>1739466231792</created>\n      <option name=\"number\" value=\"00007\" />\n      <option name=\"presentableId\" value=\"LOCAL-00007\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1739466231792</updated>\n    </task>\n    <task id=\"LOCAL-00008\" summary=\"[FE/FIX] 뒤로가기 시 지도 코드 꼬이는 현상 수정 (#68)\">\n      <option name=\"closed\" value=\"true\" />\n      <created>1739610602839</created>\n      <option name=\"number\" value=\"00008\" />\n      <option name=\"presentableId\" value=\"LOCAL-00008\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1739610602839</updated>\n    </task>\n    <task id=\"LOCAL-00009\" summary=\"[FE/FIX] 뒤로가기 시 지도 코드 꼬이는 현상 수정 (#68)\">\n      <option name=\"closed\" value=\"true\" />\n      <created>1739670282959</created>\n      <option name=\"number\" value=\"00009\" />\n      <option name=\"presentableId\" value=\"LOCAL-00009\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1739670282959</updated>\n    </task>\n    <task id=\"LOCAL-00010\" summary=\"[FE/FIX] 뒤로가기 시 지도 코드 꼬이는 현상 수정 (#68)\">\n      <option name=\"closed\" value=\"true\" />\n      <created>1739696098939</created>\n      <option name=\"number\" value=\"00010\" />\n      <option name=\"presentableId\" value=\"LOCAL-00010\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1739696098939</updated>\n    </task>\n    <task id=\"LOCAL-00011\" summary=\"[FE/FIX] 뒤로가기 시 지도 코드 꼬이는 현상 수정 (#68)\">\n      <option name=\"closed\" value=\"true\" />\n      <created>1739708076864</created>\n      <option name=\"number\" value=\"00011\" />\n      <option name=\"presentableId\" value=\"LOCAL-00011\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1739708076864</updated>\n    </task>\n    <task id=\"LOCAL-00012\" summary=\"[FE/FIX] 제품 입고요청 Api 정상작동 (#113)\">\n      <option name=\"closed\" value=\"true\" />\n      <created>1739722788572</created>\n      <option name=\"number\" value=\"00012\" />\n      <option name=\"presentableId\" value=\"LOCAL-00012\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1739722788573</updated>\n    </task>\n    <task id=\"LOCAL-00013\" summary=\"[FE/FIX] 플리아이템 신청 온라인 환경 테스트 (#113)\">\n      <option name=\"closed\" value=\"true\" />\n      <created>1739754878271</created>\n      <option name=\"number\" value=\"00013\" />\n      <option name=\"presentableId\" value=\"LOCAL-00013\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1739754878271</updated>\n    </task>\n    <task id=\"LOCAL-00014\" summary=\"[FE/FIX] 메인페이지 css 수정 (#122)\">\n      <option name=\"closed\" value=\"true\" />\n      <created>1739844698225</created>\n      <option name=\"number\" value=\"00014\" />\n      <option name=\"presentableId\" value=\"LOCAL-00014\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1739844698225</updated>\n    </task>\n    <task id=\"LOCAL-00015\" summary=\"[FE/FIX] 메인페이지 css 수정 (#129)\">\n      <option name=\"closed\" value=\"true\" />\n      <created>1739852240829</created>\n      <option name=\"number\" value=\"00015\" />\n      <option name=\"presentableId\" value=\"LOCAL-00015\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1739852240829</updated>\n    </task>\n    <task id=\"LOCAL-00016\" summary=\"[FE/FIX] 메인페이지 css 수정 (#131)\">\n      <option name=\"closed\" value=\"true\" />\n      <created>1739868829683</created>\n      <option name=\"number\" value=\"00016\" />\n      <option name=\"presentableId\" value=\"LOCAL-00016\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1739868829683</updated>\n    </task>\n    <task id=\"LOCAL-00017\" summary=\"[FE/FIX] 메인페이지 css 수정 (#129)\">\n      <option name=\"closed\" value=\"true\" />\n      <created>1739901147961</created>\n      <option name=\"number\" value=\"00017\" />\n      <option name=\"presentableId\" value=\"LOCAL-00017\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1739901147961</updated>\n    </task>\n    <task id=\"LOCAL-00018\" summary=\"[FE/FIX] 메인페이지 css 수정 (#129)\">\n      <option name=\"closed\" value=\"true\" />\n      <created>1739925905795</created>\n      <option name=\"number\" value=\"00018\" />\n      <option name=\"presentableId\" value=\"LOCAL-00018\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1739925905795</updated>\n    </task>\n    <task id=\"LOCAL-00019\" summary=\"[FE/FIX] 메인페이지 css 수정 (#129)\">\n      <option name=\"closed\" value=\"true\" />\n      <created>1739925924491</created>\n      <option name=\"number\" value=\"00019\" />\n      <option name=\"presentableId\" value=\"LOCAL-00019\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1739925924491</updated>\n    </task>\n    <task id=\"LOCAL-00020\" summary=\"[FE/FIX] 메인페이지 css 수정 (#135)\">\n      <option name=\"closed\" value=\"true\" />\n      <created>1739939235607</created>\n      <option name=\"number\" value=\"00020\" />\n      <option name=\"presentableId\" value=\"LOCAL-00020\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1739939235607</updated>\n    </task>\n    <task id=\"LOCAL-00021\" summary=\"[FE/FIX] 메인페이지 css 수정 (#135)\">\n      <option name=\"closed\" value=\"true\" />\n      <created>1739943443673</created>\n      <option name=\"number\" value=\"00021\" />\n      <option name=\"presentableId\" value=\"LOCAL-00021\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1739943443673</updated>\n    </task>\n    <task id=\"LOCAL-00022\" summary=\"[FE/FIX] 키오스크 css flex로 수정 (#135)\">\n      <option name=\"closed\" value=\"true\" />\n      <created>1739967810759</created>\n      <option name=\"number\" value=\"00022\" />\n      <option name=\"presentableId\" value=\"LOCAL-00022\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1739967810759</updated>\n    </task>\n    <task id=\"LOCAL-00023\" summary=\"[FE/FIX] 키오스크 css flex로 수정 (#135)\">\n      <option name=\"closed\" value=\"true\" />\n      <created>1739975054785</created>\n      <option name=\"number\" value=\"00023\" />\n      <option name=\"presentableId\" value=\"LOCAL-00023\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1739975054785</updated>\n    </task>\n    <option name=\"localTasksCounter\" value=\"24\" />\n    <servers />\n  </component>\n  <component name=\"TypeScriptGeneratedFilesManager\">\n    <option name=\"version\" value=\"3\" />\n  </component>\n  <component name=\"Vcs.Log.Tabs.Properties\">\n    <option name=\"TAB_STATES\">\n      <map>\n        <entry key=\"MAIN\">\n          <value>\n            <State />\n          </value>\n        </entry>\n      </map>\n    </option>\n  </component>\n  <component name=\"VcsManagerConfiguration\">\n    <MESSAGE value=\"[FE/FIX] 배포 테스트 (#68)\" />\n    <MESSAGE value=\"[FE/FIX] 지도 호출 흐름 수정 (#68)\" />\n    <MESSAGE value=\"[FE/FIX] 키오스크 ui 수정 (#68)\" />\n    <MESSAGE value=\"[FE/FIX] 뒤로가기 시 지도 코드 꼬이는 현상 수정 (#68)\" />\n    <MESSAGE value=\"[FE/FIX] 제품 입고요청 Api 정상작동 (#113)\" />\n    <MESSAGE value=\"[FE/FIX] 플리아이템 신청 온라인 환경 테스트 (#113)\" />\n    <MESSAGE value=\"[FE/FIX] 플리아이템, 쿠폰수령, 입고요청 api 완료(#118)\" />\n    <MESSAGE value=\"[FE/FIX] 메인페이지 css 수정 (#122)\" />\n    <MESSAGE value=\"[FE/FIX] 메인페이지 css 수정 (#131)\" />\n    <MESSAGE value=\"[FE/FIX] 메인페이지 css 수정 (#129)\" />\n    <MESSAGE value=\"[FE/FIX] 메인페이지 css 수정 (#135)\" />\n    <MESSAGE value=\"[FE/FIX] 키오스크 css flex로 수정 (#135)\" />\n    <option name=\"LAST_COMMIT_MESSAGE\" value=\"[FE/FIX] 키오스크 css flex로 수정 (#135)\" />\n  </component>\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	(revision cd2f5e7611f096d104cd664f0a2372fa6671b055)
++++ b/.idea/workspace.xml	(date 1740040015654)
+@@ -5,13 +5,14 @@
+   </component>
+   <component name="ChangeListManager">
+     <list default="true" id="f896b346-e63a-4955-9c5d-cb4b97fbcc7e" name="Changes" comment="[FE/FIX] 키오스크 css flex로 수정 (#135)">
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_rebase_[Changes]/shelved.patch" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_rebase_[Changes]/shelved.patch" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_rebase__Changes_.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_rebase__Changes_.xml" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/Frontend/src/components/KioskBarcodeScanner/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/components/KioskBarcodeScanner/index.js" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/Frontend/src/components/KioskCouponScanner/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/components/KioskCouponScanner/index.js" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/Frontend/src/components/KioskHeaderContainer/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/components/KioskHeaderContainer/style.css" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/Frontend/src/pages/KioskMain/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/pages/KioskMain/index.js" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/Frontend/src/pages/KioskMain/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/pages/KioskMain/style.css" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/Frontend/src/pages/StoredetailRequest/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/pages/StoredetailRequest/style.css" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/Frontend/src/api/NutritionSearchEmptyApi.js" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/api/SearchNativeApi.js" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/Frontend/src/components/SearchBar/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/components/SearchBar/index.js" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/Frontend/src/components/SearchNutritionScroll/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/components/SearchNutritionScroll/index.js" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/Frontend/src/pages/Search/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/pages/Search/index.js" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/Frontend/src/pages/SearchResult/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/pages/SearchResult/index.js" afterDir="false" />
+     </list>
+     <option name="SHOW_DIALOG" value="false" />
+     <option name="HIGHLIGHT_CONFLICTS" value="true" />
+@@ -59,7 +60,7 @@
+   "keyToString": {
+     "RunOnceActivity.ShowReadmeOnStart": "true",
+     "RunOnceActivity.git.unshallow": "true",
+-    "git-widget-placeholder": "FE/FEAT/#148",
++    "git-widget-placeholder": "Frontend",
+     "kotlin-language-version-configured": "true",
+     "last_opened_file_path": "/Users/mac/Downloads/SSAFY/SSAFY_season2/commonproject",
+     "node.js.detected.package.eslint": "true",
+Index: Frontend/src/components/SearchNutritionScroll/index.js
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import { useState, useEffect } from 'react';\nimport { useNavigate } from 'react-router-dom';\nimport NutritionSearchEmptyApi from \"../../api/NutritionSearchEmptyApi\";\nimport NutritionSearchApi from \"../../api/NutritionSearchApi\";\nimport './style.css'\n\nconst SearchNutritionScroll = ({ coords, searchQuery }) => {\n    const navigate = useNavigate();\n    const [maxSugar, setMaxSugar] = useState(100);\n    const [maxCal, setMaxCal] = useState(500);\n    const [items, setItems] = useState([]);\n    const [error, setError] = useState(null);\n\n    console.log(searchQuery);\n\n    useEffect(() => {\n        const fetchData = async () => {\n            try {\n                let result;\n                if (searchQuery) {\n                    // 검색어 있을 때: 일반 검색 API 사용\n                    result = await NutritionSearchApi(maxSugar, maxCal, searchQuery);\n                } else {\n                    // 검색어 없을 때: 기본 필터 API 사용\n                    result = await NutritionSearchEmptyApi(maxSugar, maxCal);\n                }\n                setItems(result || []);\n                setError(null);\n            } catch (err) {\n                setError('데이터 로딩에 실패했습니다');\n                setItems([]);\n            }\n        };\n        fetchData();\n    }, [maxSugar, maxCal, searchQuery]); // 검색어 변경 감지\n\n\n    return (\n        <div className=\"scrollcontents\">\n            <div className=\"scrollnotice\">영양분으로 검색하기</div>\n\n            <div className=\"scrollui\">\n                <label>\n                    <p>당 함유량: {maxSugar}</p>\n                    <input\n                        type=\"range\"\n                        min=\"0\"\n                        max=\"100\"\n                        value={maxSugar}\n                        onChange={(e) => setMaxSugar(Number(e.target.value))}\n                    />\n                </label>\n                <label>\n                    <p>칼로리: {maxCal}</p>\n                    <input\n                        type=\"range\"\n                        min=\"0\"\n                        max=\"500\"\n                        value={maxCal}\n                        onChange={(e) => setMaxCal(Number(e.target.value))}\n                    />\n                </label>\n            </div>\n\n            <div className=\"nutritionsearchresult\">\n                {error && <p style={{ color: 'red' }}>{error}</p>}\n                {!error && items.length === 0 && <p>데이터가 없습니다.</p>}\n                {!error && items.length > 0 && (\n                    <ul className=\"nutritionul\">\n                        {items.map((item) => (\n                            <li\n                                className=\"nutritionli\"\n                                key={item.item_id}\n                                onClick={() =>\n                                    navigate(\n                                        `/search/results?lat=${coords.lat}&lng=${coords.lng}&itemId=${item.item_id}&itemName=${item.item_name}`\n                                    )\n                                }\n                            >\n                                <img\n                                    src={item.itemImageUrl} // 이미지 URL\n                                    alt={item.item_name}\n                                    className=\"nutrition-image\"\n                                />\n                                <span className=\"nutrition-text\">{item.item_name}</span>\n                            </li>\n                        ))}\n                    </ul>\n                )}\n            </div>\n        </div>\n    );\n};\n\nexport default SearchNutritionScroll;\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Frontend/src/components/SearchNutritionScroll/index.js b/Frontend/src/components/SearchNutritionScroll/index.js
+--- a/Frontend/src/components/SearchNutritionScroll/index.js	(revision cd2f5e7611f096d104cd664f0a2372fa6671b055)
++++ b/Frontend/src/components/SearchNutritionScroll/index.js	(date 1740039847985)
+@@ -1,7 +1,6 @@
+ import { useState, useEffect } from 'react';
+ import { useNavigate } from 'react-router-dom';
+-import NutritionSearchEmptyApi from "../../api/NutritionSearchEmptyApi";
+-import NutritionSearchApi from "../../api/NutritionSearchApi";
++import NutritionSearchEmptyApi from "../../api/SearchNativeApi";
+ import './style.css'
+ 
+ const SearchNutritionScroll = ({ coords, searchQuery }) => {
+@@ -11,20 +10,20 @@
+     const [items, setItems] = useState([]);
+     const [error, setError] = useState(null);
+ 
+-    console.log(searchQuery);
+-
+     useEffect(() => {
+         const fetchData = async () => {
+             try {
+-                let result;
+-                if (searchQuery) {
+-                    // 검색어 있을 때: 일반 검색 API 사용
+-                    result = await NutritionSearchApi(maxSugar, maxCal, searchQuery);
+-                } else {
+-                    // 검색어 없을 때: 기본 필터 API 사용
+-                    result = await NutritionSearchEmptyApi(maxSugar, maxCal);
+-                }
+-                setItems(result || []);
++                // 항상 기본 필터 API 호출
++                const result = await NutritionSearchEmptyApi(maxSugar, maxCal);
++
++                // 검색어가 있을 경우 클라이언트 측 필터링
++                const filteredResult = searchQuery
++                    ? result.filter(item =>
++                        item.item_name.toLowerCase().includes(searchQuery.toLowerCase())
++                    )
++                    : result;
++
++                setItems(filteredResult || []);
+                 setError(null);
+             } catch (err) {
+                 setError('데이터 로딩에 실패했습니다');
+@@ -32,7 +31,8 @@
+             }
+         };
+         fetchData();
+-    }, [maxSugar, maxCal, searchQuery]); // 검색어 변경 감지
++    }, [maxSugar, maxCal, searchQuery]); // 모든 의존성 유지
++
+ 
+ 
+     return (
+Index: .idea/shelf/Uncommitted_changes_before_rebase__Changes_.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><changelist name=\"Uncommitted_changes_before_rebase_[Changes]\" date=\"1739427495359\" recycled=\"true\" deleted=\"true\">\n  <option name=\"PATH\" value=\"$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_rebase_[Changes]/shelved.patch\" />\n  <option name=\"DESCRIPTION\" value=\"Uncommitted changes before rebase [Changes]\" />\n</changelist>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/shelf/Uncommitted_changes_before_rebase__Changes_.xml b/.idea/shelf/Uncommitted_changes_before_rebase__Changes_.xml
+--- a/.idea/shelf/Uncommitted_changes_before_rebase__Changes_.xml	(revision cd2f5e7611f096d104cd664f0a2372fa6671b055)
++++ b/.idea/shelf/Uncommitted_changes_before_rebase__Changes_.xml	(date 1740039138947)
+@@ -1,4 +1,4 @@
+-<changelist name="Uncommitted_changes_before_rebase_[Changes]" date="1739427495359" recycled="true" deleted="true">
++<changelist name="Uncommitted_changes_before_rebase_[Changes]" date="1740039053724" recycled="false" toDelete="true">
+   <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_rebase_[Changes]/shelved.patch" />
+   <option name="DESCRIPTION" value="Uncommitted changes before rebase [Changes]" />
+ </changelist>
+\ No newline at end of file
+Index: .idea/shelf/Uncommitted_changes_before_rebase_[Changes]/shelved.patch
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>Index: Frontend/src/pages/MainPage/index.js\nIDEA additional info:\nSubsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP\n<+>import { useState, useEffect } from \\\"react\\\";\\nimport HeaderContainer from \\\"../../components/HeaderContainer/HeaderContainer\\\";\\nimport SearchBar from \\\"../../components/SearchBar\\\";\\nimport KakaoPostcodePopup from \\\"../../components/KakaoPostcodePopup\\\";\\nimport DraggableBottomSheet from \\\"../../components/DraggableBottomSheet/DraggableBottomSheet\\\";\\nimport KakaoMapContainer from \\\"../../components/KakaoMapContainer\\\";\\nimport KakaoMapMarkers from \\\"../../components/KakaoMapMarkers\\\";\\nimport useGeolocation from \\\"../../hooks/UseGeolocation\\\";\\nimport useReverseGeocoding from \\\"../../hooks/useReverseGeocoding\\\";\\nimport useGeocoding from \\\"../../hooks/useGeocoding\\\";\\nimport {useKakaoMap} from \\\"../../contexts/ KakaoMapContext\\\";\\n\\nimport \\\"./style.css\\\";\\n\\nconst MainPage = () => {\\n\\n    const { isSDKLoaded } = useKakaoMap();\\n    const { coordToAddress } = useReverseGeocoding();\\n    const { addressToCoord } = useGeocoding();\\n    const { geoCoords, error } = useGeolocation()\\n\\n    const [coords, setCoords] = useState({lat: 37.5015376, lng: 127.0397208});\\n    const [address, setAddress] = useState(\\\"인재의 산실 멀티캠퍼스\\\");\\n    const [isPopupOpen, setIsPopupOpen] = useState(false);\\n    const [storelist, setStorelist] = useState([]);\\n    const [isManualAddress, setIsManualAddress] = useState(false);\\n\\n\\n    useEffect(() => {\\n        if (isSDKLoaded && !isManualAddress && geoCoords) { // ✅ SDK 로드 확인 추가\\n            (async () => {\\n                try {\\n                    const newAddress = await coordToAddress(geoCoords);\\n                    setCoords(geoCoords);\\n                    setAddress(newAddress);\\n                } catch (error) {\\n                    console.error(\\\"역지오코딩 실패:\\\", error);\\n                    setAddress(\\\"위치 정보를 가져올 수 없음\\\"); // ✅ 오류 처리 추가\\n                }\\n            })();\\n        }\\n    }, [geoCoords, isSDKLoaded, isManualAddress]); // ✅ 종속성 수정\\n\\n    const handleAddressComplete = async (data) => {\\n        try {\\n            const newAddress = data.fullAddress;\\n            setAddress(prev => { // 함수형 업데이트\\n                console.log('주소 업데이트:', prev, '→', newAddress);\\n                return newAddress;\\n            });\\n\\n            const newCoords = await addressToCoord(newAddress);\\n            if (newCoords) {\\n                setCoords(prevCoords => ({ // 함수형 업데이트\\n                    ...prevCoords,\\n                    ...newCoords\\n                }));\\n                setIsManualAddress(true);\\n            }\\n        } catch (error) {\\n            console.error(\\\"지오코딩 실패:\\\", error);\\n        }\\n    };\\n\\n    return (\\n        <div className=\\\"mainpagebackground\\\">\\n            <div className=\\\"mainpagecontents\\\">\\n                <div className=\\\"mainpageheader\\\">\\n                    <HeaderContainer />\\n                </div>\\n                <div className=\\\"mainpagecurrentaddress\\\">\\n                    <div className=\\\"mainpageaddressdetail\\\">내 위치: {address}</div>\\n                    <button onClick={() => setIsPopupOpen(true)} className=\\\"addressSearchButton\\\">\\n                        주소 찾기\\n                    </button>\\n                </div>\\n                <div className=\\\"mainpagesearchbar\\\">\\n                    <SearchBar coords={coords} />\\n                </div>\\n\\n                <DraggableBottomSheet coords={coords} setStorelist={setStorelist} />\\n\\n                <div className=\\\"mainpagemap\\\">\\n                    <KakaoMapContainer coords={coords} />\\n                    <KakaoMapMarkers storelist={storelist} />\\n                </div>\\n\\n                {isPopupOpen && (\\n                    <KakaoPostcodePopup\\n                        onClose={() => setIsPopupOpen(false)}\\n                        onComplete={handleAddressComplete}\\n                    />\\n                )}\\n            </div>\\n        </div>\\n    );\\n};\\n\\nexport default MainPage;\\n\nSubsystem: com.intellij.openapi.diff.impl.patch.CharsetEP\n<+>UTF-8\n===================================================================\ndiff --git a/Frontend/src/pages/MainPage/index.js b/Frontend/src/pages/MainPage/index.js\n--- a/Frontend/src/pages/MainPage/index.js\t(revision 1eac7554a2f1135fe89eaeff6a8d8c52222f06ec)\n+++ b/Frontend/src/pages/MainPage/index.js\t(date 1739425707255)\n@@ -78,7 +78,9 @@\n                     <SearchBar coords={coords} />\n                 </div>\n \n-                <DraggableBottomSheet coords={coords} setStorelist={setStorelist} />\n+                <div className=\"mainpagebottomsheet\">\n+                    <DraggableBottomSheet coords={coords} setStorelist={setStorelist} />\n+                </div>\n \n                 <div className=\"mainpagemap\">\n                     <KakaoMapContainer coords={coords} />\nIndex: Frontend/src/components/DraggableBottomSheet/DraggableBottomSheet.js\nIDEA additional info:\nSubsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP\n<+>import React, { useState, useRef, useEffect } from \\\"react\\\";\\nimport { useNavigate } from \\\"react-router-dom\\\";\\nimport BottomSheetApi from \\\"../../api/BottomSheetApi\\\";\\nimport \\\"./DraggableBottomSheet.css\\\";\\n\\nconst DraggableBottomSheet = ({ coords, setStorelist }) => {\\n  const navigate = useNavigate();\\n  const [panelHeight, setPanelHeight] = useState(10); // 기본 높이 10%\\n  const panelRef = useRef(null);\\n  const isDraggingRef = useRef(false);\\n  const startYRef = useRef(0);\\n  const NAV_HEIGHT = 0 // 네비게이션 높이\\n  const PANEL_WIDTH = \\\"100%\\\"; // 바텀시트 너비\\n\\n  // 드래그 시작 핸들러\\n  const handlePointerDown = (e) => {\\n    e.preventDefault();\\n    e.stopPropagation();\\n\\n    isDraggingRef.current = true;\\n    startYRef.current = e.clientY || e.touches?.[0]?.clientY;\\n\\n    // 드래깅 클래스 추가\\n    panelRef.current.classList.add(\\\"dragging\\\");\\n  };\\n\\n  // 드래그 중 핸들러\\n  const handlePointerMove = (e) => {\\n    if (!isDraggingRef.current) return;\\n\\n    e.preventDefault();\\n    e.stopPropagation();\\n\\n    const currentY = e.clientY || e.touches?.[0]?.clientY;\\n    const deltaY = startYRef.current - currentY;\\n\\n    requestAnimationFrame(() => {\\n      let newHeight = panelHeight + (deltaY / window.innerHeight) * 100;\\n      newHeight = Math.max(10, Math.min(newHeight, 85)); // 최소 10%, 최대 85%\\n      setPanelHeight(newHeight);\\n      startYRef.current = currentY; // 현재 위치 업데이트\\n    });\\n  };\\n\\n  // 드래그 종료 핸들러\\n  const handlePointerUp = () => {\\n    if (!isDraggingRef.current) return;\\n\\n    isDraggingRef.current = false;\\n\\n    // 스냅 위치 설정\\n    setPanelHeight((prevHeight) => {\\n      if (prevHeight > 70) return 85; // 최대 위치로 스냅\\n      if (prevHeight > 20) return 50; // 중간 위치로 스냅\\n      return 10; // 최소 위치로 스냅\\n    });\\n\\n    // 드래깅 클래스 제거\\n    panelRef.current.classList.remove(\\\"dragging\\\");\\n  };\\n\\n  // 이벤트 리스너 등록 및 해제\\n  useEffect(() => {\\n    const handleGlobalPointerUp = () => {\\n      if (isDraggingRef.current) handlePointerUp();\\n    };\\n\\n    window.addEventListener(\\\"pointerup\\\", handleGlobalPointerUp);\\n    window.addEventListener(\\\"touchend\\\", handleGlobalPointerUp);\\n\\n    return () => {\\n      window.removeEventListener(\\\"pointerup\\\", handleGlobalPointerUp);\\n      window.removeEventListener(\\\"touchend\\\", handleGlobalPointerUp);\\n    };\\n  }, []);\\n\\n  const [LocalStorelist, setLocalStorelist] = useState([]);\\n\\n  console.log(coords)\\n\\n  useEffect(() => {\\n    let isMounted = true;\\n    const fetchData = async () => {\\n      if (coords) {\\n        try {\\n          await BottomSheetApi({\\n            coords,\\n            receivedData: (data) => {\\n              if (isMounted && data) {\\n                setLocalStorelist(data);\\n                setStorelist(data);\\n              }\\n            },\\n          });\\n        } catch (error) {\\n          console.error('데이터를 가져오는 중 오류 발생:', error);\\n        }\\n      }\\n    };\\n\\n    fetchData();\\n\\n    return () => {\\n      isMounted = false;\\n    };\\n  }, [coords, setStorelist]);\\n\\n\\n  console.log(LocalStorelist);\\n  return (\\n      <div\\n          ref={panelRef}\\n          className=\\\"bottom-sheet\\\"\\n          style={{\\n            height: `${panelHeight}%`,\\n            bottom: `${NAV_HEIGHT}px`,\\n            width: `${PANEL_WIDTH}`,\\n            transition: isDraggingRef.current ? \\\"none\\\" : \\\"height 0.3s ease\\\", // 드래그 중에는 트랜지션 비활성화\\n          }}\\n          onPointerMove={handlePointerMove}\\n          onTouchMove={handlePointerMove}\\n      >\\n        {/* 드래그 핸들 */}\\n        <div className=\\\"drag-handle\\\" onPointerDown={handlePointerDown} onTouchStart={handlePointerDown}></div>\\n\\n        {/* 바텀시트 내용 */}\\n        <div className=\\\"bottom-sheet-content\\\">\\n          <h2>근처 매장</h2>\\n          {LocalStorelist ? (\\n              <ul>\\n                {LocalStorelist.map((store, index) => (\\n                    <li\\n                        onClick={() => navigate(`/storedetail/${store.storeNo}`)}\\n                        key={index}\\n                    >\\n                      {store.name} {store.distance}\\n                    </li>\\n                ))}\\n              </ul>\\n          ) : (\\n              <p>근처에 매장이 없습니다.</p>\\n          )}\\n        </div>\\n      </div>\\n  );\\n};\\n\\nexport default DraggableBottomSheet;\\n\nSubsystem: com.intellij.openapi.diff.impl.patch.CharsetEP\n<+>UTF-8\n===================================================================\ndiff --git a/Frontend/src/components/DraggableBottomSheet/DraggableBottomSheet.js b/Frontend/src/components/DraggableBottomSheet/DraggableBottomSheet.js\n--- a/Frontend/src/components/DraggableBottomSheet/DraggableBottomSheet.js\t(revision 1eac7554a2f1135fe89eaeff6a8d8c52222f06ec)\n+++ b/Frontend/src/components/DraggableBottomSheet/DraggableBottomSheet.js\t(date 1739427432967)\n@@ -1,9 +1,11 @@\n import React, { useState, useRef, useEffect } from \"react\";\n-import { useNavigate } from \"react-router-dom\";\n+import { useNavigate, useLocation } from \"react-router-dom\";\n import BottomSheetApi from \"../../api/BottomSheetApi\";\n+import resultBottomSheetApi from \"../../api/resultBottomsheetApi\";\n import \"./DraggableBottomSheet.css\";\n \n-const DraggableBottomSheet = ({ coords, setStorelist }) => {\n+const DraggableBottomSheet = ({ coords, itemID, setStorelist }) => {\n+  const location = useLocation();\n   const navigate = useNavigate();\n   const [panelHeight, setPanelHeight] = useState(10); // 기본 높이 10%\n   const panelRef = useRef(null);\n@@ -76,25 +78,38 @@\n \n   const [LocalStorelist, setLocalStorelist] = useState([]);\n \n-  console.log(coords)\n-\n   useEffect(() => {\n     let isMounted = true;\n+\n     const fetchData = async () => {\n-      if (coords) {\n-        try {\n+      if (!coords) return;\n+\n+      try {\n+        // 현재 경로에 따라 API 선택\n+        if (location.pathname.startsWith('/search/')) {\n+          await resultBottomSheetApi({\n+            coords,\n+            itemId: itemID,  // 검색 결과 페이지에선 itemID 전달\n+            receivedData: (data) => {\n+              if (isMounted) {\n+                setLocalStorelist(data);\n+                setStorelist(data);\n+              }\n+            }\n+          });\n+        } else {\n           await BottomSheetApi({\n             coords,\n             receivedData: (data) => {\n-              if (isMounted && data) {\n+              if (isMounted) {\n                 setLocalStorelist(data);\n                 setStorelist(data);\n               }\n-            },\n+            }\n           });\n-        } catch (error) {\n-          console.error('데이터를 가져오는 중 오류 발생:', error);\n-        }\n+        }\n+      } catch (error) {\n+        console.error('API 요청 실패:', error);\n       }\n     };\n \n@@ -103,10 +118,8 @@\n     return () => {\n       isMounted = false;\n     };\n-  }, [coords, setStorelist]);\n+  }, [coords, itemID, setStorelist, location.pathname]); // itemID와 경로 변경 감지\n \n-\n-  console.log(LocalStorelist);\n   return (\n       <div\n           ref={panelRef}\n@@ -133,7 +146,7 @@\n                         onClick={() => navigate(`/storedetail/${store.storeNo}`)}\n                         key={index}\n                     >\n-                      {store.name} {store.distance}\n+                      {store.storeName} {store.distance}\n                     </li>\n                 ))}\n               </ul>\nIndex: Frontend/src/pages/SearchResult/index.js\nIDEA additional info:\nSubsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP\n<+>import React, { useState } from \\\"react\\\";\\nimport { useLocation } from \\\"react-router-dom\\\";\\nimport HeaderContainer from \\\"../../components/HeaderContainer/HeaderContainer\\\";\\nimport ResultBottomSheet from \\\"../../components/ResultBottomSheet\\\";\\nimport BottomNav from \\\"../../components/BottomNav/BottomNav\\\";\\nimport KakaoMapBackgroundResult from \\\"../../components/KakaoMapBackgroundResult\\\";\\nimport KakaoMapMarkersResult from \\\"../../components/KakaoMapMarkersResult\\\";\\nimport './style.css'\\n\\nconst SearchResult = () => {\\n    const [storelist, setStorelist] = useState([]);\\n    const [map, setMap] = useState(null); // 지도 객체 상태 추가\\n\\n    const location = useLocation();\\n    const queryParams = new URLSearchParams(location.search);\\n\\n\\n    const coords = {lat: queryParams.get('lat'), lng: queryParams.get('lng')}\\n    const itemId = queryParams.get('itemId');\\n\\n    return (\\n        <div className=\\\"result-page\\\">\\n            <div className=\\\"resultpagecontents\\\">\\n                <div className=\\\"resultheader\\\"><HeaderContainer/></div>\\n                <div className=\\\"resultpagenotice;\\\">검색 결과</div>\\n                <ResultBottomSheet coords={coords}\\n                                   itemId={itemId}\\n                                   setStorelist={setStorelist} />\\n                <BottomNav/>\\n            </div>\\n            <div className=\\\"resultpagemap\\\">\\n                <KakaoMapBackgroundResult coords={coords} onMapLoad={setMap} />\\n            </div>\\n            <div className=\\\"resultpagemarker\\\">\\n                {map && <KakaoMapMarkersResult map={map} storelist={storelist} />}\\n            </div>\\n\\n        </div>\\n    )\\n}\\n\\nexport default SearchResult;\nSubsystem: com.intellij.openapi.diff.impl.patch.CharsetEP\n<+>UTF-8\n===================================================================\ndiff --git a/Frontend/src/pages/SearchResult/index.js b/Frontend/src/pages/SearchResult/index.js\n--- a/Frontend/src/pages/SearchResult/index.js\t(revision 1eac7554a2f1135fe89eaeff6a8d8c52222f06ec)\n+++ b/Frontend/src/pages/SearchResult/index.js\t(date 1739427432969)\n@@ -1,15 +1,13 @@\n import React, { useState } from \"react\";\n import { useLocation } from \"react-router-dom\";\n import HeaderContainer from \"../../components/HeaderContainer/HeaderContainer\";\n-import ResultBottomSheet from \"../../components/ResultBottomSheet\";\n-import BottomNav from \"../../components/BottomNav/BottomNav\";\n-import KakaoMapBackgroundResult from \"../../components/KakaoMapBackgroundResult\";\n-import KakaoMapMarkersResult from \"../../components/KakaoMapMarkersResult\";\n+import DraggableBottomSheet from \"../../components/DraggableBottomSheet/DraggableBottomSheet\";\n+import KakaoMapMarkers from \"../../components/KakaoMapMarkers\";\n+import KakaoMapContainer from \"../../components/KakaoMapContainer\";\n import './style.css'\n \n const SearchResult = () => {\n     const [storelist, setStorelist] = useState([]);\n-    const [map, setMap] = useState(null); // 지도 객체 상태 추가\n \n     const location = useLocation();\n     const queryParams = new URLSearchParams(location.search);\n@@ -23,16 +21,15 @@\n             <div className=\"resultpagecontents\">\n                 <div className=\"resultheader\"><HeaderContainer/></div>\n                 <div className=\"resultpagenotice;\">검색 결과</div>\n-                <ResultBottomSheet coords={coords}\n+                <DraggableBottomSheet coords={coords}\n                                    itemId={itemId}\n                                    setStorelist={setStorelist} />\n-                <BottomNav/>\n             </div>\n             <div className=\"resultpagemap\">\n-                <KakaoMapBackgroundResult coords={coords} onMapLoad={setMap} />\n+                <KakaoMapContainer coords={coords} />\n             </div>\n             <div className=\"resultpagemarker\">\n-                {map && <KakaoMapMarkersResult map={map} storelist={storelist} />}\n+                <KakaoMapMarkers storelist={storelist} />\n             </div>\n \n         </div>\nIndex: Frontend/src/pages/MainPage/style.css\nIDEA additional info:\nSubsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP\n<+>.mainpagebackground {\\n    width: 100%;\\n    height: 100%;\\n}\\n\\n.mainpagecontents {\\n    width: 100%;\\n    height: 100%;\\n    display: grid;\\n    place-items: center;\\n    grid-template-rows: 8vh 6vh 6vh auto;\\n    position: relative;\\n    z-index: 100;\\n}\\n\\n.mainpageheader {\\n    grid-row: 1;\\n    width: 100%;\\n}\\n\\n.mainpagecurrentaddress {\\n    grid-row: 2;\\n    display: flex;\\n    justify-content: space-between;\\n    width: 100%;\\n    height: 6vh;\\n    background-color: #3f72af;\\n    align-items: center;\\n    position: relative;\\n    z-index: 99;\\n}\\n\\n.mainpageaddressdetail {\\n    width: 80%;\\n    text-align: left;\\n    overflow: hidden;\\n    white-space: nowrap;\\n    text-overflow: ellipsis;\\n}\\n\\n.mainpagesearchbar {\\n    grid-row: 3;\\n    position: relative;\\n    z-index: 99;\\n    width: 85%;\\n    height: 100%;\\n    margin-top: 20px;\\n}\\n\\n\\n.addressSearchButton {\\n    width: 20%;\\n    height: 100%;\\n    font-size: 12px;\\n}\\n\\n.mainpagemap {\\n    position: fixed;\\n    z-index: 1;\\n    top: 0;\\n}\\n\\n.mainpagemarker {\\n    width: 100vw;\\n    height: 100vh;\\n    position: fixed;\\n    top: 0;\\n    z-index: 10;\\n    pointer-events: none;\\n\\n}\\n\nSubsystem: com.intellij.openapi.diff.impl.patch.CharsetEP\n<+>UTF-8\n===================================================================\ndiff --git a/Frontend/src/pages/MainPage/style.css b/Frontend/src/pages/MainPage/style.css\n--- a/Frontend/src/pages/MainPage/style.css\t(revision 1eac7554a2f1135fe89eaeff6a8d8c52222f06ec)\n+++ b/Frontend/src/pages/MainPage/style.css\t(date 1739425754183)\n@@ -23,7 +23,7 @@\n     display: flex;\n     justify-content: space-between;\n     width: 100%;\n-    height: 6vh;\n+    height: 100%;\n     background-color: #3f72af;\n     align-items: center;\n     position: relative;\n@@ -69,3 +69,10 @@\n     pointer-events: none;\n \n }\n+\n+.mainpagebottomsheet {\n+    width: 100%;\n+    position: fixed;\n+    bottom: 0 !important;\n+    z-index: 101;\n+}\n\\ No newline at end of file\nIndex: Frontend/src/api/resultBottomsheetApi.js\nIDEA additional info:\nSubsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP\n<+>import axios from 'axios';\\n\\nconst apiUrl = process.env.REACT_APP_BACKEND_API_URL;\\n\\nconst resultBottomSheetApi = async ({ coords, itemId, receivedData }) => {\\n    try {\\n        // API 호출\\n        const response = await axios.get(`${apiUrl}/api/items/store-items`, {\\n            params: { lat: coords.lat,\\n                      lon: coords.lng,\\n                      itemId: itemId,},\\n        });\\n\\n        const resultnearStorelist = response.data;\\n\\n        console.log('resultnearStorelist', resultnearStorelist);\\n\\n        if (response.status === 200) {\\n            receivedData(resultnearStorelist); // 데이터를 부모 컴포넌트로 전달\\n        } else {\\n            console.error('API 요청 실패:');\\n        }\\n    } catch (error) {\\n        if (axios.isCancel(error)) {\\n            console.log('요청이 취소되었습니다:', error.message);\\n        } else if (error.response) {\\n            console.error('API 호출 중 오류 발생:', error.response.data);\\n        } else if (error.request) {\\n            console.error('응답을 받지 못했습니다:', error.request);\\n        } else {\\n            console.error('요청 설정 중 오류 발생:', error.message);\\n        }\\n\\n    }\\n};\\n\\nexport default resultBottomSheetApi\\n\nSubsystem: com.intellij.openapi.diff.impl.patch.CharsetEP\n<+>UTF-8\n===================================================================\ndiff --git a/Frontend/src/api/resultBottomsheetApi.js b/Frontend/src/api/resultBottomsheetApi.js\n--- a/Frontend/src/api/resultBottomsheetApi.js\t(revision 1eac7554a2f1135fe89eaeff6a8d8c52222f06ec)\n+++ b/Frontend/src/api/resultBottomsheetApi.js\t(date 1739424897392)\n@@ -13,8 +13,6 @@\n \n         const resultnearStorelist = response.data;\n \n-        console.log('resultnearStorelist', resultnearStorelist);\n-\n         if (response.status === 200) {\n             receivedData(resultnearStorelist); // 데이터를 부모 컴포넌트로 전달\n         } else {\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/shelf/Uncommitted_changes_before_rebase_[Changes]/shelved.patch b/.idea/shelf/Uncommitted_changes_before_rebase_[Changes]/shelved.patch
+--- a/.idea/shelf/Uncommitted_changes_before_rebase_[Changes]/shelved.patch	(revision cd2f5e7611f096d104cd664f0a2372fa6671b055)
++++ b/.idea/shelf/Uncommitted_changes_before_rebase_[Changes]/shelved.patch	(date 1740039112068)
+@@ -112,6 +112,56 @@
+                      </li>
+                  ))}
+                </ul>
++Index: Frontend/src/pages/MainPage/style.css
++IDEA additional info:
++Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
++<+>.mainpagebackground {\n    width: 100%;\n    height: 100%;\n}\n\n.mainpagecontents {\n    width: 100%;\n    height: 100%;\n    display: grid;\n    place-items: center;\n    grid-template-rows: 8vh 6vh 6vh auto;\n    position: relative;\n    z-index: 100;\n}\n\n.mainpageheader {\n    grid-row: 1;\n    width: 100%;\n}\n\n.mainpagecurrentaddress {\n    grid-row: 2;\n    display: flex;\n    justify-content: space-between;\n    width: 100%;\n    height: 6vh;\n    background-color: #3f72af;\n    align-items: center;\n    position: relative;\n    z-index: 99;\n}\n\n.mainpageaddressdetail {\n    width: 80%;\n    text-align: left;\n    overflow: hidden;\n    white-space: nowrap;\n    text-overflow: ellipsis;\n}\n\n.mainpagesearchbar {\n    grid-row: 3;\n    position: relative;\n    z-index: 99;\n    width: 85%;\n    height: 100%;\n    margin-top: 20px;\n}\n\n\n.addressSearchButton {\n    width: 20%;\n    height: 100%;\n    font-size: 12px;\n}\n\n.mainpagemap {\n    position: fixed;\n    z-index: 1;\n    top: 0;\n}\n\n.mainpagemarker {\n    width: 100vw;\n    height: 100vh;\n    position: fixed;\n    top: 0;\n    z-index: 10;\n    pointer-events: none;\n\n}\n
++Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
++<+>UTF-8
++===================================================================
++diff --git a/Frontend/src/pages/MainPage/style.css b/Frontend/src/pages/MainPage/style.css
++--- a/Frontend/src/pages/MainPage/style.css	(revision 1eac7554a2f1135fe89eaeff6a8d8c52222f06ec)
+++++ b/Frontend/src/pages/MainPage/style.css	(date 1739425754183)
++@@ -23,7 +23,7 @@
++     display: flex;
++     justify-content: space-between;
++     width: 100%;
++-    height: 6vh;
+++    height: 100%;
++     background-color: #3f72af;
++     align-items: center;
++     position: relative;
++@@ -69,3 +69,10 @@
++     pointer-events: none;
++ 
++ }
+++
+++.mainpagebottomsheet {
+++    width: 100%;
+++    position: fixed;
+++    bottom: 0 !important;
+++    z-index: 101;
+++}
++\ No newline at end of file
++Index: Frontend/src/api/resultBottomsheetApi.js
++IDEA additional info:
++Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
++<+>import axios from 'axios';\n\nconst apiUrl = process.env.REACT_APP_BACKEND_API_URL;\n\nconst resultBottomSheetApi = async ({ coords, itemId, receivedData }) => {\n    try {\n        // API 호출\n        const response = await axios.get(`${apiUrl}/api/items/store-items`, {\n            params: { lat: coords.lat,\n                      lon: coords.lng,\n                      itemId: itemId,},\n        });\n\n        const resultnearStorelist = response.data;\n\n        console.log('resultnearStorelist', resultnearStorelist);\n\n        if (response.status === 200) {\n            receivedData(resultnearStorelist); // 데이터를 부모 컴포넌트로 전달\n        } else {\n            console.error('API 요청 실패:');\n        }\n    } catch (error) {\n        if (axios.isCancel(error)) {\n            console.log('요청이 취소되었습니다:', error.message);\n        } else if (error.response) {\n            console.error('API 호출 중 오류 발생:', error.response.data);\n        } else if (error.request) {\n            console.error('응답을 받지 못했습니다:', error.request);\n        } else {\n            console.error('요청 설정 중 오류 발생:', error.message);\n        }\n\n    }\n};\n\nexport default resultBottomSheetApi\n
++Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
++<+>UTF-8
++===================================================================
++diff --git a/Frontend/src/api/resultBottomsheetApi.js b/Frontend/src/api/resultBottomsheetApi.js
++--- a/Frontend/src/api/resultBottomsheetApi.js	(revision 1eac7554a2f1135fe89eaeff6a8d8c52222f06ec)
+++++ b/Frontend/src/api/resultBottomsheetApi.js	(date 1739424897392)
++@@ -13,8 +13,6 @@
++ 
++         const resultnearStorelist = response.data;
++ 
++-        console.log('resultnearStorelist', resultnearStorelist);
++-
++         if (response.status === 200) {
++             receivedData(resultnearStorelist); // 데이터를 부모 컴포넌트로 전달
++         } else {
+ Index: Frontend/src/pages/SearchResult/index.js
+ IDEA additional info:
+ Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+@@ -161,53 +211,3 @@
+              </div>
+  
+          </div>
+-Index: Frontend/src/pages/MainPage/style.css
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+>.mainpagebackground {\n    width: 100%;\n    height: 100%;\n}\n\n.mainpagecontents {\n    width: 100%;\n    height: 100%;\n    display: grid;\n    place-items: center;\n    grid-template-rows: 8vh 6vh 6vh auto;\n    position: relative;\n    z-index: 100;\n}\n\n.mainpageheader {\n    grid-row: 1;\n    width: 100%;\n}\n\n.mainpagecurrentaddress {\n    grid-row: 2;\n    display: flex;\n    justify-content: space-between;\n    width: 100%;\n    height: 6vh;\n    background-color: #3f72af;\n    align-items: center;\n    position: relative;\n    z-index: 99;\n}\n\n.mainpageaddressdetail {\n    width: 80%;\n    text-align: left;\n    overflow: hidden;\n    white-space: nowrap;\n    text-overflow: ellipsis;\n}\n\n.mainpagesearchbar {\n    grid-row: 3;\n    position: relative;\n    z-index: 99;\n    width: 85%;\n    height: 100%;\n    margin-top: 20px;\n}\n\n\n.addressSearchButton {\n    width: 20%;\n    height: 100%;\n    font-size: 12px;\n}\n\n.mainpagemap {\n    position: fixed;\n    z-index: 1;\n    top: 0;\n}\n\n.mainpagemarker {\n    width: 100vw;\n    height: 100vh;\n    position: fixed;\n    top: 0;\n    z-index: 10;\n    pointer-events: none;\n\n}\n
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/Frontend/src/pages/MainPage/style.css b/Frontend/src/pages/MainPage/style.css
+---- a/Frontend/src/pages/MainPage/style.css	(revision 1eac7554a2f1135fe89eaeff6a8d8c52222f06ec)
+-+++ b/Frontend/src/pages/MainPage/style.css	(date 1739425754183)
+-@@ -23,7 +23,7 @@
+-     display: flex;
+-     justify-content: space-between;
+-     width: 100%;
+--    height: 6vh;
+-+    height: 100%;
+-     background-color: #3f72af;
+-     align-items: center;
+-     position: relative;
+-@@ -69,3 +69,10 @@
+-     pointer-events: none;
+- 
+- }
+-+
+-+.mainpagebottomsheet {
+-+    width: 100%;
+-+    position: fixed;
+-+    bottom: 0 !important;
+-+    z-index: 101;
+-+}
+-\ No newline at end of file
+-Index: Frontend/src/api/resultBottomsheetApi.js
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+>import axios from 'axios';\n\nconst apiUrl = process.env.REACT_APP_BACKEND_API_URL;\n\nconst resultBottomSheetApi = async ({ coords, itemId, receivedData }) => {\n    try {\n        // API 호출\n        const response = await axios.get(`${apiUrl}/api/items/store-items`, {\n            params: { lat: coords.lat,\n                      lon: coords.lng,\n                      itemId: itemId,},\n        });\n\n        const resultnearStorelist = response.data;\n\n        console.log('resultnearStorelist', resultnearStorelist);\n\n        if (response.status === 200) {\n            receivedData(resultnearStorelist); // 데이터를 부모 컴포넌트로 전달\n        } else {\n            console.error('API 요청 실패:');\n        }\n    } catch (error) {\n        if (axios.isCancel(error)) {\n            console.log('요청이 취소되었습니다:', error.message);\n        } else if (error.response) {\n            console.error('API 호출 중 오류 발생:', error.response.data);\n        } else if (error.request) {\n            console.error('응답을 받지 못했습니다:', error.request);\n        } else {\n            console.error('요청 설정 중 오류 발생:', error.message);\n        }\n\n    }\n};\n\nexport default resultBottomSheetApi\n
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/Frontend/src/api/resultBottomsheetApi.js b/Frontend/src/api/resultBottomsheetApi.js
+---- a/Frontend/src/api/resultBottomsheetApi.js	(revision 1eac7554a2f1135fe89eaeff6a8d8c52222f06ec)
+-+++ b/Frontend/src/api/resultBottomsheetApi.js	(date 1739424897392)
+-@@ -13,8 +13,6 @@
+- 
+-         const resultnearStorelist = response.data;
+- 
+--        console.log('resultnearStorelist', resultnearStorelist);
+--
+-         if (response.status === 200) {
+-             receivedData(resultnearStorelist); // 데이터를 부모 컴포넌트로 전달
+-         } else {

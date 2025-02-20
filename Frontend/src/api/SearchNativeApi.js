@@ -4,7 +4,7 @@ const SearchNativeApi = async( query ) => {
     const apiUrl = process.env.REACT_APP_BACKEND_API_URL;
 
     try {
-        const response = await axios.get(`${apiUrl}/api/items/search?query=${query}`);
+        const response = await axios.get(`${apiUrl}/api/items/search-native?query=${query}`);
         return response.data
 
     } catch (err) {
