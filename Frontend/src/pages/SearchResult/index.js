@@ -10,6 +10,7 @@ import useReverseGeocoding from "../../hooks/useReverseGeocoding";
 import useGeocoding from "../../hooks/useGeocoding";
 import SearchDropdownList from "../../components/SearchDropdownList";
 import searchApi from "../../api/searchApi";
+import SearchNativeApi from "../../api/SearchNativeApi";
 import './style.css'
 
 const SearchResult = () => {
@@ -109,6 +110,28 @@ const SearchResult = () => {
         setSearchResults([]);
     };
 
+    const handleNativeSearch = useCallback(async (query) => {
+        try {
+            const data = await SearchNativeApi(query);
+            setSearchResults(data);
+        } catch (error) {
+            console.error("네이티브 검색 오류:", error);
+            setSearchResults([]);
+        }
+    }, []);
+
+    // input 요소에 추가할 핸들러
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const searchTerm = e.target.value.trim();
+            if (searchTerm) {
+                handleNativeSearch(searchTerm);
+            }
+        }
+    };
+
+
     return (
         <div className="result-page">
                 <div className="resultheader"><HeaderContainer/></div>
@@ -119,6 +142,7 @@ const SearchResult = () => {
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             placeholder={itemName}
+                            onKeyDown={handleKeyDown}  // 이 부분 추가
                         />
                         <button className="resultclearbutton" 
                                            onClick={() => {
