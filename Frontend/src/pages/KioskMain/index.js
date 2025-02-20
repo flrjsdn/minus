@@ -166,8 +166,6 @@ const KioskMainScreen = () => {
           subtotal - Math.floor(subtotal * (state.discountRate / 100)),
       };
 
-      console.log(requestData);
-
       // API 호출
       await KioskPaymentApi(requestData);
 
@@ -201,12 +199,6 @@ const KioskMainScreen = () => {
       discountRate: couponData.discountRate,
       isCouponPopupOpen: false,
       isPaymentPopupOpen: true,
-    });
-
-    Swal.fire({
-      icon: "success",
-      title: "쿠폰 적용 완료!",
-      text: `${couponData.discountRate}% 할인이 적용되었습니다. (할인액: ${Math.floor((currentSubtotal * couponData.discountRate) / 100).toLocaleString()}원)`,
     });
   };
 
@@ -284,6 +276,25 @@ const KioskMainScreen = () => {
         </div>
       )}
 
+      {state.isCouponPopupOpen && (
+          <div className="popup-overlay">
+            <div className="popup-content">
+              <KioskCouponPopup
+                  onClose={() =>
+                      updateState({
+                        isCouponPopupOpen: false,
+                        isPaymentPopupOpen: true,
+                      })
+                  }
+                  onApplyCoupon={(couponData) => {
+                    handleApplyCoupon(couponData);
+                    updateState({ isPaymentPopupOpen: true, isCouponPopupOpen: false });
+                  }}
+              />
+            </div>
+          </div>
+      )}
+
       {/* 수정된 결제 팝업 호출 방식 */}
       {state.isPaymentPopupOpen && (
         <div className="popup-overlay">
@@ -292,26 +303,6 @@ const KioskMainScreen = () => {
               total={calculateTotalPrice()}
               onClose={() => updateState({ isPaymentPopupOpen: false })}
               onConfirm={handleConfirmPayment}
-            />
-          </div>
-        </div>
-      )}
-
-      {/* 쿠폰 팝업 닫힐 때 결제창 자동 호출 */}
-      {state.isCouponPopupOpen && (
-        <div className="popup-overlay">
-          <div className="popup-content">
-            <KioskCouponPopup
-              onClose={() =>
-                updateState({
-                  isCouponPopupOpen: false,
-                  isPaymentPopupOpen: true,
-                })
-              }
-              onApplyCoupon={(couponData) => {
-                handleApplyCoupon(couponData);
-                updateState({ isPaymentPopupOpen: true });
-              }}
             />
           </div>
         </div>

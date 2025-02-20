@@ -4,10 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f896b346-e63a-4955-9c5d-cb4b97fbcc7e" name="Changes" comment="[FE/FIX] 햣">
+    <list default="true" id="f896b346-e63a-4955-9c5d-cb4b97fbcc7e" name="Changes" comment="[FE/FIX] 영양분 검색 수정">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Frontend/src/api/NutritionSearchApi.js" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/api/NutritionSearchApi.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Frontend/src/components/SearchNutritionScroll/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/components/SearchNutritionScroll/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frontend/src/components/KioskCouponPopup/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/components/KioskCouponPopup/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frontend/src/components/KioskCouponScanner/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/components/KioskCouponScanner/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frontend/src/components/KioskPaymentPopup/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/components/KioskPaymentPopup/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Frontend/src/pages/KioskMain/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/Frontend/src/pages/KioskMain/index.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -115,7 +117,9 @@
       <workItem from="1739904889326" duration="338000" />
       <workItem from="1739923276863" duration="41280000" />
       <workItem from="1740041198600" duration="3552000" />
-      <workItem from="1740049167405" duration="566000" />
+      <workItem from="1740049167405" duration="656000" />
+      <workItem from="1740054141569" duration="1776000" />
+      <workItem from="1740062089116" duration="1686000" />
     </task>
     <task id="LOCAL-00001" summary="[FE/FIX] 배포 테스트 (#68)">
       <option name="closed" value="true" />
