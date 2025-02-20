@@ -10,7 +10,7 @@
     place-items: center;
     grid-template-rows: 8vh 10vh auto;
     position: relative;
-    z-index: 100;
+    z-index: 101;
 }
 
 .mainpageheader {

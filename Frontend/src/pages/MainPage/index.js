@@ -1,4 +1,3 @@
-// MainPage.jsx (수정된 버전)
 import { useState, useEffect } from "react";
 import HeaderContainer from "../../components/HeaderContainer/HeaderContainer";
 import SearchBar from "../../components/SearchBar";
