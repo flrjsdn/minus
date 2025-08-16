@@ -61,8 +61,6 @@
 ## 아키텍처
 ![alt text](./Frontend/public/Architecture.png)
 
-## ERD
-![alt text](./Frontend/public/erd.png)
 <br>
 
 ## 시연
